@@ -89,6 +89,69 @@
       z-index: 1;
     }
 
+    /* Styles pour le logo Région Réunion avec effet glow neon */
+    .region-logo {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 1000;
+      width: 120px;
+      opacity: 0.9;
+      transition: all 0.3s;
+      pointer-events: none;
+      filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+      animation: logo-glow 2s infinite alternate;
+    }
+
+    .region-logo:hover {
+      opacity: 1;
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 1))
+              drop-shadow(0 0 20px rgba(255, 255, 255, 0.7));
+      animation: logo-pulse 1s infinite alternate;
+    }
+
+    @keyframes logo-glow {
+      0% {
+        filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
+      }
+      100% {
+        filter: drop-shadow(0 0 10px rgba(255, 255, 255, 1))
+                drop-shadow(0 0 15px rgba(255, 255, 255, 0.7));
+      }
+    }
+
+    @keyframes logo-pulse {
+      0% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 10px rgba(255, 255, 255, 1))
+                drop-shadow(0 0 20px rgba(255, 255, 255, 0.7));
+      }
+      100% {
+        transform: scale(1.05);
+        filter: drop-shadow(0 0 15px rgba(255, 255, 255, 1))
+                drop-shadow(0 0 25px rgba(255, 255, 255, 0.9));
+      }
+    }
+
+    .region-logo::after {
+      content: "";
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      right: -5px;
+      bottom: -5px;
+      border-radius: 5px;
+      background: transparent;
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s;
+      box-shadow: 0 0 15px 5px rgba(255, 255, 255, 0.5);
+    }
+
+    .region-logo:hover::after {
+      opacity: 0.7;
+    }
+
     .app-root {
       display: flex;
       flex-direction: column;
@@ -108,6 +171,7 @@
       background: rgba(5, 5, 8, 0.8);
       border: 1px solid var(--neon-blue);
       box-shadow: var(--glow-blue);
+      margin-left: 130px; /* Pour laisser de l'espace au logo */
     }
 
     .logo-container {
@@ -561,6 +625,19 @@
       z-index: 10;
     }
 
+    .map-title {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: var(--neon-cyan);
+      text-shadow: 0 0 5px var(--neon-cyan);
+      z-index: 11;
+      font-size: 1.1em;
+      background: rgba(5, 5, 8, 0.7);
+      padding: 2px 10px;
+      border: 1px solid var(--neon-blue);
+    }
+
     .webcam-marker div {
       background-color: var(--neon-blue);
       width: 15px;
@@ -619,12 +696,27 @@
       .header {
         flex-direction: column;
         gap: 10px;
+        margin-left: 0;
+      }
+      
+      .region-logo {
+        position: relative;
+        top: 0;
+        left: 0;
+        margin: 10px auto;
+        display: block;
       }
     }
   </style>
 </head>
 <body>
   <div class="scanlines"></div>
+  
+  <!-- Logo Région Réunion avec effet glow neon -->
+  <img src="https://github.com/gunout/Traffic-Routier-D.E.E.R/blob/main/region-reunion-logo.png?raw=true" 
+       alt="Logo Région Réunion" 
+       class="region-logo"
+       title="Région Réunion">
 
   <div class="app-root">
     <!-- Header -->
@@ -667,7 +759,7 @@
         </div>
         
         <div class="video-container">
-          <div class="video-placeholder" id="videoPlaceholder">
+          <div class="video-placeholder flicker" id="videoPlaceholder">
             <div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
             <div>CHARGEMENT WEBCAM D.E.E.R.</div>
           </div>
@@ -719,6 +811,7 @@
 
     <!-- Map -->
     <div class="map-container">
+      <div class="map-title">CARTE DES WEBCAMS & INCIDENTS</div>
       <div id="map"></div>
       <div class="map-overlay"></div>
     </div>
@@ -763,7 +856,7 @@
       // DONNÉES STATIQUES
       // ============================================
       
-      // Webcams D.E.E.R. [citation:2][citation:3][citation:5]
+      // Webcams D.E.E.R. 
       const WEBCAMS = [
         { id: 'dec_04', name: 'RN2 Ste Marie - Duparc', url: 'https://www.infotrafic.re/CAM/dec_04.jpeg', coords: [-20.8969, 55.5501], zone: 'Nord' },
         { id: 'dec_14', name: 'RN1 St Denis - Potences', url: 'https://www.infotrafic.re/CAM/dec_14.jpeg', coords: [-20.8821, 55.4503], zone: 'Nord' },
@@ -780,7 +873,7 @@
         { id: 'dec_05', name: 'RN2 Ste Pierre - Anse Les Bas', url: 'https://www.infotrafic.re/CAM/dec_05.jpeg', coords: [-21.3345, 55.4789], zone: 'Sud' }
       ];
 
-      // Routes principales de La Réunion [citation:7][citation:9]
+      // Routes principales de La Réunion 
       const ROUTES = [
         { name: 'RN1 (Saint-Denis → Saint-Paul)', status: 'good', traffic: 'Fluide', zone: 'Nord-Ouest' },
         { name: 'RN1 (Saint-Paul → Saint-Denis)', status: 'moderate', traffic: 'Dense', zone: 'Nord-Ouest' },
@@ -793,7 +886,7 @@
       ];
 
       // ============================================
-      // DONNÉES TEMPS RÉEL (Incidents CRGT/Imazpress) [citation:6]
+      // DONNÉES TEMPS RÉEL (Incidents CRGT/Imazpress) 
       // ============================================
       const INCIDENTS = [
         {
@@ -946,7 +1039,7 @@
           markers.push(marker);
         });
 
-        // Marqueurs incidents [citation:6]
+        // Marqueurs incidents 
         INCIDENTS.forEach((incident) => {
           const iconColor = incident.type === 'accident' ? '#ff0040' : 
                            (incident.type === 'work' ? '#ff00ff' : '#00f0ff');
@@ -1043,7 +1136,7 @@
           elements.tabContent.innerHTML = html;
           
         } else if (tab === 'incidents') {
-          // Incidents en temps réel [citation:6]
+          // Incidents en temps réel 
           let html = '<div class="incident-list">';
           
           INCIDENTS.forEach(inc => {
@@ -1071,7 +1164,7 @@
           elements.tabContent.innerHTML = html;
           
         } else if (tab === 'routes') {
-          // Routes principales [citation:7]
+          // Routes principales 
           let html = '<div class="route-list">';
           
           ROUTES.forEach(route => {

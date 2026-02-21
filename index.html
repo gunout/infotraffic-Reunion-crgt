@@ -572,17 +572,33 @@
       width: 100%;
     }
 
-    /* Footer simplifié */
+    /* Footer avec lien D.E.E.R. */
     .footer {
       margin-top: 20px;
       padding: 10px 20px;
       background: linear-gradient(90deg, #002654 0%, #ffffff 50%, #ED2939 100%);
       border-radius: 10px;
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
       color: #002654;
       font-weight: bold;
+    }
+
+    .source-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .source-item a {
+      color: #002654;
+      text-decoration: none;
+      border-bottom: 1px dotted #ED2939;
+    }
+
+    .source-item a:hover {
+      color: #ED2939;
     }
 
     .last-update {
@@ -590,7 +606,7 @@
       font-weight: bold;
     }
 
-    /* Connection status - supprimé */
+    /* Connection status - caché */
     .connection-status {
       display: none;
     }
@@ -711,13 +727,7 @@
         <input type="text" class="search-box" id="searchInput" placeholder="Rechercher...">
       </div>
 
-      <!-- Debug Buttons -->
-      <div class="debug-buttons">
-        <button class="btn small warning" onclick="window.debugIncidents()">🔍 Debug</button>
-        <button class="btn small" onclick="window.fixDisplay()">🛠️ Fix</button>
-      </div>
-
-      <!-- Category Filters -->
+      <!-- Category Filters (sans Debug/Fix) -->
       <div class="category-filters" id="categoryFilters"></div>
 
       <div class="sidebar-tabs">
@@ -737,8 +747,12 @@
     <div id="map"></div>
   </div>
 
-  <!-- Footer simplifié -->
+  <!-- Footer avec lien D.E.E.R. uniquement -->
   <div class="footer">
+    <div class="source-item">
+      <span>📹</span>
+      <a href="https://www.infotrafic.re" target="_blank">D.E.E.R.</a>
+    </div>
     <div class="last-update" id="lastUpdate">Mise à jour: --:--:--</div>
   </div>
 
@@ -913,37 +927,6 @@
         
         return fallback[endpoint] || { data: [] };
       }
-
-      // ============================================
-      // FONCTIONS DE DÉBOGAGE
-      // ============================================
-      window.debugIncidents = function() {
-        console.log('🔍 DÉBOGAGE INCIDENTS');
-        console.log('=====================');
-        console.log('📊 allIncidents:', allIncidents);
-        
-        let total = 0;
-        CATEGORIES.forEach(cat => {
-          const incidents = allIncidents[cat.id] || [];
-          console.log(`📁 ${cat.name}: ${incidents.length} incidents`);
-          if (incidents.length > 0) {
-            console.log(`   Premier incident:`, incidents[0]);
-            console.log(`   Clés disponibles:`, Object.keys(incidents[0]));
-          }
-          total += incidents.length;
-        });
-        
-        console.log(`📈 TOTAL: ${total} incidents`);
-        return total;
-      };
-
-      window.fixDisplay = function() {
-        console.log('🛠️ FORCE L\'AFFICHAGE');
-        if (document.querySelector('.tab.active').textContent.includes('INCIDENTS')) {
-          displayAllIncidents();
-        }
-        updateIncidentMarkers();
-      };
 
       // ============================================
       // CHARGEMENT DES DONNÉES

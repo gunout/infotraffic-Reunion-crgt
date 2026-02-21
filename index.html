@@ -1,544 +1,499 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infotrafic Réunion - Trafic en temps réel</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="utf-8">
+  <title>Infotrafic Réunion - API Locale Active</title>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="theme-color" content="#002654">
+  
+  <!-- External Resources -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Raleway:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
+  <style>
+    :root { --c-blue: #002654; --c-white: #ffffff; --c-red: #ED2939; --bg-dark: #0a0a0a; --bg-panel: #111; --c-green: #00c853; --c-yellow: #ffeb3b; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Raleway', sans-serif; background: var(--bg-dark); color: var(--c-white); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+    .flag-bar { height: 6px; background: linear-gradient(90deg, var(--c-blue) 33.33%, var(--c-white) 33.33%, var(--c-white) 66.66%, var(--c-red) 66.66%); width: 100%; flex-shrink: 0; }
+    
+    /* Header */
+    header { padding: 15px 20px; background: linear-gradient(135deg, #001a3a 0%, #000 100%); border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand h1 { font-family: 'Roboto Mono', monospace; font-size: 1.2rem; background: linear-gradient(90deg, var(--c-white), var(--c-red)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; letter-spacing: 1px; }
+    .badge { background: rgba(255,255,255,0.1); border: 1px solid #555; color: #aaa; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; gap: 5px; }
+    
+    /* Main Layout */
+    main { flex: 1; padding: 20px; display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: auto 350px; gap: 20px; max-width: 1600px; margin: 0 auto; width: 100%; }
+    
+    /* Webcam Panel */
+    .webcam-panel { grid-column: 1 / 2; background: var(--bg-panel); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.6); position: relative; min-height: 450px; }
+    .panel-header { padding: 12px 15px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
+    .live-badge { display: flex; align-items: center; gap: 6px; background: rgba(237, 41, 57, 0.2); color: var(--c-red); padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+    .live-dot { width: 8px; height: 8px; background-color: var(--c-red); border-radius: 50%; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+    
+    .video-container { flex: 1; background: #000; position: relative; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+    #webcamImage { width: 100%; height: 100%; object-fit: contain; }
+    .loading-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #050505; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10; transition: opacity 0.3s; }
+    .loading-overlay.hidden { opacity: 0; pointer-events: none; }
+    .spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid var(--c-red); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    .overlay-info { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); padding: 25px 15px 15px; color: white; pointer-events: none; }
+    .overlay-info h2 { font-size: 1.3rem; text-shadow: 0 2px 4px rgba(0,0,0,1); margin-bottom: 4px; color: #fff; }
+    .overlay-info p { font-size: 0.9rem; color: #ddd; }
+    
+    .controls-bar { padding: 12px; background: rgba(255,255,255,0.05); display: flex; gap: 10px; justify-content: center; }
+    .btn { background: rgba(255,255,255,0.1); border: none; color: white; padding: 8px 16px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600; transition: background 0.2s; font-size: 0.9rem; }
+    .btn:hover { background: rgba(255,255,255,0.2); }
+    
+    /* Sidebar */
+    .sidebar-panel { grid-column: 2 / 3; grid-row: 1 / 3; background: var(--bg-panel); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; }
+    .sidebar-tabs { display: flex; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .tab-btn { flex: 1; padding: 15px; background: transparent; border: none; color: #888; font-weight: 700; cursor: pointer; border-bottom: 2px solid transparent; }
+    .tab-btn.active { color: var(--c-white); border-bottom-color: var(--c-red); background: rgba(237,41,57,0.1); }
+    .list-content { flex: 1; overflow-y: auto; padding: 10px; }
+    
+    /* API Status Box */
+    .status-box { 
+      background: #1a1a1a; border-bottom: 1px solid #333; padding: 12px; font-family: 'Roboto Mono', monospace; font-size: 0.7rem; color: #ccc;
+    }
+    .status-line { display: flex; justify-content: space-between; margin-bottom: 4px; }
+    .status-ok { color: var(--c-green); }
+    .status-err { color: var(--c-red); }
 
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            width: 100%;
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .server-status {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #002654;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 30px;
-            font-size: 14px;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-
-        .server-status.connected {
-            background: #28a745;
-        }
-
-        .server-status.error {
-            background: #dc3545;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            border-left: 5px solid #007bff;
-        }
-
-        .stat-number {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #007bff;
-        }
-
-        .stat-label {
-            color: #666;
-            margin-top: 5px;
-        }
-
-        .category-filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
-            justify-content: center;
-        }
-
-        .category-btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 30px;
-            background: #e9ecef;
-            color: #495057;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 14px;
-        }
-
-        .category-btn:hover {
-            background: #007bff;
-            color: white;
-        }
-
-        .category-btn.active {
-            background: #007bff;
-            color: white;
-        }
-
-        .incident-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .incident-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border-left: 5px solid;
-            transition: transform 0.3s;
-        }
-
-        .incident-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-        }
-
-        .incident-card.accident { border-left-color: #dc3545; }
-        .incident-card.traffic_jam { border-left-color: #ffc107; }
-        .incident-card.roadworks { border-left-color: #17a2b8; }
-        .incident-card.serious_hazard { border-left-color: #6f42c1; }
-        .incident-card.hazard { border-left-color: #fd7e14; }
-        .incident-card.roadclosure { border-left-color: #343a40; }
-        .incident-card.flood { border-left-color: #00bcd4; }
-        .incident-card.market { border-left-color: #ff9800; }
-        .incident-card.local_event { border-left-color: #9c27b0; }
-        .incident-card.animal { border-left-color: #795548; }
-
-        .incident-title {
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        .incident-desc {
-            color: #666;
-            margin-bottom: 15px;
-            font-size: 0.95em;
-        }
-
-        .incident-meta {
-            display: flex;
-            justify-content: space-between;
-            color: #999;
-            font-size: 0.85em;
-        }
-
-        .refresh-btn {
-            display: block;
-            width: 200px;
-            margin: 30px auto 0;
-            padding: 12px 24px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s;
-        }
-
-        .refresh-btn:hover {
-            background: #0056b3;
-        }
-
-        .refresh-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .last-update {
-            text-align: center;
-            margin-top: 20px;
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            color: #666;
-            font-size: 0.85em;
-        }
-
-        @media (max-width: 768px) {
-            .server-status {
-                top: 10px;
-                right: 10px;
-                font-size: 12px;
-                padding: 5px 10px;
-            }
-            
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-    </style>
+    /* List Items */
+    .incident-card { background: rgba(255,255,255,0.03); border-left: 3px solid #555; padding: 12px; margin-bottom: 10px; border-radius: 0 4px 4px 0; cursor: pointer; transition: background 0.2s; }
+    .incident-card:hover { background: rgba(255,255,255,0.06); }
+    .incident-card.accident { border-left-color: var(--c-red); }
+    .incident-card.traffic_jam { border-left-color: #ff9800; }
+    .incident-card.roadworks { border-left-color: var(--c-yellow); }
+    .incident-card.serious_hazard { border-left-color: #8B0000; }
+    .incident-card.hazard { border-left-color: #FF4500; }
+    .incident-card.roadclosure { border-left-color: #000000; }
+    .incident-card.flood { border-left-color: #00CED1; }
+    .incident-card.market { border-left-color: #FFD700; }
+    .incident-card.local_event { border-left-color: #9370DB; }
+    .incident-card.animal { border-left-color: #8B4513; }
+    
+    .inc-header { display: flex; justify-content: space-between; font-size: 0.75rem; color: #aaa; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .inc-title { font-weight: 700; color: #eee; display: block; margin-bottom: 6px; line-height: 1.3; font-size: 0.95rem; }
+    .inc-loc { font-size: 0.85rem; color: #ccc; display: flex; align-items: center; gap: 4px; }
+    .inc-desc { font-size: 0.8rem; color: #aaa; margin-bottom: 5px; }
+    
+    .cam-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.02); border: 1px solid transparent; border-radius: 4px; margin-bottom: 5px; cursor: pointer; }
+    .cam-item:hover { background: rgba(255,255,255,0.05); }
+    .cam-item.active { border-color: var(--c-blue); background: rgba(0, 38, 84, 0.2); }
+    .cam-info h4 { font-size: 0.9rem; font-weight: 600; color: #fff; }
+    
+    /* Map */
+    .map-panel { grid-column: 1 / 2; grid-row: 2 / 3; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
+    #map { width: 100%; height: 100%; background: #000; }
+    
+    footer { text-align: center; padding: 15px; font-size: 0.8rem; color: #666; border-top: 1px solid rgba(255,255,255,0.05); background: #050505; }
+    
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; grid-template-rows: auto auto auto; }
+      .sidebar-panel { grid-column: 1 / 2; grid-row: 2 / 3; height: 400px; }
+      .map-panel { grid-column: 1 / 2; grid-row: 3 / 4; height: 350px; }
+    }
+  </style>
 </head>
 <body>
-    <div class="server-status" id="serverStatus">
-        🔍 Vérification du serveur local...
+
+  <div class="flag-bar"></div>
+
+  <header>
+    <div class="brand">
+      <span class="material-icons" style="color: var(--c-red); font-size: 32px;">traffic</span>
+      <div>
+        <h1>Infotrafic Réunion</h1>
+        <span class="badge" id="apiBadge"><span class="material-icons" style="font-size:14px">cloud_off</span> API LOCALE</span>
+      </div>
     </div>
-
-    <div class="container">
-        <div class="header">
-            <h1>🚦 INFOTRAFIC RÉUNION</h1>
-            <p>Données en temps réel via votre serveur local</p>
-        </div>
-
-        <!-- Statistiques -->
-        <div class="stats-grid" id="statsGrid">
-            <div class="stat-card">
-                <div class="stat-number" id="totalIncidents">0</div>
-                <div class="stat-label">Total incidents</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="accidentCount">0</div>
-                <div class="stat-label">Accidents</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="trafficJamCount">0</div>
-                <div class="stat-label">Bouchons</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="roadworksCount">0</div>
-                <div class="stat-label">Travaux</div>
-            </div>
-        </div>
-
-        <!-- Filtres par catégorie -->
-        <div class="category-filters" id="categoryFilters"></div>
-
-        <!-- Liste des incidents -->
-        <div id="incidentList" class="incident-list">
-            <p style="text-align: center; grid-column: 1/-1;">Chargement des données...</p>
-        </div>
-
-        <!-- Bouton de rafraîchissement -->
-        <button class="refresh-btn" id="refreshBtn" onclick="loadAllIncidents()">
-            🔄 Actualiser les données
+    <div style="text-align:right;">
+        <button class="btn" id="forceRefreshData" style="font-size:0.8rem; border:1px solid #333;">
+            <span class="material-icons" style="font-size:16px">refresh</span> Actualiser
         </button>
-
-        <!-- Dernière mise à jour -->
-        <div class="last-update" id="lastUpdate">
-            Dernière mise à jour: --
-        </div>
-
-        <div class="footer">
-            <p>© 2025 Infotrafic Réunion - Serveur local: 192.168.1.17:3000</p>
-        </div>
     </div>
+  </header>
 
-    <script>
-        // ============================================
-        // CONFIGURATION API LOCALE
-        // ============================================
-        const API_BASE = 'http://192.168.1.17:3000/api';
+  <main>
+    <!-- Webcam Player -->
+    <section class="webcam-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <span class="material-icons">camera_alt</span>
+          <span id="currentCamName">Connexion...</span>
+        </div>
+        <div class="live-badge">
+          <div class="live-dot"></div> DIRECT
+        </div>
+      </div>
+
+      <div class="video-container">
+        <div class="loading-overlay" id="loadingOverlay">
+          <div class="spinner"></div>
+          <p>Chargement flux D.E.E.R...</p>
+        </div>
+        <img id="webcamImage" src="" crossorigin="anonymous" alt="Webcam Officielle">
+        <div class="overlay-info">
+          <h2 id="overlayName">-</h2>
+          <p id="overlayLoc">-</p>
+        </div>
+      </div>
+
+      <div class="controls-bar">
+        <button class="btn" id="prevBtn"><span class="material-icons">chevron_left</span></button>
+        <button class="btn" id="refreshBtn"><span class="material-icons">refresh</span></button>
+        <button class="btn" id="nextBtn"><span class="material-icons">chevron_right</span></button>
+      </div>
+    </section>
+
+    <!-- Sidebar -->
+    <aside class="sidebar-panel">
+      <div class="sidebar-tabs">
+        <button class="tab-btn active" data-tab="incidents">⚠️ Incidents</button>
+        <button class="tab-btn" data-tab="stats">📊 Statistiques</button>
+        <button class="tab-btn" data-tab="webcams">📹 Webcams</button>
+      </div>
+      
+      <div class="status-box" id="apiStatus">
+        <div class="status-line">
+            <span>API Locale:</span>
+            <span id="statusApi" class="status-ok">Connexion...</span>
+        </div>
+        <div class="status-line">
+            <span>Incidents:</span>
+            <span id="incidentCount">0</span>
+        </div>
+      </div>
+
+      <div class="list-content" id="listContainer">
+        <!-- Content injected via JS -->
+      </div>
+    </aside>
+
+    <!-- Map -->
+    <section class="map-panel">
+      <div id="map"></div>
+    </section>
+  </main>
+
+  <footer>
+    Mode Connecté : API Locale 102.35.99.37:3000 | Webcams fonctionnelles
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  
+  <script>
+    /**
+     * CONFIGURATION - API LOCALE
+     */
+    const API_BASE = 'http://102.35.99.37:3000/api';
+    
+    // Mapping des catégories pour l'affichage
+    const CATEGORIES = [
+        { id: 'accident', name: 'Accidents', color: '#ED2939', icon: 'warning' },
+        { id: 'traffic_jam', name: 'Bouchons', color: '#ff9800', icon: 'traffic' },
+        { id: 'roadworks', name: 'Travaux', color: '#ffeb3b', icon: 'construction' },
+        { id: 'serious_hazard', name: 'Dangers graves', color: '#8B0000', icon: 'dangerous' },
+        { id: 'hazard', name: 'Dangers', color: '#FF4500', icon: 'warning' },
+        { id: 'roadclosure', name: 'Fermetures', color: '#000000', icon: 'block' },
+        { id: 'flood', name: 'Inondations', color: '#00CED1', icon: 'water' },
+        { id: 'market', name: 'Marchés', color: '#FFD700', icon: 'shopping_cart' },
+        { id: 'local_event', name: 'Événements', color: '#9370DB', icon: 'event' },
+        { id: 'animal', name: 'Animaux', color: '#8B4513', icon: 'pets' }
+    ];
+
+    /**
+     * DONNÉES WEBCAMS
+     */
+    const WEBcams = [
+      { id: 'dec_04', name: 'RN2 - Sainte-Marie (Duparc)', url: 'https://www.infotrafic.re/CAM/dec_04.jpeg', lat: -20.8969, lng: 55.5501, zone: 'Nord' },
+      { id: 'dec_14', name: 'RN1 - Saint-Denis (Potences)', url: 'https://www.infotrafic.re/CAM/dec_14.jpeg', lat: -20.8821, lng: 55.4503, zone: 'Nord' },
+      { id: 'dec_15', name: 'RN1 - La Grande Chaloupe', url: 'https://www.infotrafic.re/CAM/dec_15.jpeg', lat: -20.9067, lng: 55.3982, zone: 'Nord-Ouest' },
+      { id: 'dec_02', name: 'RN1 - Le Port (Sacré Cœur)', url: 'https://www.infotrafic.re/CAM/dec_02.jpeg', lat: -20.9367, lng: 55.2961, zone: 'Ouest' },
+      { id: 'dec_16', name: 'RN1 - Saint-Paul (Bellemène)', url: 'https://www.infotrafic.re/CAM/dec_16.jpeg', lat: -20.9967, lng: 55.2821, zone: 'Ouest' },
+      { id: 'dec_09', name: 'RN1 - Saint-Paul (La Tranchée)', url: 'https://www.infotrafic.re/CAM/dec_09.jpeg', lat: -21.0034, lng: 55.2756, zone: 'Ouest' },
+      { id: 'dec_17', name: 'RN1 - Plateau Caillou', url: 'https://www.infotrafic.re/CAM/dec_17.jpeg', lat: -21.0189, lng: 55.2698, zone: 'Ouest' },
+      { id: 'dec_18', name: 'RN1 - L\'Éperon', url: 'https://www.infotrafic.re/CAM/dec_18.jpeg', lat: -21.0312, lng: 55.2645, zone: 'Ouest' },
+      { id: 'dec_10', name: 'RN1 - Ravine des Trois Bassins', url: 'https://www.infotrafic.re/CAM/dec_10.jpeg', lat: -21.0812, lng: 55.2598, zone: 'Ouest' },
+      { id: 'dec_11', name: 'RN1 - Saint-Leu (Ravine Fontaine)', url: 'https://www.infotrafic.re/CAM/dec_11.jpeg', lat: -21.1534, lng: 55.2789, zone: 'Ouest' },
+      { id: 'dec_12', name: 'RN1 - Saint-Pierre (Pierrefonds)', url: 'https://www.infotrafic.re/CAM/dec_12.jpeg', lat: -21.2867, lng: 55.4212, zone: 'Sud' },
+      { id: 'dec_13', name: 'RN3 - Saint-Pierre (Azalées)', url: 'https://www.infotrafic.re/CAM/dec_13.jpeg', lat: -21.3124, lng: 55.4678, zone: 'Sud' },
+      { id: 'dec_05', name: 'RN2 - Saint-Pierre (Anse des Bas)', url: 'https://www.infotrafic.re/CAM/dec_05.jpeg', lat: -21.3345, lng: 55.4789, zone: 'Sud' }
+    ];
+
+    let state = { 
+        currentIndex: 0, 
+        activeTab: 'incidents', 
+        map: null, 
+        markers: [], 
+        incidentMarkers: [],
+        incidentsData: {},
+        stats: {}
+    };
+    
+    const els = {
+      img: document.getElementById('webcamImage'),
+      loader: document.getElementById('loadingOverlay'),
+      name: document.getElementById('currentCamName'),
+      overlayName: document.getElementById('overlayName'),
+      overlayLoc: document.getElementById('overlayLoc'),
+      list: document.getElementById('listContainer'),
+      statusApi: document.getElementById('statusApi'),
+      incidentCount: document.getElementById('incidentCount'),
+      badge: document.getElementById('apiBadge')
+    };
+
+    /**
+     * LOGIQUE API
+     */
+    async function fetchAllData() {
+        try {
+            // Récupérer tous les incidents
+            const response = await fetch(`${API_BASE}/all`);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            
+            if (data.success) {
+                state.incidentsData = data.data || {};
+                state.stats = data.details || {};
+                
+                // Mise à jour UI
+                const total = Object.values(state.stats).reduce((a, b) => a + b, 0);
+                els.incidentCount.textContent = total;
+                els.statusApi.textContent = 'Connecté';
+                els.statusApi.className = 'status-ok';
+                els.badge.innerHTML = '<span class="material-icons" style="font-size:14px">cloud_done</span> API ACTIVE';
+                els.badge.style.color = 'var(--c-green)';
+                els.badge.style.borderColor = 'var(--c-green)';
+                
+                if (state.activeTab === 'incidents') renderAllIncidents();
+                if (state.activeTab === 'stats') renderStats();
+                updateMapIncidents();
+            }
+        } catch (error) {
+            console.error('Erreur API:', error);
+            els.statusApi.textContent = 'Hors ligne';
+            els.statusApi.className = 'status-err';
+            els.incidentCount.textContent = '?';
+            els.badge.innerHTML = '<span class="material-icons" style="font-size:14px">cloud_off</span> API INDISPONIBLE';
+            els.badge.style.color = 'var(--c-red)';
+            els.badge.style.borderColor = 'var(--c-red)';
+            
+            // Afficher message d'erreur
+            els.list.innerHTML = `
+                <div style="padding: 20px; text-align: center; color: #ff8a80;">
+                    <span class="material-icons" style="font-size: 40px;">cloud_off</span>
+                    <p style="margin-top: 10px;">Impossible de contacter l'API</p>
+                    <p style="font-size: 0.8rem; color: #aaa;">Vérifiez que le serveur tourne sur 102.35.99.37:3000</p>
+                </div>
+            `;
+        }
+    }
+
+    /**
+     * RENDU DES INTERFACES
+     */
+    function renderAllIncidents() {
+        let html = '';
+        let total = 0;
         
-        // Liste des catégories avec leurs couleurs
-        const CATEGORIES = [
-            { id: 'accident', name: 'Accidents', color: '#dc3545', icon: '🚗' },
-            { id: 'traffic_jam', name: 'Bouchons', color: '#ffc107', icon: '🚦' },
-            { id: 'roadworks', name: 'Travaux', color: '#17a2b8', icon: '🚧' },
-            { id: 'serious_hazard', name: 'Dangers graves', color: '#6f42c1', icon: '⚠️' },
-            { id: 'hazard', name: 'Dangers', color: '#fd7e14', icon: '⚠️' },
-            { id: 'roadclosure', name: 'Fermetures', color: '#343a40', icon: '🚫' },
-            { id: 'flood', name: 'Inondations', color: '#00bcd4', icon: '💧' },
-            { id: 'market', name: 'Marchés', color: '#ff9800', icon: '🛒' },
-            { id: 'local_event', name: 'Événements', color: '#9c27b0', icon: '🎉' },
-            { id: 'animal', name: 'Animaux', color: '#795548', icon: '🐾' }
-        ];
-
-        // Éléments DOM
-        const elements = {
-            serverStatus: document.getElementById('serverStatus'),
-            totalIncidents: document.getElementById('totalIncidents'),
-            accidentCount: document.getElementById('accidentCount'),
-            trafficJamCount: document.getElementById('trafficJamCount'),
-            roadworksCount: document.getElementById('roadworksCount'),
-            categoryFilters: document.getElementById('categoryFilters'),
-            incidentList: document.getElementById('incidentList'),
-            lastUpdate: document.getElementById('lastUpdate'),
-            refreshBtn: document.getElementById('refreshBtn')
-        };
-
-        // ============================================
-        // VÉRIFICATION DU SERVEUR LOCAL
-        // ============================================
-        async function checkServer() {
-            try {
-                const response = await fetch(`${API_BASE}/health`, {
-                    mode: 'cors',
-                    timeout: 3000
-                });
-                
-                if (response.ok) {
-                    elements.serverStatus.textContent = '🟢 Serveur local connecté (192.168.1.17:3000)';
-                    elements.serverStatus.className = 'server-status connected';
-                    return true;
-                } else {
-                    throw new Error('Réponse non valide');
-                }
-            } catch (error) {
-                elements.serverStatus.textContent = '🔴 Serveur local injoignable - Vérifiez que node server.js tourne';
-                elements.serverStatus.className = 'server-status error';
-                
-                // Données de démonstration si serveur indisponible
-                displayDemoData();
-                return false;
-            }
-        }
-
-        // ============================================
-        // CRÉATION DES FILTRES
-        // ============================================
-        function createCategoryFilters() {
-            let html = '<button class="category-btn active" onclick="filterByCategory(\'all\')">📋 Tous</button>';
+        CATEGORIES.forEach(cat => {
+            const incidents = state.incidentsData[cat.id] || [];
+            total += incidents.length;
             
-            CATEGORIES.forEach(cat => {
-                html += `<button class="category-btn" onclick="filterByCategory('${cat.id}')">${cat.icon} ${cat.name}</button>`;
-            });
-            
-            elements.categoryFilters.innerHTML = html;
-        }
-
-        // ============================================
-        // CHARGEMENT DE TOUS LES INCIDENTS
-        // ============================================
-        async function loadAllIncidents() {
-            elements.refreshBtn.disabled = true;
-            elements.refreshBtn.textContent = '🔄 Chargement...';
-            
-            try {
-                const response = await fetch(`${API_BASE}/all`);
-                const data = await response.json();
-                
-                if (data.success) {
-                    updateStats(data.details);
-                    displayIncidents(data.data);
-                    updateLastUpdate();
-                }
-            } catch (error) {
-                console.error('Erreur chargement:', error);
-                elements.incidentList.innerHTML = `
-                    <p style="text-align: center; grid-column: 1/-1; color: #dc3545;">
-                        ❌ Erreur de chargement des données
-                    </p>
-                `;
-            } finally {
-                elements.refreshBtn.disabled = false;
-                elements.refreshBtn.textContent = '🔄 Actualiser les données';
-            }
-        }
-
-        // ============================================
-        // AFFICHAGE DES INCIDENTS
-        // ============================================
-        function displayIncidents(data) {
-            let html = '';
-            let total = 0;
-            
-            CATEGORIES.forEach(cat => {
-                const incidents = data[cat.id] || [];
-                total += incidents.length;
-                
-                incidents.forEach(inc => {
-                    html += `
-                        <div class="incident-card ${cat.id}">
-                            <div class="incident-title">
-                                ${cat.icon} ${inc.title || `${cat.name} à ${inc.location || 'La Réunion'}`}
-                            </div>
-                            <div class="incident-desc">
-                                ${inc.description || 'Aucune description disponible'}
-                            </div>
-                            <div class="incident-meta">
-                                <span>📍 ${inc.location || 'La Réunion'}</span>
-                                <span>🕒 ${inc.time || '--:--'}</span>
-                            </div>
+            incidents.forEach((inc, idx) => {
+                html += `
+                    <div class="incident-card ${cat.id}" onclick="focusLocation(${inc.coordinates ? inc.coordinates[0] : -21.1151}, ${inc.coordinates ? inc.coordinates[1] : 55.5364})">
+                        <div class="inc-header">
+                            <span>${inc.time || new Date().toLocaleTimeString('fr-FR')}</span>
+                            <span>${cat.name}</span>
                         </div>
-                    `;
-                });
+                        <span class="inc-title">${inc.title || `Incident ${cat.name}`}</span>
+                        <div class="inc-desc">${inc.description || 'Détails non disponibles'}</div>
+                        <div class="inc-loc">📍 ${inc.location || 'La Réunion'}</div>
+                    </div>
+                `;
             });
-            
-            if (total === 0) {
-                html = '<p style="text-align: center; grid-column: 1/-1;">Aucun incident signalé</p>';
-            }
-            
-            elements.incidentList.innerHTML = html;
+        });
+        
+        if (total === 0) {
+            html = '<div style="padding: 20px; text-align: center; color: #aaa;">Aucun incident signalé</div>';
         }
+        
+        els.list.innerHTML = html;
+    }
 
-        // ============================================
-        // FILTRAGE PAR CATÉGORIE
-        // ============================================
-        window.filterByCategory = async function(categoryId) {
-            // Mettre à jour les boutons actifs
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
+    function renderStats() {
+        let html = '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">';
+        
+        CATEGORIES.forEach(cat => {
+            const count = state.stats[cat.id] || 0;
+            html += `
+                <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 4px; border-left: 3px solid ${cat.color};">
+                    <div style="font-size: 0.7rem; color: #aaa;">${cat.name}</div>
+                    <div style="font-size: 2rem; font-weight: bold; color: ${cat.color};">${count}</div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        els.list.innerHTML = html;
+    }
+
+    function renderWebcamsList() {
+        let html = '';
+        WEBcams.forEach((cam, i) => {
+            html += `
+                <div class="cam-item ${i === state.currentIndex ? 'active' : ''}" onclick="loadWebcam(${i})">
+                    <div class="cam-info">
+                        <h4>${cam.name}</h4>
+                        <span style="font-size: 0.7rem; color: #aaa;">${cam.zone}</span>
+                    </div>
+                </div>
+            `;
+        });
+        els.list.innerHTML = html;
+    }
+
+    /**
+     * INITIALISATION CARTE
+     */
+    function initMap() {
+      state.map = L.map('map', { zoomControl: false }).setView([-21.1, 55.5], 10);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '©OpenStreetMap ©CARTO', subdomains: 'abcd', maxZoom: 19
+      }).addTo(state.map);
+
+      WEBcams.forEach((cam, idx) => {
+        const icon = L.divIcon({
+          className: 'cam-icon',
+          html: `<div style="background:var(--c-blue); width:12px; height:12px; border-radius:50%; border:2px solid white; box-shadow:0 0 5px blue;"></div>`,
+          iconSize: [12,12], iconAnchor: [6,6]
+        });
+        const m = L.marker([cam.lat, cam.lng], {icon}).addTo(state.map);
+        m.on('click', () => {
+           if(state.activeTab !== 'webcams') switchTab('webcams');
+           loadWebcam(idx);
+        });
+        state.markers.push(m);
+      });
+    }
+
+    function highlightMapMarker(activeIndex) {
+      state.markers.forEach((m, i) => {
+        const el = m.getElement();
+        const div = el ? el.querySelector('div') : null;
+        if(div) {
+          div.style.backgroundColor = i === activeIndex ? '#f44336' : 'var(--c-blue)';
+          div.style.transform = i === activeIndex ? 'scale(1.5)' : 'scale(1)';
+          div.style.transition = 'all 0.3s';
+        }
+      });
+    }
+
+    function updateMapIncidents() {
+        state.incidentMarkers.forEach(m => state.map.removeLayer(m));
+        state.incidentMarkers = [];
+
+        CATEGORIES.forEach(cat => {
+            const incidents = state.incidentsData[cat.id] || [];
             
-            if (categoryId === 'all') {
-                loadAllIncidents();
-                return;
-            }
-            
-            try {
-                const response = await fetch(`${API_BASE}/${categoryId}`);
-                const data = await response.json();
-                
-                if (data.success) {
-                    const cat = CATEGORIES.find(c => c.id === categoryId);
-                    let html = '';
-                    
-                    (data.data || []).forEach(inc => {
-                        html += `
-                            <div class="incident-card ${categoryId}">
-                                <div class="incident-title">
-                                    ${cat.icon} ${inc.title || `${cat.name}`}
-                                </div>
-                                <div class="incident-desc">
-                                    ${inc.description || 'Aucune description disponible'}
-                                </div>
-                                <div class="incident-meta">
-                                    <span>📍 ${inc.location || 'La Réunion'}</span>
-                                    <span>🕒 ${inc.time || '--:--'}</span>
-                                </div>
-                            </div>
-                        `;
+            incidents.forEach(inc => {
+                if (inc.coordinates) {
+                    const icon = L.divIcon({
+                        className: 'inc-icon',
+                        html: `<span class="material-icons" style="color: ${cat.color}; font-size: 24px; text-shadow:0 0 4px black;">${cat.icon}</span>`,
+                        iconSize: [24,24], iconAnchor: [12,24]
                     });
                     
-                    if (html === '') {
-                        html = `<p style="text-align: center; grid-column: 1/-1;">Aucun ${cat.name.toLowerCase()} signalé</p>`;
-                    }
-                    
-                    elements.incidentList.innerHTML = html;
+                    const m = L.marker([inc.coordinates[0], inc.coordinates[1]], {icon}).addTo(state.map);
+                    m.bindPopup(`<b>${cat.name}</b><br>${inc.title}<br>${inc.location}`);
+                    state.incidentMarkers.push(m);
                 }
-            } catch (error) {
-                console.error('Erreur filtre:', error);
-            }
-        };
+            });
+        });
+    }
 
-        // ============================================
-        // MISE À JOUR DES STATISTIQUES
-        // ============================================
-        function updateStats(details) {
-            const total = Object.values(details).reduce((a, b) => a + b, 0);
-            
-            elements.totalIncidents.textContent = total;
-            elements.accidentCount.textContent = details.accident || 0;
-            elements.trafficJamCount.textContent = details.traffic_jam || 0;
-            elements.roadworksCount.textContent = details.roadworks || 0;
-        }
+    /**
+     * LOGIQUE WEBCAM
+     */
+    function loadWebcam(index) {
+      if (index < 0 || index >= WEBcams.length) return;
+      state.currentIndex = index;
+      const cam = WEBcams[index];
 
-        // ============================================
-        // MISE À JOUR DE L'HORODATAGE
-        // ============================================
-        function updateLastUpdate() {
-            const now = new Date();
-            elements.lastUpdate.textContent = `Dernière mise à jour: ${now.toLocaleTimeString('fr-FR')}`;
-        }
+      els.loader.classList.remove('hidden');
+      els.name.innerText = cam.name;
+      els.overlayName.innerText = cam.name;
+      els.overlayLoc.innerText = cam.zone;
 
-        // ============================================
-        // DONNÉES DE DÉMONSTRATION
-        // ============================================
-        function displayDemoData() {
-            const demoData = {
-                accident: [
-                    { title: 'Accident RN1 Cambaie', description: 'Deux véhicules impliqués', location: 'Saint-Paul', time: '17h25' }
-                ],
-                traffic_jam: [
-                    { title: 'Bouchon RN1', description: 'Ralentissements sur 3km', location: 'Cambaie', time: '17h30' }
-                ],
-                roadworks: [
-                    { title: 'Travaux tunnel', description: 'Fermeture nocturne', location: 'Grande Chaloupe', time: '20h-5h' }
-                ]
-            };
-            
-            const demoDetails = {
-                accident: 1,
-                traffic_jam: 1,
-                roadworks: 1,
-                hazard: 0,
-                serious_hazard: 0,
-                roadclosure: 0,
-                flood: 0,
-                market: 0,
-                local_event: 0,
-                animal: 0
-            };
-            
-            updateStats(demoDetails);
-            displayIncidents(demoData);
-        }
+      state.map.flyTo([cam.lat, cam.lng], 13, { duration: 1.5 });
+      highlightMapMarker(index);
 
-        // ============================================
-        // RAFRAÎCHISSEMENT AUTOMATIQUE
-        // ============================================
-        setInterval(async () => {
-            const isConnected = await checkServer();
-            if (isConnected) {
-                loadAllIncidents();
-            }
-        }, 60000); // Toutes les minutes
+      const url = `${cam.url}?t=${Date.now()}`;
+      els.img.onload = () => els.loader.classList.add('hidden');
+      els.img.onerror = () => {
+        els.loader.innerHTML = '<span class="material-icons" style="font-size:40px; color:#f44336">error_outline</span><p>Hors ligne</p>';
+      };
+      els.img.src = url;
 
-        // ============================================
-        // INITIALISATION
-        // ============================================
-        async function init() {
-            createCategoryFilters();
-            const isConnected = await checkServer();
-            
-            if (isConnected) {
-                await loadAllIncidents();
-            }
-        }
+      if(state.activeTab === 'webcams') renderWebcamsList();
+    }
 
-        // Démarrer
-        init();
-    </script>
+    function refreshCurrentWebcam() {
+      const cam = WEBcams[state.currentIndex];
+      els.loader.classList.remove('hidden');
+      els.img.src = `${cam.url}?t=${Date.now()}`;
+    }
+
+    /**
+     * NAVIGATION
+     */
+    function switchTab(tab) {
+      state.activeTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+      
+      if (tab === 'incidents') renderAllIncidents();
+      else if (tab === 'stats') renderStats();
+      else renderWebcamsList();
+    }
+
+    function setupEvents() {
+      document.querySelectorAll('.tab-btn').forEach(b => b.onclick = (e) => switchTab(e.target.dataset.tab));
+      document.getElementById('prevBtn').onclick = () => loadWebcam((state.currentIndex - 1 + WEBcams.length) % WEBcams.length);
+      document.getElementById('nextBtn').onclick = () => loadWebcam((state.currentIndex + 1) % WEBcams.length);
+      document.getElementById('refreshBtn').onclick = refreshCurrentWebcam;
+      document.getElementById('forceRefreshData').onclick = fetchAllData;
+      
+      document.addEventListener('keydown', (e) => {
+        if(e.key === 'ArrowRight') document.getElementById('nextBtn').click();
+        if(e.key === 'ArrowLeft') document.getElementById('prevBtn').click();
+      });
+    }
+
+    window.focusLocation = function(lat, lng) {
+        state.map.flyTo([lat, lng], 14, { duration: 1.5 });
+    };
+
+    window.loadWebcam = loadWebcam;
+
+    /**
+     * INITIALISATION
+     */
+    document.addEventListener('DOMContentLoaded', () => {
+      initMap();
+      loadWebcam(0);
+      fetchAllData();
+      setInterval(refreshCurrentWebcam, 30000);
+      setInterval(fetchAllData, 60000); // Rafraîchir toutes les minutes
+      setupEvents();
+    });
+  </script>
 </body>
 </html>

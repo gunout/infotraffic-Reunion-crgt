@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <title>Infotrafic Réunion - API Locale Active</title>
+  <title>Infotrafic Réunion - Trafic en temps réel</title>
   
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="theme-color" content="#002654">
@@ -110,7 +110,9 @@
       <span class="material-icons" style="color: var(--c-red); font-size: 32px;">traffic</span>
       <div>
         <h1>Infotrafic Réunion</h1>
-        <span class="badge" id="apiBadge"><span class="material-icons" style="font-size:14px">cloud_off</span> API LOCALE</span>
+        <span class="badge" id="apiBadge">
+          <span class="material-icons" style="font-size:14px">settings_ethernet</span> TAILSCALE
+        </span>
       </div>
     </div>
     <div style="text-align:right;">
@@ -162,8 +164,8 @@
       
       <div class="status-box" id="apiStatus">
         <div class="status-line">
-            <span>API Locale:</span>
-            <span id="statusApi" class="status-ok">Connexion...</span>
+            <span>🦊 Tailscale:</span>
+            <span id="statusApi" class="status-ok">100.75.35.27</span>
         </div>
         <div class="status-line">
             <span>Incidents:</span>
@@ -183,16 +185,16 @@
   </main>
 
   <footer>
-    Mode Connecté : API Locale 102.35.99.37:3000 | Webcams fonctionnelles
+    Mode Tailscale : Connexion sécurisée via 100.75.35.27 | Webcams D.E.E.R.
   </footer>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   
   <script>
     /**
-     * CONFIGURATION - API LOCALE
+     * CONFIGURATION - TAILSCALE (PERMANENTE)
      */
-    const API_BASE = 'http://102.35.99.37:3000/api';
+    const API_BASE = 'http://100.75.35.27:3000/api';
     
     // Mapping des catégories pour l'affichage
     const CATEGORIES = [
@@ -250,47 +252,89 @@
     };
 
     /**
-     * LOGIQUE API
+     * VÉRIFICATION CONNEXION TAILSCALE
+     */
+    async function checkTailscaleConnection() {
+        try {
+            const response = await fetch(`${API_BASE}/health`, {
+                mode: 'cors',
+                cache: 'no-cache',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log('✅ Connecté via Tailscale!', data);
+                els.statusApi.textContent = 'Connecté';
+                els.statusApi.className = 'status-ok';
+                els.badge.innerHTML = `
+                    <span class="material-icons" style="font-size:14px">check_circle</span>
+                    TAILSCALE ACTIF
+                `;
+                els.badge.style.background = '#4CAF50';
+                els.badge.style.color = 'white';
+                return true;
+            } else {
+                throw new Error('Réponse non OK');
+            }
+        } catch (error) {
+            console.error('❌ Erreur Tailscale:', error);
+            els.statusApi.textContent = 'Hors ligne';
+            els.statusApi.className = 'status-err';
+            els.badge.innerHTML = `
+                <span class="material-icons" style="font-size:14px">error</span>
+                TAILSCALE OFFLINE
+            `;
+            els.badge.style.background = '#f44336';
+            els.badge.style.color = 'white';
+            return false;
+        }
+    }
+
+    /**
+     * CHARGEMENT DES DONNÉES API
      */
     async function fetchAllData() {
         try {
-            // Récupérer tous les incidents
-            const response = await fetch(`${API_BASE}/all`);
+            const response = await fetch(`${API_BASE}/all`, {
+                mode: 'cors',
+                cache: 'no-cache',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+            
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            
             const data = await response.json();
             
             if (data.success) {
                 state.incidentsData = data.data || {};
                 state.stats = data.details || {};
                 
-                // Mise à jour UI
                 const total = Object.values(state.stats).reduce((a, b) => a + b, 0);
                 els.incidentCount.textContent = total;
-                els.statusApi.textContent = 'Connecté';
-                els.statusApi.className = 'status-ok';
-                els.badge.innerHTML = '<span class="material-icons" style="font-size:14px">cloud_done</span> API ACTIVE';
-                els.badge.style.color = 'var(--c-green)';
-                els.badge.style.borderColor = 'var(--c-green)';
                 
                 if (state.activeTab === 'incidents') renderAllIncidents();
                 if (state.activeTab === 'stats') renderStats();
                 updateMapIncidents();
             }
         } catch (error) {
-            console.error('Erreur API:', error);
-            els.statusApi.textContent = 'Hors ligne';
-            els.statusApi.className = 'status-err';
-            els.incidentCount.textContent = '?';
-            els.badge.innerHTML = '<span class="material-icons" style="font-size:14px">cloud_off</span> API INDISPONIBLE';
-            els.badge.style.color = 'var(--c-red)';
-            els.badge.style.borderColor = 'var(--c-red)';
+            console.error('❌ Erreur API:', error);
             
-            // Afficher message d'erreur
+            // Afficher un message d'erreur dans la liste
             els.list.innerHTML = `
                 <div style="padding: 20px; text-align: center; color: #ff8a80;">
-                    <span class="material-icons" style="font-size: 40px;">cloud_off</span>
-                    <p style="margin-top: 10px;">Impossible de contacter l'API</p>
-                    <p style="font-size: 0.8rem; color: #aaa;">Vérifiez que le serveur tourne sur 102.35.99.37:3000</p>
+                    <span class="material-icons" style="font-size: 40px;">wifi_off</span>
+                    <h3 style="margin: 10px 0;">Impossible de contacter l'API</h3>
+                    <p>Vérifiez que Tailscale est actif et que le serveur tourne</p>
+                    <p style="font-size: 0.8rem; background: #2a2a2a; padding: 8px; border-radius: 4px;">
+                        IP Tailscale: 100.75.35.27
+                    </p>
                 </div>
             `;
         }
@@ -323,7 +367,13 @@
         });
         
         if (total === 0) {
-            html = '<div style="padding: 20px; text-align: center; color: #aaa;">Aucun incident signalé</div>';
+            html = `
+                <div style="padding: 40px; text-align: center; color: #aaa;">
+                    <span class="material-icons" style="font-size: 48px;">info</span>
+                    <h3 style="margin: 15px 0;">Aucun incident signalé</h3>
+                    <p>La circulation est fluide sur l'ensemble de l'île</p>
+                </div>
+            `;
         }
         
         els.list.innerHTML = html;
@@ -489,9 +539,10 @@
     document.addEventListener('DOMContentLoaded', () => {
       initMap();
       loadWebcam(0);
+      checkTailscaleConnection();
       fetchAllData();
       setInterval(refreshCurrentWebcam, 30000);
-      setInterval(fetchAllData, 60000); // Rafraîchir toutes les minutes
+      setInterval(fetchAllData, 60000);
       setupEvents();
     });
   </script>

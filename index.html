@@ -318,6 +318,17 @@
       color: #ED2939;
     }
 
+    .btn.success {
+      background: #00ff00;
+      color: #002654;
+      border-color: #002654;
+    }
+
+    .btn.success:hover {
+      background: #002654;
+      color: #00ff00;
+    }
+
     /* GitHub Pages Guide */
     .github-guide {
       position: fixed;
@@ -367,6 +378,12 @@
 
     .proxy-btn:hover {
       background: #ED2939;
+    }
+
+    .proxy-btn.active {
+      background: #00ff00;
+      color: #002654;
+      border-color: #002654;
     }
 
     .github-link {
@@ -763,7 +780,7 @@
   <div class="header">
     <div class="logo">
       <h1>INFOTRAFIC RÉUNION</h1>
-      <span class="badge">GITHUB PAGES</span>
+      <span class="badge">PROXY LOCAL</span>
     </div>
     <div class="stats">
       <div class="stat-item blue">
@@ -788,15 +805,11 @@
       <span>📡 Statut: </span><span id="githubStatus">Test des proxys...</span>
     </div>
     <div class="proxy-buttons-container" id="proxyButtonsContainer">
-      <button class="proxy-btn" onclick="forceProxy(0)">Proxy 1</button>
-      <button class="proxy-btn" onclick="forceProxy(1)">Proxy 2</button>
-      <button class="proxy-btn" onclick="forceProxy(2)">Proxy 3</button>
-      <button class="proxy-btn" onclick="forceProxy(3)">Proxy 4</button>
-      <button class="proxy-btn" onclick="forceProxy(4)">Proxy 5</button>
-      <button class="proxy-btn" onclick="forceProxy(5)">Proxy 6</button>
-    </div>
-    <div style="margin-top: 5px;">
-      <a href="https://cors-anywhere.herokuapp.com/corsdemo" target="_blank" class="github-link">🔓 Activer CORS Anywhere</a>
+      <button class="proxy-btn" onclick="forceProxy(0)" id="proxy0Btn">🚀 Proxy Local</button>
+      <button class="proxy-btn" onclick="forceProxy(1)">Proxy 1</button>
+      <button class="proxy-btn" onclick="forceProxy(2)">Proxy 2</button>
+      <button class="proxy-btn" onclick="forceProxy(3)">Proxy 3</button>
+      <button class="proxy-btn" onclick="forceProxy(4)">Proxy 4</button>
     </div>
     <div style="margin-top: 5px;">
       <a href="#" onclick="manualTest()" class="github-link">🔄 Test manuel</a>
@@ -878,12 +891,11 @@
 
       <!-- Proxy Buttons -->
       <div class="proxy-buttons">
-        <button class="btn small" onclick="window.forceProxy(0)">Proxy 1</button>
-        <button class="btn small" onclick="window.forceProxy(1)">Proxy 2</button>
-        <button class="btn small" onclick="window.forceProxy(2)">Proxy 3</button>
-        <button class="btn small" onclick="window.forceProxy(3)">Proxy 4</button>
-        <button class="btn small" onclick="window.forceProxy(4)">Proxy 5</button>
-        <button class="btn small" onclick="window.forceProxy(5)">Proxy 6</button>
+        <button class="btn small success" onclick="window.forceProxy(0)">🚀 Proxy Local</button>
+        <button class="btn small" onclick="window.forceProxy(1)">Proxy 1</button>
+        <button class="btn small" onclick="window.forceProxy(2)">Proxy 2</button>
+        <button class="btn small" onclick="window.forceProxy(3)">Proxy 3</button>
+        <button class="btn small" onclick="window.forceProxy(4)">Proxy 4</button>
       </div>
 
       <!-- Debug Buttons -->
@@ -940,35 +952,34 @@
       'use strict';
 
       // ============================================
-      // CONFIGURATION SPÉCIALE GITHUB PAGES
+      // CONFIGURATION AVEC VOTRE PROPRE PROXY
       // ============================================
       
-      // Détection automatique de l'environnement
-      const isGitHubPages = window.location.hostname.includes('github.io');
+      // URL de base de l'API locale
       const LOCAL_API = 'http://192.168.1.17:3000/api';
       
-      // Proxys CORS gratuits (ordonnés par fiabilité)
+      // VOTRE PROPRE PROXY - Le plus fiable !
+      const YOUR_PROXY = LOCAL_API + '/proxy?url=';
+      
+      // Proxys de secours (au cas où)
       const PROXIES = [
+        YOUR_PROXY,  // Votre proxy en PRIORITÉ ABSOLUE
         'https://corsproxy.io/?',
         'https://api.allorigins.win/raw?url=',
         'https://cors-anywhere.herokuapp.com/',
-        'https://thingproxy.freeboard.io/fetch/',
-        'https://proxy.cors.sh/',
-        'https://cors.eu.org/'
+        'https://thingproxy.freeboard.io/fetch/'
       ];
       
-      let API_BASE = LOCAL_API;
+      // Détection de l'environnement
+      const isGitHubPages = window.location.hostname.includes('github.io');
+      
+      // Variables pour le proxy
       let useProxy = false;
-      let currentProxy = 0;
+      let currentProxy = 0; // 0 = votre proxy
 
       // ============================================
-      // WEBCAMS AVEC PROXY
+      // WEBCAMS - Utilisation du proxy
       // ============================================
-      const IMAGE_PROXIES = [
-        'https://corsproxy.io/?',
-        'https://api.allorigins.win/raw?url=',
-        'https://cors-anywhere.herokuapp.com/'
-      ];
       
       const WEBCAMS = [
         { id: 'dec_04', name: 'RN2 Sainte-Marie - Duparc', originalUrl: 'https://www.infotrafic.re/CAM/dec_04.jpeg', coords: [-20.8969, 55.5501], zone: 'Nord', desc: 'Sainte-Marie' },
@@ -1041,35 +1052,46 @@
       if (isGitHubPages) {
         elements.githubGuide.classList.add('visible');
         console.log('🌐 Site déployé sur GitHub Pages');
-        console.log('🔒 Mode HTTPS actif - Utilisation des proxys CORS');
+        console.log('🔒 Utilisation du proxy local en priorité');
       }
 
       // ============================================
       // FONCTIONS DE TEST PROXY
       // ============================================
-      async function testProxy(proxyUrl) {
-        const testUrl = proxyUrl + encodeURIComponent(LOCAL_API + '/health');
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
+      async function testProxy(proxyUrl, isLocalProxy = false) {
+        let testUrl;
+        
+        if (isLocalProxy) {
+          // Pour votre proxy local, on teste directement l'API health
+          testUrl = proxyUrl + encodeURIComponent(LOCAL_API + '/health');
+        } else {
+          // Pour les autres proxys, on teste httpbin
+          testUrl = proxyUrl + encodeURIComponent('https://httpbin.org/get');
+        }
         
         try {
           console.log(`🔄 Test proxy: ${proxyUrl}`);
           
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000);
+          
           const response = await fetch(testUrl, { 
             signal: controller.signal,
             mode: 'cors',
-            headers: { 
-              'Accept': 'application/json',
-              'Origin': window.location.origin 
-            }
+            headers: { 'Accept': 'application/json' }
           });
           
           clearTimeout(timeoutId);
           
           if (response.ok) {
-            const data = await response.json();
-            if (data.success) {
-              console.log(`✅ Proxy OK: ${proxyUrl}`);
+            if (isLocalProxy) {
+              const data = await response.json();
+              if (data.success) {
+                console.log('✅ Votre proxy fonctionne!');
+                return true;
+              }
+            } else {
+              console.log('✅ Proxy OK:', proxyUrl);
               return true;
             }
           }
@@ -1080,30 +1102,44 @@
       }
 
       window.forceProxy = async function(proxyIndex) {
-        if (proxyIndex >= 0 && proxyIndex < PROXIES.length) {
-          elements.apiStatus.innerHTML = `⏳ Forçage proxy ${proxyIndex+1}...`;
-          if (elements.githubStatus) {
-            elements.githubStatus.innerHTML = `Test proxy ${proxyIndex+1}/${PROXIES.length}`;
+        // Mettre à jour l'UI
+        elements.apiStatus.innerHTML = `⏳ Test proxy ${proxyIndex === 0 ? 'local' : proxyIndex}...`;
+        if (elements.githubStatus) {
+          elements.githubStatus.innerHTML = `⏳ Test proxy ${proxyIndex === 0 ? 'local' : proxyIndex}...`;
+        }
+        
+        // Mettre en évidence le bouton actif
+        document.querySelectorAll('.proxy-btn').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = document.getElementById(`proxy${proxyIndex}Btn`) || 
+                         document.querySelectorAll('.proxy-btn')[proxyIndex];
+        if (activeBtn) activeBtn.classList.add('active');
+        
+        // Tester le proxy
+        const works = await testProxy(PROXIES[proxyIndex], proxyIndex === 0);
+        
+        if (works) {
+          useProxy = true;
+          currentProxy = proxyIndex;
+          
+          if (proxyIndex === 0) {
+            elements.apiStatus.innerHTML = '✅ Connecté (proxy local)';
+            elements.serverIP.innerHTML = '192.168.1.17:3000 (proxy local)';
+          } else {
+            elements.apiStatus.innerHTML = '✅ Connecté (proxy externe)';
+            elements.serverIP.innerHTML = '192.168.1.17:3000 (via proxy)';
           }
           
-          const works = await testProxy(PROXIES[proxyIndex]);
+          elements.apiStatus.style.color = '#00ff00';
+          if (elements.githubStatus) {
+            elements.githubStatus.innerHTML = `✅ Connecté via proxy ${proxyIndex === 0 ? 'local' : proxyIndex}`;
+          }
           
-          if (works) {
-            useProxy = true;
-            currentProxy = proxyIndex;
-            API_BASE = PROXIES[currentProxy] + encodeURIComponent(LOCAL_API);
-            elements.apiStatus.innerHTML = '✅ Connecté (proxy)';
-            elements.apiStatus.style.color = '#00ff00';
-            elements.serverIP.innerHTML = '192.168.1.17:3000 (proxy)';
-            if (elements.githubStatus) {
-              elements.githubStatus.innerHTML = '✅ Connecté via proxy';
-            }
-            await loadAllData();
-          } else {
-            elements.apiStatus.innerHTML = '❌ Proxy indisponible';
-            if (elements.githubStatus) {
-              elements.githubStatus.innerHTML = `❌ Proxy ${proxyIndex+1} indisponible`;
-            }
+          await loadAllData();
+          return true;
+        } else {
+          elements.apiStatus.innerHTML = `❌ Proxy ${proxyIndex === 0 ? 'local' : proxyIndex} indisponible`;
+          if (elements.githubStatus) {
+            elements.githubStatus.innerHTML = `❌ Proxy ${proxyIndex === 0 ? 'local' : proxyIndex} indisponible`;
           }
         }
       };
@@ -1117,24 +1153,21 @@
           elements.githubStatus.innerHTML = '⏳ Test manuel en cours...';
         }
         
-        for (let i = 0; i < PROXIES.length; i++) {
-          elements.apiStatus.innerHTML = `⏳ Test proxy ${i+1}/${PROXIES.length}...`;
+        // Essayer d'abord votre proxy local
+        if (await testProxy(PROXIES[0], true)) {
+          await forceProxy(0);
+          return true;
+        }
+        
+        // Puis les autres proxys
+        for (let i = 1; i < PROXIES.length; i++) {
+          elements.apiStatus.innerHTML = `⏳ Test proxy ${i}...`;
           if (elements.githubStatus) {
-            elements.githubStatus.innerHTML = `⏳ Test proxy ${i+1}/${PROXIES.length}`;
+            elements.githubStatus.innerHTML = `⏳ Test proxy ${i}...`;
           }
           
-          const works = await testProxy(PROXIES[i]);
-          if (works) {
-            useProxy = true;
-            currentProxy = i;
-            API_BASE = PROXIES[i] + encodeURIComponent(LOCAL_API);
-            elements.apiStatus.innerHTML = '✅ Connecté (proxy)';
-            elements.apiStatus.style.color = '#00ff00';
-            elements.serverIP.innerHTML = '192.168.1.17:3000 (proxy)';
-            if (elements.githubStatus) {
-              elements.githubStatus.innerHTML = '✅ Connecté via proxy';
-            }
-            await loadAllData();
+          if (await testProxy(PROXIES[i], false)) {
+            await forceProxy(i);
             return true;
           }
         }
@@ -1147,17 +1180,15 @@
       };
 
       // ============================================
-      // INITIALISATION API
+      // INITIALISATION CONNEXION
       // ============================================
-      async function initAPI() {
+      window.testConnection = async function() {
         const statusElement = elements.apiStatus;
-        const ipElement = elements.serverIP;
         
-        statusElement.innerHTML = '⏳ Test direct...';
-        ipElement.innerHTML = '192.168.1.17:3000';
+        statusElement.innerHTML = '⏳ Test de connexion...';
         
         try {
-          // Test direct (ne fonctionnera que localement)
+          // Tester d'abord la connexion directe
           const directTest = await fetch(LOCAL_API + '/health', { 
             mode: 'cors',
             timeout: 3000 
@@ -1168,39 +1199,24 @@
             if (data.success) {
               statusElement.innerHTML = '✅ Connecté (direct)';
               statusElement.style.color = '#00ff00';
-              API_BASE = LOCAL_API;
               useProxy = false;
+              await loadAllData();
               return true;
             }
           }
         } catch (e) {
-          console.log('ℹ️ Direct connection testé' + (isGitHubPages ? ' (bloqué sur GitHub Pages)' : ''));
+          console.log('ℹ️ Connexion directe impossible' + (isGitHubPages ? ' sur GitHub Pages' : ''));
         }
         
-        // Test des proxys
-        statusElement.innerHTML = '⏳ Test proxys...';
+        // Si on est sur GitHub Pages ou que direct échoue, utiliser le proxy
+        statusElement.innerHTML = '⏳ Test du proxy local...';
         if (elements.githubStatus) {
-          elements.githubStatus.innerHTML = '⏳ Test proxys...';
+          elements.githubStatus.innerHTML = '⏳ Test proxy local...';
         }
         
-        for (let i = 0; i < PROXIES.length; i++) {
-          statusElement.innerHTML = `⏳ Proxy ${i+1}/${PROXIES.length}...`;
-          if (elements.githubStatus) {
-            elements.githubStatus.innerHTML = `⏳ Proxy ${i+1}/${PROXIES.length}...`;
-          }
-          
-          if (await testProxy(PROXIES[i])) {
-            statusElement.innerHTML = '✅ Connecté (proxy)';
-            statusElement.style.color = '#00ff00';
-            ipElement.innerHTML = '192.168.1.17:3000 (via proxy)';
-            if (elements.githubStatus) {
-              elements.githubStatus.innerHTML = '✅ Connecté via proxy';
-            }
-            useProxy = true;
-            currentProxy = i;
-            API_BASE = PROXIES[i] + encodeURIComponent(LOCAL_API);
-            return true;
-          }
+        if (await testProxy(PROXIES[0], true)) {
+          await forceProxy(0);
+          return true;
         }
         
         // Fallback
@@ -1210,7 +1226,7 @@
           elements.githubStatus.innerHTML = '⚠️ Mode démo (cliquez sur un proxy)';
         }
         return false;
-      }
+      };
 
       // ============================================
       // FONCTION DE FETCH AVEC PROXY
@@ -1219,7 +1235,13 @@
         let url;
         
         if (useProxy) {
-          url = PROXIES[currentProxy] + encodeURIComponent(LOCAL_API + '/' + endpoint);
+          if (currentProxy === 0) {
+            // Utilise votre proxy personnel
+            url = PROXIES[0] + encodeURIComponent(LOCAL_API + '/' + endpoint);
+          } else {
+            // Utilise un proxy externe
+            url = PROXIES[currentProxy] + encodeURIComponent(LOCAL_API + '/' + endpoint);
+          }
         } else {
           url = LOCAL_API + '/' + endpoint;
         }
@@ -1324,11 +1346,6 @@
       // ============================================
       // CHARGEMENT DES DONNÉES
       // ============================================
-      window.testConnection = async function() {
-        await initAPI();
-        await loadAllData();
-      };
-
       async function loadAllData() {
         try {
           const data = await apiFetch('all');
@@ -1429,7 +1446,14 @@
         elements.loadingOverlay.style.display = 'flex';
         elements.webcamImage.style.display = 'none';
 
-        const imageUrl = cam.originalUrl + '?t=' + Date.now();
+        // Utiliser le proxy pour les webcams si on est en mode proxy
+        let imageUrl;
+        if (useProxy && currentProxy === 0) {
+          // Utiliser votre proxy local
+          imageUrl = PROXIES[0] + encodeURIComponent(cam.originalUrl) + '&t=' + Date.now();
+        } else {
+          imageUrl = cam.originalUrl + '?t=' + Date.now();
+        }
         
         const img = new Image();
         img.onload = () => {
@@ -1838,7 +1862,7 @@
         displayWebcamsList();
         createCategoryFilters();
         
-        await initAPI();
+        await window.testConnection();
         await loadAllData();
         
         setInterval(loadAllData, 60000);

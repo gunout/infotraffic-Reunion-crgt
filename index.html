@@ -318,6 +318,69 @@
       color: #ED2939;
     }
 
+    /* GitHub Pages Guide */
+    .github-guide {
+      position: fixed;
+      bottom: 130px;
+      right: 10px;
+      background: #002654;
+      border: 2px solid #ED2939;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 0.8em;
+      z-index: 1000;
+      color: white;
+      display: none;
+      max-width: 250px;
+    }
+
+    .github-guide.visible {
+      display: block;
+    }
+
+    .github-guide-title {
+      color: #ED2939;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .github-guide-status {
+      margin: 5px 0;
+    }
+
+    .proxy-buttons-container {
+      display: flex;
+      gap: 5px;
+      margin: 5px 0;
+      flex-wrap: wrap;
+    }
+
+    .proxy-btn {
+      background: #002654;
+      color: white;
+      border: 1px solid #ED2939;
+      padding: 2px 8px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 0.8em;
+    }
+
+    .proxy-btn:hover {
+      background: #ED2939;
+    }
+
+    .github-link {
+      color: #ED2939;
+      text-decoration: none;
+      font-size: 0.8em;
+      display: block;
+      margin-top: 5px;
+    }
+
+    .github-link:hover {
+      text-decoration: underline;
+    }
+
     /* Sidebar */
     .sidebar {
       flex: 1;
@@ -684,6 +747,13 @@
         left: 10px;
         text-align: center;
       }
+      
+      .github-guide {
+        bottom: 70px;
+        left: 10px;
+        right: 10px;
+        max-width: none;
+      }
     }
   </style>
 </head>
@@ -708,6 +778,28 @@
         <span class="material-icons">schedule</span>
         <span id="liveTime">--:--:--</span>
       </div>
+    </div>
+  </div>
+
+  <!-- GitHub Pages Guide -->
+  <div id="githubGuide" class="github-guide">
+    <div class="github-guide-title">🌐 Connexion GitHub Pages</div>
+    <div class="github-guide-status">
+      <span>📡 Statut: </span><span id="githubStatus">Test des proxys...</span>
+    </div>
+    <div class="proxy-buttons-container" id="proxyButtonsContainer">
+      <button class="proxy-btn" onclick="forceProxy(0)">Proxy 1</button>
+      <button class="proxy-btn" onclick="forceProxy(1)">Proxy 2</button>
+      <button class="proxy-btn" onclick="forceProxy(2)">Proxy 3</button>
+      <button class="proxy-btn" onclick="forceProxy(3)">Proxy 4</button>
+      <button class="proxy-btn" onclick="forceProxy(4)">Proxy 5</button>
+      <button class="proxy-btn" onclick="forceProxy(5)">Proxy 6</button>
+    </div>
+    <div style="margin-top: 5px;">
+      <a href="https://cors-anywhere.herokuapp.com/corsdemo" target="_blank" class="github-link">🔓 Activer CORS Anywhere</a>
+    </div>
+    <div style="margin-top: 5px;">
+      <a href="#" onclick="manualTest()" class="github-link">🔄 Test manuel</a>
     </div>
   </div>
 
@@ -791,6 +883,7 @@
         <button class="btn small" onclick="window.forceProxy(2)">Proxy 3</button>
         <button class="btn small" onclick="window.forceProxy(3)">Proxy 4</button>
         <button class="btn small" onclick="window.forceProxy(4)">Proxy 5</button>
+        <button class="btn small" onclick="window.forceProxy(5)">Proxy 6</button>
       </div>
 
       <!-- Debug Buttons -->
@@ -847,10 +940,11 @@
       'use strict';
 
       // ============================================
-      // CONFIGURATION API AVEC PROXY CORS AMÉLIORÉE
+      // CONFIGURATION SPÉCIALE GITHUB PAGES
       // ============================================
       
-      // URL de base de l'API locale
+      // Détection automatique de l'environnement
+      const isGitHubPages = window.location.hostname.includes('github.io');
       const LOCAL_API = 'http://192.168.1.17:3000/api';
       
       // Proxys CORS gratuits (ordonnés par fiabilité)
@@ -859,7 +953,8 @@
         'https://api.allorigins.win/raw?url=',
         'https://cors-anywhere.herokuapp.com/',
         'https://thingproxy.freeboard.io/fetch/',
-        'https://proxy.cors.sh/'
+        'https://proxy.cors.sh/',
+        'https://cors.eu.org/'
       ];
       
       let API_BASE = LOCAL_API;
@@ -937,24 +1032,36 @@
         categoryFilters: document.getElementById('categoryFilters'),
         apiStatus: document.getElementById('apiStatus'),
         serverIP: document.getElementById('serverIP'),
-        connectionStatus: document.getElementById('connectionStatus')
+        connectionStatus: document.getElementById('connectionStatus'),
+        githubStatus: document.getElementById('githubStatus'),
+        githubGuide: document.getElementById('githubGuide')
       };
+
+      // Afficher le guide uniquement sur GitHub Pages
+      if (isGitHubPages) {
+        elements.githubGuide.classList.add('visible');
+        console.log('🌐 Site déployé sur GitHub Pages');
+        console.log('🔒 Mode HTTPS actif - Utilisation des proxys CORS');
+      }
 
       // ============================================
       // FONCTIONS DE TEST PROXY
       // ============================================
       async function testProxy(proxyUrl) {
+        const testUrl = proxyUrl + encodeURIComponent(LOCAL_API + '/health');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        
         try {
-          const testUrl = proxyUrl + encodeURIComponent(LOCAL_API + '/health');
-          console.log('🔄 Test proxy:', proxyUrl);
-          
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 8000);
+          console.log(`🔄 Test proxy: ${proxyUrl}`);
           
           const response = await fetch(testUrl, { 
             signal: controller.signal,
             mode: 'cors',
-            headers: { 'Accept': 'application/json' }
+            headers: { 
+              'Accept': 'application/json',
+              'Origin': window.location.origin 
+            }
           });
           
           clearTimeout(timeoutId);
@@ -962,12 +1069,12 @@
           if (response.ok) {
             const data = await response.json();
             if (data.success) {
-              console.log('✅ Proxy OK:', proxyUrl);
+              console.log(`✅ Proxy OK: ${proxyUrl}`);
               return true;
             }
           }
         } catch (e) {
-          console.log('❌ Proxy failed:', proxyUrl, e.message);
+          console.log(`❌ Proxy failed: ${proxyUrl} (${e.message})`);
         }
         return false;
       }
@@ -975,20 +1082,68 @@
       window.forceProxy = async function(proxyIndex) {
         if (proxyIndex >= 0 && proxyIndex < PROXIES.length) {
           elements.apiStatus.innerHTML = `⏳ Forçage proxy ${proxyIndex+1}...`;
+          if (elements.githubStatus) {
+            elements.githubStatus.innerHTML = `Test proxy ${proxyIndex+1}/${PROXIES.length}`;
+          }
+          
           const works = await testProxy(PROXIES[proxyIndex]);
           
           if (works) {
             useProxy = true;
             currentProxy = proxyIndex;
             API_BASE = PROXIES[currentProxy] + encodeURIComponent(LOCAL_API);
-            elements.apiStatus.innerHTML = '✅ Proxy forcé';
+            elements.apiStatus.innerHTML = '✅ Connecté (proxy)';
             elements.apiStatus.style.color = '#00ff00';
             elements.serverIP.innerHTML = '192.168.1.17:3000 (proxy)';
+            if (elements.githubStatus) {
+              elements.githubStatus.innerHTML = '✅ Connecté via proxy';
+            }
             await loadAllData();
           } else {
             elements.apiStatus.innerHTML = '❌ Proxy indisponible';
+            if (elements.githubStatus) {
+              elements.githubStatus.innerHTML = `❌ Proxy ${proxyIndex+1} indisponible`;
+            }
           }
         }
+      };
+
+      // ============================================
+      // TEST MANUEL
+      // ============================================
+      window.manualTest = async function() {
+        elements.apiStatus.innerHTML = '⏳ Test manuel...';
+        if (elements.githubStatus) {
+          elements.githubStatus.innerHTML = '⏳ Test manuel en cours...';
+        }
+        
+        for (let i = 0; i < PROXIES.length; i++) {
+          elements.apiStatus.innerHTML = `⏳ Test proxy ${i+1}/${PROXIES.length}...`;
+          if (elements.githubStatus) {
+            elements.githubStatus.innerHTML = `⏳ Test proxy ${i+1}/${PROXIES.length}`;
+          }
+          
+          const works = await testProxy(PROXIES[i]);
+          if (works) {
+            useProxy = true;
+            currentProxy = i;
+            API_BASE = PROXIES[i] + encodeURIComponent(LOCAL_API);
+            elements.apiStatus.innerHTML = '✅ Connecté (proxy)';
+            elements.apiStatus.style.color = '#00ff00';
+            elements.serverIP.innerHTML = '192.168.1.17:3000 (proxy)';
+            if (elements.githubStatus) {
+              elements.githubStatus.innerHTML = '✅ Connecté via proxy';
+            }
+            await loadAllData();
+            return true;
+          }
+        }
+        
+        elements.apiStatus.innerHTML = '❌ Aucun proxy disponible';
+        if (elements.githubStatus) {
+          elements.githubStatus.innerHTML = '❌ Aucun proxy disponible';
+        }
+        return false;
       };
 
       // ============================================
@@ -1002,7 +1157,7 @@
         ipElement.innerHTML = '192.168.1.17:3000';
         
         try {
-          // Test direct
+          // Test direct (ne fonctionnera que localement)
           const directTest = await fetch(LOCAL_API + '/health', { 
             mode: 'cors',
             timeout: 3000 
@@ -1019,19 +1174,28 @@
             }
           }
         } catch (e) {
-          console.log('ℹ️ Direct connection testé');
+          console.log('ℹ️ Direct connection testé' + (isGitHubPages ? ' (bloqué sur GitHub Pages)' : ''));
         }
         
         // Test des proxys
         statusElement.innerHTML = '⏳ Test proxys...';
+        if (elements.githubStatus) {
+          elements.githubStatus.innerHTML = '⏳ Test proxys...';
+        }
         
         for (let i = 0; i < PROXIES.length; i++) {
           statusElement.innerHTML = `⏳ Proxy ${i+1}/${PROXIES.length}...`;
+          if (elements.githubStatus) {
+            elements.githubStatus.innerHTML = `⏳ Proxy ${i+1}/${PROXIES.length}...`;
+          }
           
           if (await testProxy(PROXIES[i])) {
             statusElement.innerHTML = '✅ Connecté (proxy)';
             statusElement.style.color = '#00ff00';
             ipElement.innerHTML = '192.168.1.17:3000 (via proxy)';
+            if (elements.githubStatus) {
+              elements.githubStatus.innerHTML = '✅ Connecté via proxy';
+            }
             useProxy = true;
             currentProxy = i;
             API_BASE = PROXIES[i] + encodeURIComponent(LOCAL_API);
@@ -1042,6 +1206,9 @@
         // Fallback
         statusElement.innerHTML = '⚠️ Mode démo';
         statusElement.style.color = '#FFA500';
+        if (elements.githubStatus) {
+          elements.githubStatus.innerHTML = '⚠️ Mode démo (cliquez sur un proxy)';
+        }
         return false;
       }
 
@@ -1167,13 +1334,10 @@
           const data = await apiFetch('all');
           
           if (data && data.success) {
-            // Réinitialiser les incidents
             allIncidents = {};
             
-            // 1. Traiter les trafficolor (données de trafic)
             if (data.data.trafficolor && Array.isArray(data.data.trafficolor)) {
               allIncidents.trafficolor = data.data.trafficolor.map(item => {
-                // Extraire le premier point de géolocalisation comme coordonnées
                 let lat = -21.1151, lng = 55.5364;
                 
                 if (item.geolocation && item.geolocation.length > 0) {
@@ -1184,26 +1348,23 @@
                   }
                 }
                 
-                // Extraire la description
                 let description = '';
                 let speed = null;
                 if (item.public_description) {
                   if (item.public_description.fr) {
                     description = item.public_description.fr;
                   }
-                  // Extraire la vitesse si disponible
                   const speedMatch = item.public_description.en?.match(/\d+/);
                   if (speedMatch) {
                     speed = parseInt(speedMatch[0]);
                   }
                 }
                 
-                // Déterminer la couleur en fonction de la vitesse
                 let color = item.trafficolor || '#77F362';
                 if (speed) {
-                  if (speed > 80) color = '#77F362'; // Vert
-                  else if (speed > 50) color = '#EE7E33'; // Orange
-                  else color = '#ED2939'; // Rouge
+                  if (speed > 80) color = '#77F362';
+                  else if (speed > 50) color = '#EE7E33';
+                  else color = '#ED2939';
                 }
                 
                 return {
@@ -1220,20 +1381,16 @@
               console.log(`✅ ${allIncidents.trafficolor.length} données trafic chargées`);
             }
             
-            // 2. Traiter les webcams (pour les statistiques uniquement)
             if (data.data.webcam && Array.isArray(data.data.webcam)) {
-              // On ne les ajoute pas aux incidents, mais on les garde pour les stats
               allIncidents.webcam = data.data.webcam;
             }
             
-            // 3. Initialiser les autres catégories vides
             CATEGORIES.forEach(cat => {
               if (cat.id !== 'trafficolor' && cat.id !== 'webcam' && !allIncidents[cat.id]) {
                 allIncidents[cat.id] = [];
               }
             });
             
-            // Mettre à jour les statistiques
             const details = {
               trafficolor: allIncidents.trafficolor?.length || 0,
               ...data.details
@@ -1325,7 +1482,6 @@
         let html = '<div class="incident-list">';
         let total = 0;
         
-        // Parcourir toutes les catégories
         Object.keys(allIncidents).forEach(key => {
           const incidents = allIncidents[key];
           
@@ -1412,7 +1568,6 @@
           if (data && data.success) {
             let html = '<div class="stats-grid">';
             
-            // Afficher les stats avec les noms de catégories
             const statsToShow = {
               trafficolor: 'État du trafic',
               accident: 'Accidents',
@@ -1515,7 +1670,6 @@
                 const [lat, lng] = inc.coordinates;
                 
                 if (!isNaN(lat) && !isNaN(lng)) {
-                  // Utiliser la couleur spécifique si disponible
                   const markerColor = inc.color || cat.color;
                   
                   const marker = L.marker([lat, lng], {

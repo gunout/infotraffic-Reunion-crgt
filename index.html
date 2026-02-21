@@ -329,48 +329,6 @@
       color: #00ff00;
     }
 
-    /* GitHub Pages Guide - Simplifié */
-    .github-guide {
-      position: fixed;
-      bottom: 130px;
-      right: 10px;
-      background: #002654;
-      border: 2px solid #00ff00;
-      border-radius: 10px;
-      padding: 10px;
-      font-size: 0.8em;
-      z-index: 1000;
-      color: white;
-      display: none;
-      max-width: 250px;
-    }
-
-    .github-guide.visible {
-      display: block;
-    }
-
-    .github-guide-title {
-      color: #00ff00;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    .github-guide-status {
-      margin: 5px 0;
-    }
-
-    .github-link {
-      color: #00ff00;
-      text-decoration: none;
-      font-size: 0.8em;
-      display: block;
-      margin-top: 5px;
-    }
-
-    .github-link:hover {
-      text-decoration: underline;
-    }
-
     /* Sidebar */
     .sidebar {
       flex: 1;
@@ -614,39 +572,17 @@
       width: 100%;
     }
 
-    /* Footer */
+    /* Footer simplifié */
     .footer {
       margin-top: 20px;
       padding: 10px 20px;
       background: linear-gradient(90deg, #002654 0%, #ffffff 50%, #ED2939 100%);
       border-radius: 10px;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
       color: #002654;
       font-weight: bold;
-    }
-
-    .sources {
-      display: flex;
-      gap: 20px;
-      font-size: 0.8em;
-    }
-
-    .source-item {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .source-item a {
-      color: #002654;
-      text-decoration: none;
-      border-bottom: 1px dotted #ED2939;
-    }
-
-    .source-item a:hover {
-      color: #ED2939;
     }
 
     .last-update {
@@ -654,31 +590,9 @@
       font-weight: bold;
     }
 
-    /* Connection status */
+    /* Connection status - supprimé */
     .connection-status {
-      position: fixed;
-      bottom: 70px;
-      right: 10px;
-      padding: 10px;
-      background: #002654;
-      border: 2px solid #ED2939;
-      border-radius: 10px;
-      font-size: 0.8em;
-      z-index: 1000;
-      color: white;
-    }
-
-    .connection-status.connected {
-      border-left: 5px solid #00ff00;
-    }
-
-    .connection-status.error {
-      border-left: 5px solid #ED2939;
-    }
-
-    .ip-address {
-      color: #ED2939;
-      font-weight: bold;
+      display: none;
     }
 
     @media (max-width: 768px) {
@@ -702,28 +616,9 @@
         text-align: center;
       }
       
-      .sources {
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-      
       .region-logo {
         width: 70px;
         bottom: 70px;
-      }
-      
-      .connection-status {
-        bottom: 10px;
-        right: 10px;
-        left: 10px;
-        text-align: center;
-      }
-      
-      .github-guide {
-        bottom: 70px;
-        left: 10px;
-        right: 10px;
-        max-width: none;
       }
     }
   </style>
@@ -734,7 +629,7 @@
   <div class="header">
     <div class="logo">
       <h1>INFOTRAFIC RÉUNION</h1>
-      <span class="badge">HTTPS via CADDY</span>
+      <span class="badge">DIRECT</span>
     </div>
     <div class="stats">
       <div class="stat-item blue">
@@ -749,26 +644,6 @@
         <span class="material-icons">schedule</span>
         <span id="liveTime">--:--:--</span>
       </div>
-    </div>
-  </div>
-
-  <!-- GitHub Pages Guide (simplifié) -->
-  <div id="githubGuide" class="github-guide">
-    <div class="github-guide-title">🔒 Connexion HTTPS</div>
-    <div class="github-guide-status">
-      <span>📡 Statut: </span><span id="githubStatus">Connexion automatique...</span>
-    </div>
-    <div>
-      <a href="#" onclick="window.testConnection()" class="github-link">🔄 Tester la connexion</a>
-    </div>
-  </div>
-
-  <!-- Connection Status -->
-  <div id="connectionStatus" class="connection-status">
-    <div>🖥️ Serveur: <span id="serverIP" class="ip-address">192.168.1.17:3443</span></div>
-    <div>📡 Statut: <span id="apiStatus">⏳ Vérification...</span></div>
-    <div style="font-size:0.8em; margin-top:5px;">
-      <a href="#" onclick="window.testConnection()" style="color: #ED2939;">Tester la connexion</a>
     </div>
   </div>
 
@@ -836,7 +711,7 @@
         <input type="text" class="search-box" id="searchInput" placeholder="Rechercher...">
       </div>
 
-      <!-- Debug Buttons (simplifiés) -->
+      <!-- Debug Buttons -->
       <div class="debug-buttons">
         <button class="btn small warning" onclick="window.debugIncidents()">🔍 Debug</button>
         <button class="btn small" onclick="window.fixDisplay()">🛠️ Fix</button>
@@ -862,22 +737,8 @@
     <div id="map"></div>
   </div>
 
-  <!-- Footer -->
+  <!-- Footer simplifié -->
   <div class="footer">
-    <div class="sources">
-      <div class="source-item">
-        <span>📹</span>
-        <a href="https://www.infotrafic.re" target="_blank">D.E.E.R.</a>
-      </div>
-      <div class="source-item">
-        <span>🚦</span>
-        <a href="#" target="_blank">HTTPS: 192.168.1.17:3443</a>
-      </div>
-      <div class="source-item">
-        <span>⚠️</span>
-        <a href="#" onclick="window.testConnection()" style="color: #ED2939;">Tester</a>
-      </div>
-    </div>
     <div class="last-update" id="lastUpdate">Mise à jour: --:--:--</div>
   </div>
 
@@ -895,14 +756,11 @@
       // URL de l'API via Caddy (HTTPS)
       const API_URL = 'https://192.168.1.17:3443/api';
       
-      // Détection de l'environnement
-      const isGitHubPages = window.location.hostname.includes('github.io');
-      
-      // L'URL de base est toujours la même (Caddy gère tout)
+      // L'URL de base est toujours la même
       const API_BASE = API_URL;
 
       // ============================================
-      // WEBCAMS - Direct (Caddy ne peut pas aider pour les webcams)
+      // WEBCAMS
       // ============================================
       
       const WEBCAMS = [
@@ -964,29 +822,13 @@
         fullscreenBtn: document.getElementById('fullscreenBtn'),
         searchInput: document.getElementById('searchInput'),
         tabContent: document.getElementById('tabContent'),
-        categoryFilters: document.getElementById('categoryFilters'),
-        apiStatus: document.getElementById('apiStatus'),
-        serverIP: document.getElementById('serverIP'),
-        connectionStatus: document.getElementById('connectionStatus'),
-        githubStatus: document.getElementById('githubStatus'),
-        githubGuide: document.getElementById('githubGuide')
+        categoryFilters: document.getElementById('categoryFilters')
       };
 
-      // Afficher le guide uniquement sur GitHub Pages
-      if (isGitHubPages) {
-        elements.githubGuide.classList.add('visible');
-        console.log('🌐 Site déployé sur GitHub Pages - Connexion HTTPS');
-      }
-
       // ============================================
-      // TEST DE CONNEXION SIMPLIFIÉ
+      // TEST DE CONNEXION (silencieux)
       // ============================================
-      window.testConnection = async function() {
-        elements.apiStatus.innerHTML = '⏳ Connexion HTTPS...';
-        if (elements.githubStatus) {
-          elements.githubStatus.innerHTML = '⏳ Connexion HTTPS...';
-        }
-        
+      async function testConnection() {
         try {
           const response = await fetch(`${API_BASE}/health`, {
             mode: 'cors',
@@ -996,12 +838,7 @@
           if (response.ok) {
             const data = await response.json();
             if (data.success) {
-              elements.apiStatus.innerHTML = '✅ Connecté (HTTPS)';
-              elements.apiStatus.style.color = '#00ff00';
-              elements.serverIP.innerHTML = '192.168.1.17:3443 (HTTPS)';
-              if (elements.githubStatus) {
-                elements.githubStatus.innerHTML = '✅ Connecté via HTTPS';
-              }
+              console.log('✅ Connecté à l\'API');
               await loadAllData();
               return true;
             }
@@ -1009,17 +846,12 @@
           throw new Error('Erreur de connexion');
         } catch (error) {
           console.error('❌ Erreur de connexion:', error);
-          elements.apiStatus.innerHTML = '❌ Connexion impossible';
-          elements.apiStatus.style.color = '#ED2939';
-          if (elements.githubStatus) {
-            elements.githubStatus.innerHTML = '❌ Connexion impossible';
-          }
           return false;
         }
-      };
+      }
 
       // ============================================
-      // FONCTION DE FETCH SIMPLIFIÉE
+      // FONCTION DE FETCH
       // ============================================
       async function apiFetch(endpoint) {
         try {
@@ -1613,7 +1445,6 @@
       // ============================================
       async function init() {
         elements.camCount.textContent = WEBCAMS.length;
-        elements.serverIP.innerHTML = '192.168.1.17:3443 (HTTPS)';
         
         initMap();
         loadWebcam(0);
@@ -1622,7 +1453,7 @@
         displayWebcamsList();
         createCategoryFilters();
         
-        await window.testConnection();
+        await testConnection();
         await loadAllData();
         
         setInterval(loadAllData, 60000);

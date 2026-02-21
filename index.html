@@ -329,13 +329,13 @@
       color: #00ff00;
     }
 
-    /* GitHub Pages Guide */
+    /* GitHub Pages Guide - Simplifié */
     .github-guide {
       position: fixed;
       bottom: 130px;
       right: 10px;
       background: #002654;
-      border: 2px solid #ED2939;
+      border: 2px solid #00ff00;
       border-radius: 10px;
       padding: 10px;
       font-size: 0.8em;
@@ -350,7 +350,7 @@
     }
 
     .github-guide-title {
-      color: #ED2939;
+      color: #00ff00;
       font-weight: bold;
       margin-bottom: 5px;
     }
@@ -359,35 +359,8 @@
       margin: 5px 0;
     }
 
-    .proxy-buttons-container {
-      display: flex;
-      gap: 5px;
-      margin: 5px 0;
-      flex-wrap: wrap;
-    }
-
-    .proxy-btn {
-      background: #002654;
-      color: white;
-      border: 1px solid #ED2939;
-      padding: 2px 8px;
-      border-radius: 3px;
-      cursor: pointer;
-      font-size: 0.8em;
-    }
-
-    .proxy-btn:hover {
-      background: #ED2939;
-    }
-
-    .proxy-btn.active {
-      background: #00ff00;
-      color: #002654;
-      border-color: #002654;
-    }
-
     .github-link {
-      color: #ED2939;
+      color: #00ff00;
       text-decoration: none;
       font-size: 0.8em;
       display: block;
@@ -465,25 +438,6 @@
     .category-btn.active {
       background: #002654;
       border-color: #002654;
-    }
-
-    .proxy-buttons {
-      display: flex;
-      gap: 5px;
-      padding: 5px 10px;
-      background: rgba(0,0,0,0.3);
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .debug-buttons {
-      display: flex;
-      gap: 5px;
-      padding: 5px 10px;
-      background: rgba(0,0,0,0.5);
-      justify-content: center;
-      flex-wrap: wrap;
-      border-top: 1px solid #ED2939;
     }
 
     .sidebar-tabs {
@@ -780,7 +734,7 @@
   <div class="header">
     <div class="logo">
       <h1>INFOTRAFIC RÉUNION</h1>
-      <span class="badge">PROXY LOCAL</span>
+      <span class="badge">HTTPS via CADDY</span>
     </div>
     <div class="stats">
       <div class="stat-item blue">
@@ -798,27 +752,20 @@
     </div>
   </div>
 
-  <!-- GitHub Pages Guide -->
+  <!-- GitHub Pages Guide (simplifié) -->
   <div id="githubGuide" class="github-guide">
-    <div class="github-guide-title">🌐 Connexion GitHub Pages</div>
+    <div class="github-guide-title">🔒 Connexion HTTPS</div>
     <div class="github-guide-status">
-      <span>📡 Statut: </span><span id="githubStatus">Test des proxys...</span>
+      <span>📡 Statut: </span><span id="githubStatus">Connexion automatique...</span>
     </div>
-    <div class="proxy-buttons-container" id="proxyButtonsContainer">
-      <button class="proxy-btn" onclick="forceProxy(0)" id="proxy0Btn">🚀 Proxy Local</button>
-      <button class="proxy-btn" onclick="forceProxy(1)">Proxy 1</button>
-      <button class="proxy-btn" onclick="forceProxy(2)">Proxy 2</button>
-      <button class="proxy-btn" onclick="forceProxy(3)">Proxy 3</button>
-      <button class="proxy-btn" onclick="forceProxy(4)">Proxy 4</button>
-    </div>
-    <div style="margin-top: 5px;">
-      <a href="#" onclick="manualTest()" class="github-link">🔄 Test manuel</a>
+    <div>
+      <a href="#" onclick="window.testConnection()" class="github-link">🔄 Tester la connexion</a>
     </div>
   </div>
 
   <!-- Connection Status -->
   <div id="connectionStatus" class="connection-status">
-    <div>🖥️ Serveur: <span id="serverIP" class="ip-address">192.168.1.17:3000</span></div>
+    <div>🖥️ Serveur: <span id="serverIP" class="ip-address">192.168.1.17:3443</span></div>
     <div>📡 Statut: <span id="apiStatus">⏳ Vérification...</span></div>
     <div style="font-size:0.8em; margin-top:5px;">
       <a href="#" onclick="window.testConnection()" style="color: #ED2939;">Tester la connexion</a>
@@ -889,19 +836,9 @@
         <input type="text" class="search-box" id="searchInput" placeholder="Rechercher...">
       </div>
 
-      <!-- Proxy Buttons -->
-      <div class="proxy-buttons">
-        <button class="btn small success" onclick="window.forceProxy(0)">🚀 Proxy Local</button>
-        <button class="btn small" onclick="window.forceProxy(1)">Proxy 1</button>
-        <button class="btn small" onclick="window.forceProxy(2)">Proxy 2</button>
-        <button class="btn small" onclick="window.forceProxy(3)">Proxy 3</button>
-        <button class="btn small" onclick="window.forceProxy(4)">Proxy 4</button>
-      </div>
-
-      <!-- Debug Buttons -->
+      <!-- Debug Buttons (simplifiés) -->
       <div class="debug-buttons">
         <button class="btn small warning" onclick="window.debugIncidents()">🔍 Debug</button>
-        <button class="btn small" onclick="window.showRawData()">📦 Raw Data</button>
         <button class="btn small" onclick="window.fixDisplay()">🛠️ Fix</button>
       </div>
 
@@ -934,7 +871,7 @@
       </div>
       <div class="source-item">
         <span>🚦</span>
-        <a href="#" target="_blank">API: 192.168.1.17:3000</a>
+        <a href="#" target="_blank">HTTPS: 192.168.1.17:3443</a>
       </div>
       <div class="source-item">
         <span>⚠️</span>
@@ -952,49 +889,36 @@
       'use strict';
 
       // ============================================
-      // CONFIGURATION AVEC VOTRE PROPRE PROXY
+      // CONFIGURATION HTTPS (via CADDY)
       // ============================================
       
-      // URL de base de l'API locale
-      const LOCAL_API = 'http://192.168.1.17:3000/api';
-      
-      // VOTRE PROPRE PROXY - Le plus fiable !
-      const YOUR_PROXY = LOCAL_API + '/proxy?url=';
-      
-      // Proxys de secours (au cas où)
-      const PROXIES = [
-        YOUR_PROXY,  // Votre proxy en PRIORITÉ ABSOLUE
-        'https://corsproxy.io/?',
-        'https://api.allorigins.win/raw?url=',
-        'https://cors-anywhere.herokuapp.com/',
-        'https://thingproxy.freeboard.io/fetch/'
-      ];
+      // URL de l'API via Caddy (HTTPS)
+      const API_URL = 'https://192.168.1.17:3443/api';
       
       // Détection de l'environnement
       const isGitHubPages = window.location.hostname.includes('github.io');
       
-      // Variables pour le proxy
-      let useProxy = false;
-      let currentProxy = 0; // 0 = votre proxy
+      // L'URL de base est toujours la même (Caddy gère tout)
+      const API_BASE = API_URL;
 
       // ============================================
-      // WEBCAMS - Utilisation du proxy
+      // WEBCAMS - Direct (Caddy ne peut pas aider pour les webcams)
       // ============================================
       
       const WEBCAMS = [
-        { id: 'dec_04', name: 'RN2 Sainte-Marie - Duparc', originalUrl: 'https://www.infotrafic.re/CAM/dec_04.jpeg', coords: [-20.8969, 55.5501], zone: 'Nord', desc: 'Sainte-Marie' },
-        { id: 'dec_14', name: 'RN1 Saint-Denis - Potences', originalUrl: 'https://www.infotrafic.re/CAM/dec_14.jpeg', coords: [-20.8821, 55.4503], zone: 'Nord', desc: 'Saint-Denis' },
-        { id: 'dec_15', name: 'RN1 - La Grande Chaloupe', originalUrl: 'https://www.infotrafic.re/CAM/dec_15.jpeg', coords: [-20.9067, 55.3982], zone: 'Nord-Ouest', desc: 'Grande Chaloupe' },
-        { id: 'dec_02', name: 'RN1 Le Port - Sacré Cœur', originalUrl: 'https://www.infotrafic.re/CAM/dec_02.jpeg', coords: [-20.9367, 55.2961], zone: 'Ouest', desc: 'Le Port' },
-        { id: 'dec_16', name: 'RN1 Saint-Paul - Bellemène', originalUrl: 'https://www.infotrafic.re/CAM/dec_16.jpeg', coords: [-20.9967, 55.2821], zone: 'Ouest', desc: 'Saint-Paul' },
-        { id: 'dec_09', name: 'RN1 Saint-Paul - Tranchée', originalUrl: 'https://www.infotrafic.re/CAM/dec_09.jpeg', coords: [-21.0034, 55.2756], zone: 'Ouest', desc: 'Saint-Paul' },
-        { id: 'dec_17', name: 'RN1 - Plateau Caillou', originalUrl: 'https://www.infotrafic.re/CAM/dec_17.jpeg', coords: [-21.0189, 55.2698], zone: 'Ouest', desc: 'Plateau Caillou' },
-        { id: 'dec_18', name: 'RN1 - Éperon', originalUrl: 'https://www.infotrafic.re/CAM/dec_18.jpeg', coords: [-21.0312, 55.2645], zone: 'Ouest', desc: 'Éperon' },
-        { id: 'dec_10', name: 'RN1 - Ravine 3 Bassins', originalUrl: 'https://www.infotrafic.re/CAM/dec_10.jpeg', coords: [-21.0812, 55.2598], zone: 'Ouest', desc: 'Trois Bassins' },
-        { id: 'dec_11', name: 'RN1 Saint-Leu - Ravine Fontaine', originalUrl: 'https://www.infotrafic.re/CAM/dec_11.jpeg', coords: [-21.1534, 55.2789], zone: 'Ouest', desc: 'Saint-Leu' },
-        { id: 'dec_12', name: 'RN1 Saint-Pierre - Pierrefonds', originalUrl: 'https://www.infotrafic.re/CAM/dec_12.jpeg', coords: [-21.2867, 55.4212], zone: 'Sud', desc: 'Saint-Pierre' },
-        { id: 'dec_13', name: 'RN3 Saint-Pierre - Azalées', originalUrl: 'https://www.infotrafic.re/CAM/dec_13.jpeg', coords: [-21.3124, 55.4678], zone: 'Sud', desc: 'Azalées' },
-        { id: 'dec_05', name: 'RN2 Saint-Pierre - Anse Les Bas', originalUrl: 'https://www.infotrafic.re/CAM/dec_05.jpeg', coords: [-21.3345, 55.4789], zone: 'Sud', desc: 'Anse Les Bas' }
+        { id: 'dec_04', name: 'RN2 Sainte-Marie - Duparc', url: 'https://www.infotrafic.re/CAM/dec_04.jpeg', coords: [-20.8969, 55.5501], zone: 'Nord', desc: 'Sainte-Marie' },
+        { id: 'dec_14', name: 'RN1 Saint-Denis - Potences', url: 'https://www.infotrafic.re/CAM/dec_14.jpeg', coords: [-20.8821, 55.4503], zone: 'Nord', desc: 'Saint-Denis' },
+        { id: 'dec_15', name: 'RN1 - La Grande Chaloupe', url: 'https://www.infotrafic.re/CAM/dec_15.jpeg', coords: [-20.9067, 55.3982], zone: 'Nord-Ouest', desc: 'Grande Chaloupe' },
+        { id: 'dec_02', name: 'RN1 Le Port - Sacré Cœur', url: 'https://www.infotrafic.re/CAM/dec_02.jpeg', coords: [-20.9367, 55.2961], zone: 'Ouest', desc: 'Le Port' },
+        { id: 'dec_16', name: 'RN1 Saint-Paul - Bellemène', url: 'https://www.infotrafic.re/CAM/dec_16.jpeg', coords: [-20.9967, 55.2821], zone: 'Ouest', desc: 'Saint-Paul' },
+        { id: 'dec_09', name: 'RN1 Saint-Paul - Tranchée', url: 'https://www.infotrafic.re/CAM/dec_09.jpeg', coords: [-21.0034, 55.2756], zone: 'Ouest', desc: 'Saint-Paul' },
+        { id: 'dec_17', name: 'RN1 - Plateau Caillou', url: 'https://www.infotrafic.re/CAM/dec_17.jpeg', coords: [-21.0189, 55.2698], zone: 'Ouest', desc: 'Plateau Caillou' },
+        { id: 'dec_18', name: 'RN1 - Éperon', url: 'https://www.infotrafic.re/CAM/dec_18.jpeg', coords: [-21.0312, 55.2645], zone: 'Ouest', desc: 'Éperon' },
+        { id: 'dec_10', name: 'RN1 - Ravine 3 Bassins', url: 'https://www.infotrafic.re/CAM/dec_10.jpeg', coords: [-21.0812, 55.2598], zone: 'Ouest', desc: 'Trois Bassins' },
+        { id: 'dec_11', name: 'RN1 Saint-Leu - Ravine Fontaine', url: 'https://www.infotrafic.re/CAM/dec_11.jpeg', coords: [-21.1534, 55.2789], zone: 'Ouest', desc: 'Saint-Leu' },
+        { id: 'dec_12', name: 'RN1 Saint-Pierre - Pierrefonds', url: 'https://www.infotrafic.re/CAM/dec_12.jpeg', coords: [-21.2867, 55.4212], zone: 'Sud', desc: 'Saint-Pierre' },
+        { id: 'dec_13', name: 'RN3 Saint-Pierre - Azalées', url: 'https://www.infotrafic.re/CAM/dec_13.jpeg', coords: [-21.3124, 55.4678], zone: 'Sud', desc: 'Azalées' },
+        { id: 'dec_05', name: 'RN2 Saint-Pierre - Anse Les Bas', url: 'https://www.infotrafic.re/CAM/dec_05.jpeg', coords: [-21.3345, 55.4789], zone: 'Sud', desc: 'Anse Les Bas' }
       ];
 
       // ============================================
@@ -1051,203 +975,55 @@
       // Afficher le guide uniquement sur GitHub Pages
       if (isGitHubPages) {
         elements.githubGuide.classList.add('visible');
-        console.log('🌐 Site déployé sur GitHub Pages');
-        console.log('🔒 Utilisation du proxy local en priorité');
+        console.log('🌐 Site déployé sur GitHub Pages - Connexion HTTPS');
       }
 
       // ============================================
-      // FONCTIONS DE TEST PROXY
-      // ============================================
-      async function testProxy(proxyUrl, isLocalProxy = false) {
-        let testUrl;
-        
-        if (isLocalProxy) {
-          // Pour votre proxy local, on teste directement l'API health
-          testUrl = proxyUrl + encodeURIComponent(LOCAL_API + '/health');
-        } else {
-          // Pour les autres proxys, on teste httpbin
-          testUrl = proxyUrl + encodeURIComponent('https://httpbin.org/get');
-        }
-        
-        try {
-          console.log(`🔄 Test proxy: ${proxyUrl}`);
-          
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 5000);
-          
-          const response = await fetch(testUrl, { 
-            signal: controller.signal,
-            mode: 'cors',
-            headers: { 'Accept': 'application/json' }
-          });
-          
-          clearTimeout(timeoutId);
-          
-          if (response.ok) {
-            if (isLocalProxy) {
-              const data = await response.json();
-              if (data.success) {
-                console.log('✅ Votre proxy fonctionne!');
-                return true;
-              }
-            } else {
-              console.log('✅ Proxy OK:', proxyUrl);
-              return true;
-            }
-          }
-        } catch (e) {
-          console.log(`❌ Proxy failed: ${proxyUrl} (${e.message})`);
-        }
-        return false;
-      }
-
-      window.forceProxy = async function(proxyIndex) {
-        // Mettre à jour l'UI
-        elements.apiStatus.innerHTML = `⏳ Test proxy ${proxyIndex === 0 ? 'local' : proxyIndex}...`;
-        if (elements.githubStatus) {
-          elements.githubStatus.innerHTML = `⏳ Test proxy ${proxyIndex === 0 ? 'local' : proxyIndex}...`;
-        }
-        
-        // Mettre en évidence le bouton actif
-        document.querySelectorAll('.proxy-btn').forEach(btn => btn.classList.remove('active'));
-        const activeBtn = document.getElementById(`proxy${proxyIndex}Btn`) || 
-                         document.querySelectorAll('.proxy-btn')[proxyIndex];
-        if (activeBtn) activeBtn.classList.add('active');
-        
-        // Tester le proxy
-        const works = await testProxy(PROXIES[proxyIndex], proxyIndex === 0);
-        
-        if (works) {
-          useProxy = true;
-          currentProxy = proxyIndex;
-          
-          if (proxyIndex === 0) {
-            elements.apiStatus.innerHTML = '✅ Connecté (proxy local)';
-            elements.serverIP.innerHTML = '192.168.1.17:3000 (proxy local)';
-          } else {
-            elements.apiStatus.innerHTML = '✅ Connecté (proxy externe)';
-            elements.serverIP.innerHTML = '192.168.1.17:3000 (via proxy)';
-          }
-          
-          elements.apiStatus.style.color = '#00ff00';
-          if (elements.githubStatus) {
-            elements.githubStatus.innerHTML = `✅ Connecté via proxy ${proxyIndex === 0 ? 'local' : proxyIndex}`;
-          }
-          
-          await loadAllData();
-          return true;
-        } else {
-          elements.apiStatus.innerHTML = `❌ Proxy ${proxyIndex === 0 ? 'local' : proxyIndex} indisponible`;
-          if (elements.githubStatus) {
-            elements.githubStatus.innerHTML = `❌ Proxy ${proxyIndex === 0 ? 'local' : proxyIndex} indisponible`;
-          }
-        }
-      };
-
-      // ============================================
-      // TEST MANUEL
-      // ============================================
-      window.manualTest = async function() {
-        elements.apiStatus.innerHTML = '⏳ Test manuel...';
-        if (elements.githubStatus) {
-          elements.githubStatus.innerHTML = '⏳ Test manuel en cours...';
-        }
-        
-        // Essayer d'abord votre proxy local
-        if (await testProxy(PROXIES[0], true)) {
-          await forceProxy(0);
-          return true;
-        }
-        
-        // Puis les autres proxys
-        for (let i = 1; i < PROXIES.length; i++) {
-          elements.apiStatus.innerHTML = `⏳ Test proxy ${i}...`;
-          if (elements.githubStatus) {
-            elements.githubStatus.innerHTML = `⏳ Test proxy ${i}...`;
-          }
-          
-          if (await testProxy(PROXIES[i], false)) {
-            await forceProxy(i);
-            return true;
-          }
-        }
-        
-        elements.apiStatus.innerHTML = '❌ Aucun proxy disponible';
-        if (elements.githubStatus) {
-          elements.githubStatus.innerHTML = '❌ Aucun proxy disponible';
-        }
-        return false;
-      };
-
-      // ============================================
-      // INITIALISATION CONNEXION
+      // TEST DE CONNEXION SIMPLIFIÉ
       // ============================================
       window.testConnection = async function() {
-        const statusElement = elements.apiStatus;
-        
-        statusElement.innerHTML = '⏳ Test de connexion...';
+        elements.apiStatus.innerHTML = '⏳ Connexion HTTPS...';
+        if (elements.githubStatus) {
+          elements.githubStatus.innerHTML = '⏳ Connexion HTTPS...';
+        }
         
         try {
-          // Tester d'abord la connexion directe
-          const directTest = await fetch(LOCAL_API + '/health', { 
+          const response = await fetch(`${API_BASE}/health`, {
             mode: 'cors',
-            timeout: 3000 
+            timeout: 5000
           });
           
-          if (directTest.ok) {
-            const data = await directTest.json();
+          if (response.ok) {
+            const data = await response.json();
             if (data.success) {
-              statusElement.innerHTML = '✅ Connecté (direct)';
-              statusElement.style.color = '#00ff00';
-              useProxy = false;
+              elements.apiStatus.innerHTML = '✅ Connecté (HTTPS)';
+              elements.apiStatus.style.color = '#00ff00';
+              elements.serverIP.innerHTML = '192.168.1.17:3443 (HTTPS)';
+              if (elements.githubStatus) {
+                elements.githubStatus.innerHTML = '✅ Connecté via HTTPS';
+              }
               await loadAllData();
               return true;
             }
           }
-        } catch (e) {
-          console.log('ℹ️ Connexion directe impossible' + (isGitHubPages ? ' sur GitHub Pages' : ''));
+          throw new Error('Erreur de connexion');
+        } catch (error) {
+          console.error('❌ Erreur de connexion:', error);
+          elements.apiStatus.innerHTML = '❌ Connexion impossible';
+          elements.apiStatus.style.color = '#ED2939';
+          if (elements.githubStatus) {
+            elements.githubStatus.innerHTML = '❌ Connexion impossible';
+          }
+          return false;
         }
-        
-        // Si on est sur GitHub Pages ou que direct échoue, utiliser le proxy
-        statusElement.innerHTML = '⏳ Test du proxy local...';
-        if (elements.githubStatus) {
-          elements.githubStatus.innerHTML = '⏳ Test proxy local...';
-        }
-        
-        if (await testProxy(PROXIES[0], true)) {
-          await forceProxy(0);
-          return true;
-        }
-        
-        // Fallback
-        statusElement.innerHTML = '⚠️ Mode démo';
-        statusElement.style.color = '#FFA500';
-        if (elements.githubStatus) {
-          elements.githubStatus.innerHTML = '⚠️ Mode démo (cliquez sur un proxy)';
-        }
-        return false;
       };
 
       // ============================================
-      // FONCTION DE FETCH AVEC PROXY
+      // FONCTION DE FETCH SIMPLIFIÉE
       // ============================================
       async function apiFetch(endpoint) {
-        let url;
-        
-        if (useProxy) {
-          if (currentProxy === 0) {
-            // Utilise votre proxy personnel
-            url = PROXIES[0] + encodeURIComponent(LOCAL_API + '/' + endpoint);
-          } else {
-            // Utilise un proxy externe
-            url = PROXIES[currentProxy] + encodeURIComponent(LOCAL_API + '/' + endpoint);
-          }
-        } else {
-          url = LOCAL_API + '/' + endpoint;
-        }
-        
         try {
-          const response = await fetch(url, {
+          const response = await fetch(`${API_BASE}/${endpoint}`, {
             mode: 'cors',
             headers: { 'Accept': 'application/json' }
           });
@@ -1329,12 +1105,6 @@
         return total;
       };
 
-      window.showRawData = function() {
-        console.log('📦 DONNÉES BRUTES');
-        console.log('=================');
-        console.log(JSON.stringify(allIncidents, null, 2));
-      };
-
       window.fixDisplay = function() {
         console.log('🛠️ FORCE L\'AFFICHAGE');
         if (document.querySelector('.tab.active').textContent.includes('INCIDENTS')) {
@@ -1398,12 +1168,8 @@
               console.log(`✅ ${allIncidents.trafficolor.length} données trafic chargées`);
             }
             
-            if (data.data.webcam && Array.isArray(data.data.webcam)) {
-              allIncidents.webcam = data.data.webcam;
-            }
-            
             CATEGORIES.forEach(cat => {
-              if (cat.id !== 'trafficolor' && cat.id !== 'webcam' && !allIncidents[cat.id]) {
+              if (cat.id !== 'trafficolor' && !allIncidents[cat.id]) {
                 allIncidents[cat.id] = [];
               }
             });
@@ -1446,14 +1212,7 @@
         elements.loadingOverlay.style.display = 'flex';
         elements.webcamImage.style.display = 'none';
 
-        // Utiliser le proxy pour les webcams si on est en mode proxy
-        let imageUrl;
-        if (useProxy && currentProxy === 0) {
-          // Utiliser votre proxy local
-          imageUrl = PROXIES[0] + encodeURIComponent(cam.originalUrl) + '&t=' + Date.now();
-        } else {
-          imageUrl = cam.originalUrl + '?t=' + Date.now();
-        }
+        const imageUrl = cam.url + '?t=' + Date.now();
         
         const img = new Image();
         img.onload = () => {
@@ -1468,7 +1227,7 @@
           elements.loadingOverlay.innerHTML = `
             <div style="text-align:center;">
               <span class="material-icons" style="font-size:48px; color:#ED2939;">videocam_off</span>
-              <p style="margin-top:10px; color:#ffffff;">Service de webcams temporairement indisponible</p>
+              <p style="margin-top:10px; color:#ffffff;">Webcam temporairement indisponible</p>
               <button onclick="loadWebcam(${index})" style="margin-top:10px; padding:5px 15px; background:#002654; color:white; border:2px solid white; cursor:pointer;">Réessayer</button>
             </div>
           `;
@@ -1509,7 +1268,7 @@
         Object.keys(allIncidents).forEach(key => {
           const incidents = allIncidents[key];
           
-          if (Array.isArray(incidents) && incidents.length > 0 && key !== 'webcam') {
+          if (Array.isArray(incidents) && incidents.length > 0) {
             const cat = CATEGORIES.find(c => c.id === key) || { 
               id: key, 
               name: key.replace('_', ' '), 
@@ -1682,7 +1441,7 @@
         Object.keys(allIncidents).forEach(key => {
           const incidents = allIncidents[key];
           
-          if (Array.isArray(incidents) && key !== 'webcam') {
+          if (Array.isArray(incidents) && incidents.length > 0) {
             const cat = CATEGORIES.find(c => c.id === key) || { 
               id: key, 
               color: '#888', 
@@ -1854,6 +1613,7 @@
       // ============================================
       async function init() {
         elements.camCount.textContent = WEBCAMS.length;
+        elements.serverIP.innerHTML = '192.168.1.17:3443 (HTTPS)';
         
         initMap();
         loadWebcam(0);

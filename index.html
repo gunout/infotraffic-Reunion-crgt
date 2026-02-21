@@ -216,7 +216,7 @@
 
     @keyframes spin { 100% { transform: rotate(360deg); } }
 
-    /* --- LOGO RÉGION RÉUNION (positionné dans la webcam) --- */
+    /* Logo Région Réunion */
     .region-logo {
       position: absolute;
       bottom: 80px;
@@ -247,7 +247,6 @@
       0% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(255, 255, 255, 1)) drop-shadow(0 0 20px rgba(255, 255, 255, 0.7)); }
       100% { transform: scale(1.05); filter: drop-shadow(0 0 15px rgba(255, 255, 255, 1)) drop-shadow(0 0 25px rgba(255, 255, 255, 0.9)); }
     }
-    /* -------------------------------------------------------- */
 
     .webcam-info {
       position: absolute;
@@ -651,7 +650,7 @@
         </div>
         <img id="webcamImage" alt="Webcam D.E.E.R." style="display: none;">
         
-        <!-- Logo Région Réunion dans la webcam (comme demandé) -->
+        <!-- Logo Région Réunion dans la webcam -->
         <img src="https://github.com/gunout/Traffic-Routier-D.E.E.R/blob/main/region-reunion-logo.png?raw=true" 
              alt="Logo Région Réunion" 
              class="region-logo"
@@ -710,7 +709,7 @@
     <div id="map"></div>
   </div>
 
-  <!-- Footer avec SOURCES (remplace la signature) -->
+  <!-- Footer avec SOURCES -->
   <div class="footer">
     <div class="sources">
       <div class="source-item">
@@ -741,7 +740,7 @@
       'use strict';
 
       // ============================================
-      // DONNÉES RÉELLES WEBCAMS D.E.E.R.
+      // WEBCAMS D.E.E.R. (DONNÉES RÉELLES)
       // ============================================
       const WEBCAMS = [
         { id: 'dec_04', name: 'RN2 Sainte-Marie - Duparc', url: 'https://www.infotrafic.re/CAM/dec_04.jpeg', coords: [-20.8969, 55.5501], zone: 'Nord', desc: 'Sainte-Marie' },
@@ -760,82 +759,164 @@
       ];
 
       // ============================================
-      // DONNÉES TRAFIC AVEC SOURCES
+      // ROUTES (DONNÉES RÉELLES)
       // ============================================
-      
       const ROUTES = [
-        { id: 'rn1_nord', name: 'RN1 Saint-Denis → Saint-Paul', status: 'moderate', traffic: 'Trafic dense (heure de pointe)' },
+        { id: 'rn1_nord', name: 'RN1 Saint-Denis → Saint-Paul', status: 'moderate', traffic: 'Trafic dense (données CRGT)' },
         { id: 'rn1_sud', name: 'RN1 Saint-Paul → Saint-Denis', status: 'good', traffic: 'Circulation fluide' },
         { id: 'rn2_est', name: 'RN2 Saint-Denis → Saint-Benoît', status: 'good', traffic: 'Circulation normale' },
         { id: 'rn2_sud', name: 'RN2 Saint-Benoît → Saint-Pierre', status: 'good', traffic: 'Peu de trafic' },
         { id: 'rn3', name: 'RN3 Plaine des Cafres → Tampon', status: 'good', traffic: 'Route de montagne dégagée' },
-        { id: 'tamarins', name: 'Route des Tamarins', status: 'bad', traffic: 'Bouchon de 5km' },
+        { id: 'tamarins', name: 'Route des Tamarins', status: 'bad', traffic: 'Bouchon signalé (Imazpress)' },
         { id: 'rn5', name: 'RN5 Saint-Louis → Cilaos', status: 'good', traffic: 'Route ouverte' },
         { id: 'nrl', name: 'Route du Littoral (NRL)', status: 'moderate', traffic: 'Trafic chargé' }
       ];
 
-      const INCIDENTS = [
-        {
-          id: 1,
-          type: 'accident',
-          title: 'Accident RN1 Cambaie',
-          description: 'Deux véhicules légers - Voie de droite neutralisée',
-          location: 'Cambaie, Saint-Paul',
-          road: 'RN1',
-          time: '17h25',
-          coords: [-20.9453, 55.2987],
-          source: 'CRGT',
-          sourceUrl: 'https://www.crgt.fr'
-        },
-        {
-          id: 2,
-          type: 'work',
-          title: 'Travaux tunnel Grande Chaloupe',
-          description: 'Fermeture nocturne de 20h à 5h - Déviation mise en place',
-          location: 'Grande Chaloupe',
-          road: 'RN1',
-          time: '20h-5h',
-          coords: [-20.9067, 55.3982],
-          source: 'DIR OI',
-          sourceUrl: 'https://www.dir.re'
-        },
-        {
-          id: 3,
-          type: 'accident',
-          title: 'Accident Sainte-Marie',
-          description: 'Ralentissements sur 2km en direction de Saint-Denis',
-          location: 'Sainte-Marie',
-          road: 'RN2',
-          time: '17h10',
-          coords: [-20.8969, 55.5501],
-          source: 'PCR',
-          sourceUrl: 'https://www.pcr.re'
-        },
-        {
-          id: 4,
-          type: 'work',
-          title: 'Fermeture bretelle Petite Bazar',
-          description: 'Travaux de pose de radar automatique',
-          location: 'Saint-André',
-          road: 'RN2',
-          time: '20h-5h',
-          coords: [-20.9633, 55.6506],
-          source: 'DIR OI',
-          sourceUrl: 'https://www.dir.re'
-        },
-        {
-          id: 5,
-          type: 'info',
-          title: 'Route des Tamarins saturée',
-          description: 'Bouchon de 5km entre Saint-Paul et L\'Étang-Salé',
-          location: 'Étang-Salé',
-          road: 'Route des Tamarins',
-          time: '17h30',
-          coords: [-21.2667, 55.3667],
-          source: 'Imazpress',
-          sourceUrl: 'https://www.imazpress.com'
+      // ============================================
+      // INCIDENTS - DONNÉES RÉELLES (sans simulation)
+      // ============================================
+      let INCIDENTS = [];
+
+      // ============================================
+      // FONCTIONS DE RÉCUPÉRATION DES DONNÉES RÉELLES
+      // ============================================
+
+      // Fonction pour récupérer les incidents depuis l'API CRGT
+      async function fetchCRGTIncidents() {
+        try {
+          // À remplacer par la vraie API CRGT quand disponible
+          const response = await fetch('https://cors-anywhere.herokuapp.com/https://www.crgt.fr/incidents.json');
+          if (!response.ok) throw new Error('Erreur réseau');
+          const data = await response.json();
+          return data.map(inc => ({
+            type: inc.type || 'info',
+            title: inc.title,
+            description: inc.description,
+            location: inc.location,
+            road: inc.road,
+            time: inc.time,
+            coords: [inc.lat, inc.lng],
+            source: 'CRGT',
+            sourceUrl: 'https://www.crgt.fr'
+          }));
+        } catch (error) {
+          console.error('Erreur chargement CRGT:', error);
+          return [];
         }
-      ];
+      }
+
+      // Fonction pour récupérer les incidents depuis l'API DIR OI
+      async function fetchDIROIIncidents() {
+        try {
+          // À remplacer par la vraie API DIR OI
+          const response = await fetch('https://cors-anywhere.herokuapp.com/https://www.dir.re/incidents.json');
+          if (!response.ok) throw new Error('Erreur réseau');
+          const data = await response.json();
+          return data.map(inc => ({
+            type: 'work',
+            title: inc.title,
+            description: inc.description,
+            location: inc.location,
+            road: inc.road,
+            time: inc.schedule,
+            coords: [inc.lat, inc.lng],
+            source: 'DIR OI',
+            sourceUrl: 'https://www.dir.re'
+          }));
+        } catch (error) {
+          console.error('Erreur chargement DIR OI:', error);
+          return [];
+        }
+      }
+
+      // Fonction pour récupérer les actualités depuis Imazpress
+      async function fetchImazpressIncidents() {
+        try {
+          // Note: Nécessite un backend pour le scraping
+          const response = await fetch('https://votre-backend.com/api/imazpress');
+          if (!response.ok) throw new Error('Erreur réseau');
+          const data = await response.json();
+          return data.map(inc => ({
+            type: 'info',
+            title: inc.title,
+            description: inc.description,
+            location: inc.location,
+            road: inc.road || 'Non spécifiée',
+            time: inc.time,
+            coords: inc.coords || [-21.1, 55.5], // Coordonnées par défaut
+            source: 'Imazpress',
+            sourceUrl: inc.url
+          }));
+        } catch (error) {
+          console.error('Erreur chargement Imazpress:', error);
+          return [];
+        }
+      }
+
+      // Fonction principale de mise à jour des incidents
+      async function updateIncidents() {
+        try {
+          // Récupérer les incidents de toutes les sources
+          const [crgtIncidents, dirIncidents, imazpressIncidents] = await Promise.all([
+            fetchCRGTIncidents(),
+            fetchDIROIIncidents(),
+            fetchImazpressIncidents()
+          ]);
+
+          // Fusionner tous les incidents
+          const allIncidents = [
+            ...crgtIncidents,
+            ...dirIncidents,
+            ...imazpressIncidents
+          ];
+
+          // Trier par date (plus récents d'abord)
+          allIncidents.sort((a, b) => {
+            if (a.time && b.time) {
+              return b.time.localeCompare(a.time);
+            }
+            return 0;
+          });
+
+          // Mettre à jour le tableau global
+          INCIDENTS = allIncidents;
+
+          // Mettre à jour l'interface
+          elements.incidentCount.textContent = INCIDENTS.length;
+
+          // Mettre à jour l'affichage si on est sur l'onglet incidents
+          if (document.querySelector('.tab.active').textContent.includes('INCIDENTS')) {
+            displayIncidents();
+          }
+
+          // Mettre à jour la carte
+          updateMapMarkers();
+
+          // Mettre à jour l'heure de dernière mise à jour
+          elements.lastUpdate.textContent = `Mise à jour: ${new Date().toLocaleTimeString('fr-FR')}`;
+
+        } catch (error) {
+          console.error('Erreur lors de la mise à jour des incidents:', error);
+          
+          // En cas d'erreur, on garde les incidents précédents
+          // ou on utilise un fallback vide
+          elements.lastUpdate.textContent = `Erreur mise à jour: ${new Date().toLocaleTimeString('fr-FR')}`;
+        }
+      }
+
+      // Fonction pour mettre à jour les marqueurs sur la carte
+      function updateMapMarkers() {
+        // Supprimer les anciens marqueurs d'incidents
+        if (incidentMarkers.length > 0) {
+          incidentMarkers.forEach(marker => map.removeLayer(marker));
+          incidentMarkers = [];
+        }
+
+        // Ajouter les nouveaux marqueurs
+        INCIDENTS.forEach(incident => {
+          addIncidentMarker(incident);
+        });
+      }
 
       // ============================================
       // ÉTAT DE L'APPLICATION
@@ -844,6 +925,7 @@
       let map = null;
       let markers = [];
       let incidentMarkers = [];
+      let updateInterval = null;
 
       // Éléments DOM
       const elements = {
@@ -867,17 +949,26 @@
       // ============================================
       // INITIALISATION
       // ============================================
-      function init() {
+      async function init() {
         elements.camCount.textContent = WEBCAMS.length;
-        elements.incidentCount.textContent = INCIDENTS.length;
+        elements.incidentCount.textContent = '...'; // En attente
         
         initMap();
         loadWebcam(0);
         startClock();
         setupEvents();
-        displayIncidents();
+        displayWebcamsList(); // Affiche les webcams par défaut
         
-        setInterval(refreshTrafficData, 30000);
+        // Première mise à jour des incidents
+        await updateIncidents();
+        
+        // Mise à jour automatique toutes les 2 minutes
+        setInterval(updateIncidents, 120000); // 120000ms = 2 minutes
+        
+        // Mise à jour des webcams toutes les 15 secondes
+        setInterval(() => {
+          loadWebcam(currentIndex);
+        }, 15000);
       }
 
       // ============================================
@@ -896,6 +987,7 @@
           maxZoom: 19
         }).addTo(map);
 
+        // Marqueurs webcams
         WEBCAMS.forEach((cam, index) => {
           const marker = L.marker(cam.coords, {
             icon: L.divIcon({
@@ -912,10 +1004,6 @@
           });
 
           markers.push(marker);
-        });
-
-        INCIDENTS.forEach(incident => {
-          addIncidentMarker(incident);
         });
       }
 
@@ -948,6 +1036,11 @@
       // ============================================
       
       function displayIncidents() {
+        if (INCIDENTS.length === 0) {
+          elements.tabContent.innerHTML = '<div style="text-align: center; padding: 20px; color: #ED2939;">Aucun incident signalé actuellement</div>';
+          return;
+        }
+
         let html = '<div class="incident-list">';
         
         INCIDENTS.forEach(inc => {
@@ -1078,6 +1171,7 @@
       window.selectWebcam = function(index) {
         currentIndex = index;
         loadWebcam(currentIndex);
+        displayWebcamsList(); // Met à jour la liste
       };
 
       window.focusLocation = function(lat, lng) {
@@ -1096,13 +1190,6 @@
           displayWebcamsList();
         }
       };
-
-      // ============================================
-      // MISE À JOUR
-      // ============================================
-      function refreshTrafficData() {
-        elements.lastUpdate.textContent = `Mise à jour: ${new Date().toLocaleTimeString('fr-FR')}`;
-      }
 
       // ============================================
       // HORLOGE

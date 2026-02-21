@@ -307,6 +307,17 @@
       font-size: 0.8em;
     }
 
+    .btn.warning {
+      background: #ED2939;
+      color: white;
+      border-color: white;
+    }
+
+    .btn.warning:hover {
+      background: white;
+      color: #ED2939;
+    }
+
     /* Sidebar */
     .sidebar {
       flex: 1;
@@ -382,6 +393,17 @@
       padding: 5px 10px;
       background: rgba(0,0,0,0.3);
       justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .debug-buttons {
+      display: flex;
+      gap: 5px;
+      padding: 5px 10px;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      flex-wrap: wrap;
+      border-top: 1px solid #ED2939;
     }
 
     .sidebar-tabs {
@@ -472,6 +494,7 @@
     .incident-card.accident { border-left-color: #ED2939; }
     .incident-card.traffic_jam { border-left-color: #FFA500; }
     .incident-card.roadworks { border-left-color: #002654; }
+    .incident-card.trafficolor { border-left-color: #00CED1; }
     .incident-card.serious_hazard { border-left-color: #8B0000; }
     .incident-card.hazard { border-left-color: #FF4500; }
     .incident-card.roadclosure { border-left-color: #000000; }
@@ -693,7 +716,7 @@
     <div>🖥️ Serveur: <span id="serverIP" class="ip-address">192.168.1.17:3000</span></div>
     <div>📡 Statut: <span id="apiStatus">⏳ Vérification...</span></div>
     <div style="font-size:0.8em; margin-top:5px;">
-      <a href="#" onclick="testConnection()" style="color: #ED2939;">Tester la connexion</a>
+      <a href="#" onclick="window.testConnection()" style="color: #ED2939;">Tester la connexion</a>
     </div>
   </div>
 
@@ -763,20 +786,27 @@
 
       <!-- Proxy Buttons -->
       <div class="proxy-buttons">
-        <button class="btn small" onclick="forceProxy(0)">Proxy 1</button>
-        <button class="btn small" onclick="forceProxy(1)">Proxy 2</button>
-        <button class="btn small" onclick="forceProxy(2)">Proxy 3</button>
-        <button class="btn small" onclick="forceProxy(3)">Proxy 4</button>
-        <button class="btn small" onclick="forceProxy(4)">Proxy 5</button>
+        <button class="btn small" onclick="window.forceProxy(0)">Proxy 1</button>
+        <button class="btn small" onclick="window.forceProxy(1)">Proxy 2</button>
+        <button class="btn small" onclick="window.forceProxy(2)">Proxy 3</button>
+        <button class="btn small" onclick="window.forceProxy(3)">Proxy 4</button>
+        <button class="btn small" onclick="window.forceProxy(4)">Proxy 5</button>
+      </div>
+
+      <!-- Debug Buttons -->
+      <div class="debug-buttons">
+        <button class="btn small warning" onclick="window.debugIncidents()">🔍 Debug</button>
+        <button class="btn small" onclick="window.showRawData()">📦 Raw Data</button>
+        <button class="btn small" onclick="window.fixDisplay()">🛠️ Fix</button>
       </div>
 
       <!-- Category Filters -->
       <div class="category-filters" id="categoryFilters"></div>
 
       <div class="sidebar-tabs">
-        <button class="tab active" onclick="switchTab('incidents')">⚠️ INCIDENTS</button>
-        <button class="tab" onclick="switchTab('stats')">📊 STATISTIQUES</button>
-        <button class="tab" onclick="switchTab('webcams')">📹 WEBCAMS</button>
+        <button class="tab active" onclick="window.switchTab('incidents')">⚠️ INCIDENTS</button>
+        <button class="tab" onclick="window.switchTab('stats')">📊 STATISTIQUES</button>
+        <button class="tab" onclick="window.switchTab('webcams')">📹 WEBCAMS</button>
       </div>
 
       <div class="tab-content" id="tabContent">
@@ -803,7 +833,7 @@
       </div>
       <div class="source-item">
         <span>⚠️</span>
-        <a href="#" onclick="testConnection()" style="color: #ED2939;">Tester</a>
+        <a href="#" onclick="window.testConnection()" style="color: #ED2939;">Tester</a>
       </div>
     </div>
     <div class="last-update" id="lastUpdate">Mise à jour: --:--:--</div>
@@ -839,7 +869,6 @@
       // ============================================
       // WEBCAMS AVEC PROXY
       // ============================================
-      const IMAGE_PROXY = 'https://corsproxy.io/?';
       const IMAGE_PROXIES = [
         'https://corsproxy.io/?',
         'https://api.allorigins.win/raw?url=',
@@ -869,6 +898,7 @@
         { id: 'accident', name: 'Accidents', color: '#ED2939', icon: 'warning' },
         { id: 'traffic_jam', name: 'Bouchons', color: '#FFA500', icon: 'traffic' },
         { id: 'roadworks', name: 'Travaux', color: '#002654', icon: 'construction' },
+        { id: 'trafficolor', name: 'État du trafic', color: '#00CED1', icon: 'speed' },
         { id: 'serious_hazard', name: 'Dangers graves', color: '#8B0000', icon: 'dangerous' },
         { id: 'hazard', name: 'Dangers', color: '#FF4500', icon: 'warning' },
         { id: 'roadclosure', name: 'Fermetures', color: '#000000', icon: 'block' },
@@ -886,7 +916,6 @@
       let markers = [];
       let incidentMarkers = [];
       let allIncidents = {};
-      let imageProxyIndex = 0;
 
       // Éléments DOM
       const elements = {
@@ -973,7 +1002,7 @@
         ipElement.innerHTML = '192.168.1.17:3000';
         
         try {
-          // Test direct (ne fonctionnera pas depuis GitHub Pages)
+          // Test direct
           const directTest = await fetch(LOCAL_API + '/health', { 
             mode: 'cors',
             timeout: 3000 
@@ -990,7 +1019,7 @@
             }
           }
         } catch (e) {
-          console.log('ℹ️ Direct connection impossible (normal depuis GitHub Pages)');
+          console.log('ℹ️ Direct connection testé');
         }
         
         // Test des proxys
@@ -1040,8 +1069,6 @@
           throw new Error('Erreur HTTP ' + response.status);
         } catch (error) {
           console.error('❌ Erreur fetch:', error);
-          
-          // Fallback sur les données de test
           return getFallbackData(endpoint);
         }
       }
@@ -1091,6 +1118,43 @@
       }
 
       // ============================================
+      // FONCTIONS DE DÉBOGAGE
+      // ============================================
+      window.debugIncidents = function() {
+        console.log('🔍 DÉBOGAGE INCIDENTS');
+        console.log('=====================');
+        console.log('📊 allIncidents:', allIncidents);
+        
+        let total = 0;
+        CATEGORIES.forEach(cat => {
+          const incidents = allIncidents[cat.id] || [];
+          console.log(`📁 ${cat.name}: ${incidents.length} incidents`);
+          if (incidents.length > 0) {
+            console.log(`   Premier incident:`, incidents[0]);
+            console.log(`   Clés disponibles:`, Object.keys(incidents[0]));
+          }
+          total += incidents.length;
+        });
+        
+        console.log(`📈 TOTAL: ${total} incidents`);
+        return total;
+      };
+
+      window.showRawData = function() {
+        console.log('📦 DONNÉES BRUTES');
+        console.log('=================');
+        console.log(JSON.stringify(allIncidents, null, 2));
+      };
+
+      window.fixDisplay = function() {
+        console.log('🛠️ FORCE L\'AFFICHAGE');
+        if (document.querySelector('.tab.active').textContent.includes('INCIDENTS')) {
+          displayAllIncidents();
+        }
+        updateIncidentMarkers();
+      };
+
+      // ============================================
       // CHARGEMENT DES DONNÉES
       // ============================================
       window.testConnection = async function() {
@@ -1103,20 +1167,81 @@
           const data = await apiFetch('all');
           
           if (data && data.success) {
-            allIncidents = data.data || {};
+            // Réinitialiser les incidents
+            allIncidents = {};
             
+            // 1. Traiter les trafficolor (données de trafic)
+            if (data.data.trafficolor && Array.isArray(data.data.trafficolor)) {
+              allIncidents.trafficolor = data.data.trafficolor.map(item => {
+                // Extraire le premier point de géolocalisation comme coordonnées
+                let lat = -21.1151, lng = 55.5364;
+                
+                if (item.geolocation && item.geolocation.length > 0) {
+                  const firstPoint = item.geolocation[0];
+                  if (Array.isArray(firstPoint) && firstPoint.length >= 2) {
+                    lng = firstPoint[0];
+                    lat = firstPoint[1];
+                  }
+                }
+                
+                // Extraire la description
+                let description = '';
+                let speed = null;
+                if (item.public_description) {
+                  if (item.public_description.fr) {
+                    description = item.public_description.fr;
+                  }
+                  // Extraire la vitesse si disponible
+                  const speedMatch = item.public_description.en?.match(/\d+/);
+                  if (speedMatch) {
+                    speed = parseInt(speedMatch[0]);
+                  }
+                }
+                
+                // Déterminer la couleur en fonction de la vitesse
+                let color = item.trafficolor || '#77F362';
+                if (speed) {
+                  if (speed > 80) color = '#77F362'; // Vert
+                  else if (speed > 50) color = '#EE7E33'; // Orange
+                  else color = '#ED2939'; // Rouge
+                }
+                
+                return {
+                  title: item.unique_disruption_number || 'Donnée trafic',
+                  description: description,
+                  location: item.address && item.address !== 'nil' ? item.address : 'La Réunion',
+                  time: new Date().toLocaleTimeString('fr-FR'),
+                  coordinates: [lat, lng],
+                  source: item.source || 'Labocom',
+                  color: color,
+                  speed: speed
+                };
+              });
+              console.log(`✅ ${allIncidents.trafficolor.length} données trafic chargées`);
+            }
+            
+            // 2. Traiter les webcams (pour les statistiques uniquement)
+            if (data.data.webcam && Array.isArray(data.data.webcam)) {
+              // On ne les ajoute pas aux incidents, mais on les garde pour les stats
+              allIncidents.webcam = data.data.webcam;
+            }
+            
+            // 3. Initialiser les autres catégories vides
             CATEGORIES.forEach(cat => {
-              if (!Array.isArray(allIncidents[cat.id])) {
+              if (cat.id !== 'trafficolor' && cat.id !== 'webcam' && !allIncidents[cat.id]) {
                 allIncidents[cat.id] = [];
               }
             });
             
-            updateStats(data.details || {});
-          } else {
-            allIncidents = {
-              accident: getFallbackData('accident'),
-              roadworks: getFallbackData('roadworks')
+            // Mettre à jour les statistiques
+            const details = {
+              trafficolor: allIncidents.trafficolor?.length || 0,
+              ...data.details
             };
+            updateStats(details);
+            
+          } else {
+            allIncidents = {};
           }
           
           updateIncidentMarkers();
@@ -1133,9 +1258,9 @@
       }
 
       // ============================================
-      // WEBCAM AVEC RETRY PROXY
+      // WEBCAM
       // ============================================
-      function loadWebcamWithRetry(index, proxyIdx = 0) {
+      function loadWebcam(index) {
         const cam = WEBCAMS[index];
         if (!cam) return;
 
@@ -1147,18 +1272,7 @@
         elements.loadingOverlay.style.display = 'flex';
         elements.webcamImage.style.display = 'none';
 
-        if (proxyIdx >= IMAGE_PROXIES.length) {
-          elements.loadingOverlay.innerHTML = `
-            <div style="text-align:center;">
-              <span class="material-icons" style="font-size:48px; color:#ED2939;">error</span>
-              <p style="margin-top:10px; color:#ffffff;">Erreur de chargement</p>
-              <button onclick="loadWebcamWithRetry(${index}, 0)" style="margin-top:10px; padding:5px 15px; background:#002654; color:white; border:2px solid white; cursor:pointer;">Réessayer</button>
-            </div>
-          `;
-          return;
-        }
-
-        const imageUrl = IMAGE_PROXIES[proxyIdx] + encodeURIComponent(cam.originalUrl) + '&t=' + Date.now();
+        const imageUrl = cam.originalUrl + '?t=' + Date.now();
         
         const img = new Image();
         img.onload = () => {
@@ -1170,15 +1284,16 @@
         };
 
         img.onerror = () => {
-          console.log(`⚠️ Proxy image ${proxyIdx+1} échoué, tentative suivante...`);
-          loadWebcamWithRetry(index, proxyIdx + 1);
+          elements.loadingOverlay.innerHTML = `
+            <div style="text-align:center;">
+              <span class="material-icons" style="font-size:48px; color:#ED2939;">videocam_off</span>
+              <p style="margin-top:10px; color:#ffffff;">Service de webcams temporairement indisponible</p>
+              <button onclick="loadWebcam(${index})" style="margin-top:10px; padding:5px 15px; background:#002654; color:white; border:2px solid white; cursor:pointer;">Réessayer</button>
+            </div>
+          `;
         };
 
         img.src = imageUrl;
-      }
-
-      function loadWebcam(index) {
-        loadWebcamWithRetry(index, 0);
       }
 
       // ============================================
@@ -1205,35 +1320,55 @@
       };
 
       function displayAllIncidents() {
+        console.log('📊 Affichage des incidents...');
+        
         let html = '<div class="incident-list">';
         let total = 0;
         
-        CATEGORIES.forEach(cat => {
-          const incidents = allIncidents[cat.id] || [];
-          total += incidents.length;
+        // Parcourir toutes les catégories
+        Object.keys(allIncidents).forEach(key => {
+          const incidents = allIncidents[key];
           
-          incidents.forEach(inc => {
-            html += `
-              <div class="incident-card ${cat.id}" onclick="focusLocation(${inc.coordinates ? inc.coordinates[0] : -21.1151}, ${inc.coordinates ? inc.coordinates[1] : 55.5364})">
-                <div class="incident-title">
-                  <span class="material-icons">${cat.icon}</span>
-                  ${inc.title || 'Incident ' + cat.name}
+          if (Array.isArray(incidents) && incidents.length > 0 && key !== 'webcam') {
+            const cat = CATEGORIES.find(c => c.id === key) || { 
+              id: key, 
+              name: key.replace('_', ' '), 
+              color: '#888', 
+              icon: 'info' 
+            };
+            
+            incidents.forEach(inc => {
+              total++;
+              
+              let description = inc.description || '';
+              if (inc.speed) {
+                description += ` | Vitesse: ${inc.speed} km/h`;
+              }
+              
+              html += `
+                <div class="incident-card ${cat.id}" onclick="focusLocation(${inc.coordinates[0]}, ${inc.coordinates[1]})">
+                  <div class="incident-title">
+                    <span class="material-icons">${cat.icon}</span>
+                    ${inc.title || 'Incident'}
+                  </div>
+                  <div class="incident-desc">${description}</div>
+                  <div class="incident-meta">
+                    <span>📍 ${inc.location || 'La Réunion'}</span>
+                    <span>🕒 ${inc.time || ''}</span>
+                  </div>
+                  <div class="incident-source">
+                    Source: ${inc.source || 'API'}
+                  </div>
                 </div>
-                <div class="incident-desc">${inc.description || 'Aucune description'}</div>
-                <div class="incident-meta">
-                  <span>📍 ${inc.location || 'La Réunion'}</span>
-                  <span>🕒 ${inc.time || ''}</span>
-                </div>
-                <div class="incident-source">
-                  Source: ${inc.source || 'API Infotrafic'}
-                </div>
-              </div>
-            `;
-          });
+              `;
+            });
+          }
         });
         
         if (total === 0) {
           html += '<div style="text-align: center; padding: 20px; color: #ED2939;">Aucun incident signalé</div>';
+        } else {
+          console.log(`✅ ${total} incidents affichés`);
         }
         
         html += '</div>';
@@ -1246,13 +1381,18 @@
         html += '<div class="incident-list">';
         
         incidents.forEach(inc => {
+          let description = inc.description || '';
+          if (inc.speed) {
+            description += ` | Vitesse: ${inc.speed} km/h`;
+          }
+          
           html += `
-            <div class="incident-card ${categoryId}" onclick="focusLocation(${inc.coordinates ? inc.coordinates[0] : -21.1151}, ${inc.coordinates ? inc.coordinates[1] : 55.5364})">
+            <div class="incident-card ${categoryId}" onclick="focusLocation(${inc.coordinates[0]}, ${inc.coordinates[1]})">
               <div class="incident-title">
                 <span class="material-icons">${cat.icon}</span>
                 ${inc.title || 'Incident'}
               </div>
-              <div class="incident-desc">${inc.description || 'Aucune description'}</div>
+              <div class="incident-desc">${description}</div>
               <div class="incident-meta">
                 <span>📍 ${inc.location || 'La Réunion'}</span>
                 <span>🕒 ${inc.time || ''}</span>
@@ -1272,13 +1412,29 @@
           if (data && data.success) {
             let html = '<div class="stats-grid">';
             
-            Object.entries(data.stats || {}).forEach(([key, value]) => {
+            // Afficher les stats avec les noms de catégories
+            const statsToShow = {
+              trafficolor: 'État du trafic',
+              accident: 'Accidents',
+              traffic_jam: 'Bouchons',
+              roadworks: 'Travaux',
+              serious_hazard: 'Dangers graves',
+              hazard: 'Dangers',
+              roadclosure: 'Fermetures',
+              flood: 'Inondations',
+              market: 'Marchés',
+              local_event: 'Événements',
+              animal: 'Animaux'
+            };
+            
+            Object.entries(statsToShow).forEach(([key, label]) => {
+              const value = data.stats[key] || 0;
               const cat = CATEGORIES.find(c => c.id === key);
               if (cat) {
                 html += `
                   <div class="stat-card" style="border-left: 3px solid ${cat.color};">
                     <div class="stat-number">${value}</div>
-                    <div class="stat-label">${cat.name}</div>
+                    <div class="stat-label">${label}</div>
                   </div>
                 `;
               }
@@ -1342,33 +1498,51 @@
           incidentMarkers = [];
         }
 
-        CATEGORIES.forEach(cat => {
-          const incidents = allIncidents[cat.id] || [];
+        let totalMarkers = 0;
+
+        Object.keys(allIncidents).forEach(key => {
+          const incidents = allIncidents[key];
           
-          if (Array.isArray(incidents)) {
+          if (Array.isArray(incidents) && key !== 'webcam') {
+            const cat = CATEGORIES.find(c => c.id === key) || { 
+              id: key, 
+              color: '#888', 
+              icon: 'info' 
+            };
+            
             incidents.forEach(inc => {
-              if (inc && inc.coordinates && inc.coordinates.length === 2) {
-                const marker = L.marker(inc.coordinates, {
-                  icon: L.divIcon({
-                    className: 'map-marker',
-                    html: `<span class="material-icons" style="color: ${cat.color}; font-size: 24px; filter: drop-shadow(0 0 10px ${cat.color});">${cat.icon}</span>`,
-                    iconSize: [24, 24]
-                  })
-                }).addTo(map);
+              if (inc.coordinates && inc.coordinates.length === 2) {
+                const [lat, lng] = inc.coordinates;
+                
+                if (!isNaN(lat) && !isNaN(lng)) {
+                  // Utiliser la couleur spécifique si disponible
+                  const markerColor = inc.color || cat.color;
+                  
+                  const marker = L.marker([lat, lng], {
+                    icon: L.divIcon({
+                      className: 'map-marker',
+                      html: `<span class="material-icons" style="color: ${markerColor}; font-size: 24px; filter: drop-shadow(0 0 10px ${markerColor});">${cat.icon}</span>`,
+                      iconSize: [24, 24]
+                    })
+                  }).addTo(map);
 
-                marker.bindPopup(`
-                  <b style="color: ${cat.color};">${cat.name}</b><br>
-                  <strong>${inc.title || 'Incident'}</strong><br>
-                  ${inc.description || ''}<br>
-                  <small>📍 ${inc.location || 'La Réunion'}</small><br>
-                  <small>🕒 ${inc.time || ''}</small>
-                `);
+                  let popupContent = `<b style="color: ${cat.color};">${cat.name || key}</b><br>`;
+                  popupContent += `<strong>${inc.title || 'Incident'}</strong><br>`;
+                  if (inc.description) popupContent += `${inc.description}<br>`;
+                  if (inc.speed) popupContent += `🚗 Vitesse: ${inc.speed} km/h<br>`;
+                  popupContent += `<small>📍 ${inc.location || 'La Réunion'}</small>`;
 
-                incidentMarkers.push(marker);
+                  marker.bindPopup(popupContent);
+
+                  incidentMarkers.push(marker);
+                  totalMarkers++;
+                }
               }
             });
           }
         });
+        
+        console.log(`🗺️ ${totalMarkers} marqueurs ajoutés sur la carte`);
       }
 
       // ============================================

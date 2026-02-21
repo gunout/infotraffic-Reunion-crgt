@@ -40,9 +40,9 @@
 
     /* Drapeau de La Réunion */
     .flag-bar {
-      height: 5px;
+      height: 4px;
       background: linear-gradient(90deg, #002654 0%, #002654 33.33%, #ffffff 33.33%, #ffffff 66.66%, #ED2939 66.66%, #ED2939 100%);
-      margin-bottom: 15px;
+      margin-bottom: 10px;
       border-radius: 5px;
     }
 
@@ -51,24 +51,25 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
-      padding: 15px 20px;
+      margin-bottom: 15px;
+      padding: 12px 15px;
       background: linear-gradient(135deg, #002654 0%, #ffffff 50%, #ED2939 100%);
       border: 1px solid #ffffff;
       box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
       border-radius: 10px;
       flex-wrap: wrap;
+      gap: 10px;
     }
 
     .logo {
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
     .logo h1 {
-      font-size: 1.5em;
+      font-size: 1.3em;
       color: #ffffff;
       text-shadow: 2px 2px 0 #002654, -2px -2px 0 #ED2939;
     }
@@ -76,27 +77,27 @@
     .badge {
       background: #ffffff;
       color: #002654;
-      padding: 5px 15px;
+      padding: 3px 10px;
       border-radius: 30px;
       font-weight: bold;
-      font-size: 0.9em;
+      font-size: 0.8em;
       border: 1px solid #ED2939;
     }
 
     .stats {
       display: flex;
-      gap: 15px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
     .stat-item {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 15px;
+      gap: 5px;
+      padding: 5px 10px;
       background: rgba(0, 0, 0, 0.5);
       border-radius: 30px;
-      font-size: 0.9em;
+      font-size: 0.8em;
       backdrop-filter: blur(5px);
     }
 
@@ -120,8 +121,8 @@
     /* Main layout */
     .main-container {
       display: flex;
-      gap: 20px;
-      min-height: 500px;
+      gap: 15px;
+      min-height: 400px;
     }
 
     /* Webcam section */
@@ -137,22 +138,23 @@
     }
 
     .webcam-header {
-      padding: 15px;
+      padding: 12px;
       background: linear-gradient(90deg, #002654 0%, #ffffff 50%, #ED2939 100%);
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
     }
 
     .webcam-title {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       font-weight: bold;
       color: #ffffff;
       text-shadow: 2px 2px 0 #002654;
+      font-size: 0.9em;
     }
 
     .live-indicator {
@@ -160,15 +162,15 @@
       align-items: center;
       gap: 5px;
       background: rgba(0,0,0,0.5);
-      padding: 5px 10px;
+      padding: 4px 8px;
       border-radius: 30px;
-      font-size: 0.8em;
+      font-size: 0.75em;
       color: #ffffff;
     }
 
     .live-dot {
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
       background: #ED2939;
       border-radius: 50%;
       animation: pulse 1s infinite;
@@ -184,7 +186,7 @@
       flex: 1;
       position: relative;
       background: #000;
-      min-height: 200px;
+      min-height: 180px;
     }
 
     #webcamImage {
@@ -205,15 +207,15 @@
       justify-content: center;
       align-items: center;
       flex-direction: column;
-      gap: 15px;
+      gap: 10px;
       z-index: 10;
       text-align: center;
-      padding: 20px;
+      padding: 15px;
     }
 
     .spinner {
-      width: 50px;
-      height: 50px;
+      width: 40px;
+      height: 40px;
       border: 3px solid #ffffff;
       border-top-color: #002654;
       border-right-color: #ED2939;
@@ -226,18 +228,18 @@
     /* Logo Région Réunion */
     .region-logo {
       position: absolute;
-      bottom: 80px;
-      right: 15px;
+      bottom: 60px;
+      right: 10px;
       z-index: 20;
-      width: 80px;
+      width: 70px;
       opacity: 0.9;
       transition: all 0.3s;
       pointer-events: none;
       filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
       animation: logo-glow 2s infinite alternate;
-      border-radius: 10px;
+      border-radius: 8px;
       background: rgba(255, 255, 255, 0.1);
-      padding: 5px;
+      padding: 3px;
       backdrop-filter: blur(2px);
     }
 
@@ -263,29 +265,29 @@
 
     .webcam-info {
       position: absolute;
-      bottom: 15px;
-      left: 15px;
-      right: 15px;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
       display: flex;
       justify-content: space-between;
       background: linear-gradient(90deg, #002654 0%, transparent 50%, #ED2939 100%);
-      padding: 10px 15px;
+      padding: 6px 10px;
       border: 1px solid #ffffff;
       border-radius: 5px;
       color: #ffffff;
       font-weight: bold;
       z-index: 15;
-      font-size: 0.9em;
+      font-size: 0.8em;
       flex-wrap: wrap;
       gap: 5px;
     }
 
     .webcam-controls {
-      padding: 15px;
+      padding: 12px;
       background: linear-gradient(145deg, #002654 0%, #ffffff 50%, #ED2939 100%);
       border-top: 1px solid #ffffff;
       display: flex;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
       justify-content: center;
     }
@@ -294,17 +296,17 @@
       background: transparent;
       border: 2px solid #ffffff;
       color: #ffffff;
-      padding: 8px 15px;
+      padding: 6px 12px;
       cursor: pointer;
       font-family: inherit;
-      font-size: 0.9em;
+      font-size: 0.8em;
       transition: all 0.3s;
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
       font-weight: bold;
       text-shadow: 1px 1px 0 #002654;
-      border-radius: 8px;
+      border-radius: 6px;
     }
 
     .btn:hover {
@@ -315,8 +317,8 @@
     }
 
     .btn.small {
-      padding: 4px 8px;
-      font-size: 0.75em;
+      padding: 3px 6px;
+      font-size: 0.7em;
     }
 
     .btn.warning {
@@ -330,69 +332,6 @@
       color: #ED2939;
     }
 
-    /* GitHub Pages Guide */
-    .github-guide {
-      position: fixed;
-      bottom: 90px;
-      right: 10px;
-      left: 10px;
-      background: #002654;
-      border: 2px solid #ED2939;
-      border-radius: 10px;
-      padding: 10px;
-      font-size: 0.8em;
-      z-index: 1000;
-      color: white;
-      display: none;
-    }
-
-    .github-guide.visible {
-      display: block;
-    }
-
-    .github-guide-title {
-      color: #ED2939;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    .github-guide-status {
-      margin: 5px 0;
-    }
-
-    .proxy-buttons-container {
-      display: flex;
-      gap: 5px;
-      margin: 5px 0;
-      flex-wrap: wrap;
-    }
-
-    .proxy-btn {
-      background: #002654;
-      color: white;
-      border: 1px solid #ED2939;
-      padding: 4px 8px;
-      border-radius: 3px;
-      cursor: pointer;
-      font-size: 0.75em;
-    }
-
-    .proxy-btn:hover {
-      background: #ED2939;
-    }
-
-    .github-link {
-      color: #ED2939;
-      text-decoration: none;
-      font-size: 0.8em;
-      display: block;
-      margin-top: 5px;
-    }
-
-    .github-link:hover {
-      text-decoration: underline;
-    }
-
     /* Sidebar */
     .sidebar {
       flex: 1;
@@ -402,12 +341,12 @@
       border: 2px solid #ffffff;
       border-radius: 10px;
       overflow: hidden;
-      min-width: 300px;
+      min-width: 280px;
       box-shadow: 0 0 30px rgba(237, 41, 57, 0.3);
     }
 
     .sidebar-header {
-      padding: 15px;
+      padding: 12px;
       background: linear-gradient(90deg, #002654 0%, #ffffff 50%, #ED2939 100%);
     }
 
@@ -415,18 +354,20 @@
       color: #ffffff;
       font-weight: bold;
       text-shadow: 2px 2px 0 #002654;
+      font-size: 0.9em;
     }
 
     .search-box {
       width: 100%;
-      padding: 10px;
-      margin-top: 10px;
+      padding: 8px;
+      margin-top: 8px;
       background: rgba(255, 255, 255, 0.9);
       border: 2px solid #002654;
       color: #002654;
       font-family: inherit;
       border-radius: 5px;
       font-weight: bold;
+      font-size: 0.8em;
     }
 
     .search-box::placeholder {
@@ -436,8 +377,8 @@
     .category-filters {
       display: flex;
       flex-wrap: wrap;
-      gap: 5px;
-      padding: 10px;
+      gap: 4px;
+      padding: 8px;
       background: rgba(0,0,0,0.2);
     }
 
@@ -445,11 +386,13 @@
       background: transparent;
       border: 1px solid #ffffff;
       color: #ffffff;
-      padding: 5px 8px;
+      padding: 4px 6px;
       border-radius: 20px;
-      font-size: 0.65em;
+      font-size: 0.6em;
       cursor: pointer;
       transition: all 0.3s;
+      flex: 1 1 auto;
+      min-width: 60px;
     }
 
     .category-btn:hover {
@@ -462,25 +405,6 @@
       border-color: #002654;
     }
 
-    .proxy-buttons {
-      display: flex;
-      gap: 5px;
-      padding: 5px 10px;
-      background: rgba(0,0,0,0.3);
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .debug-buttons {
-      display: flex;
-      gap: 5px;
-      padding: 5px 10px;
-      background: rgba(0,0,0,0.5);
-      justify-content: center;
-      flex-wrap: wrap;
-      border-top: 1px solid #ED2939;
-    }
-
     .sidebar-tabs {
       display: flex;
       border-bottom: 2px solid #ffffff;
@@ -489,7 +413,7 @@
 
     .tab {
       flex: 1;
-      padding: 12px 5px;
+      padding: 10px 3px;
       text-align: center;
       background: none;
       border: none;
@@ -497,10 +421,10 @@
       cursor: pointer;
       font-family: inherit;
       transition: all 0.3s;
-      font-size: 0.8em;
+      font-size: 0.75em;
       font-weight: bold;
       text-shadow: 1px 1px 0 #002654;
-      min-width: 80px;
+      min-width: 70px;
     }
 
     .tab.active {
@@ -511,34 +435,34 @@
     .tab-content {
       flex: 1;
       overflow-y: auto;
-      padding: 15px;
-      max-height: 400px;
+      padding: 12px;
+      max-height: 350px;
     }
 
     /* Webcam list */
     .webcam-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
 
     .webcam-item {
       background: linear-gradient(145deg, rgba(0,38,84,0.1) 0%, rgba(255,255,255,0.2) 50%, rgba(237,41,57,0.1) 100%);
       border: 1px solid #002654;
-      padding: 10px;
+      padding: 8px;
       cursor: pointer;
       transition: all 0.3s;
       display: flex;
       justify-content: space-between;
       align-items: center;
       border-radius: 5px;
-      font-size: 0.85em;
+      font-size: 0.8em;
     }
 
     .webcam-item:hover {
-      transform: translateX(-5px);
+      transform: translateX(-3px);
       border-color: #ED2939;
-      box-shadow: 0 0 15px #ED2939;
+      box-shadow: 0 0 10px #ED2939;
     }
 
     .webcam-item.active {
@@ -547,8 +471,8 @@
     }
 
     .zone-tag {
-      font-size: 0.7em;
-      padding: 2px 6px;
+      font-size: 0.65em;
+      padding: 2px 5px;
       background: #002654;
       color: #ffffff;
       border-radius: 20px;
@@ -559,17 +483,17 @@
     .incident-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
 
     .incident-card {
       background: linear-gradient(145deg, rgba(0,38,84,0.2) 0%, rgba(255,255,255,0.3) 50%, rgba(237,41,57,0.2) 100%);
-      border-left: 5px solid;
-      padding: 10px;
+      border-left: 4px solid;
+      padding: 8px;
       cursor: pointer;
       transition: all 0.3s;
       border-radius: 0 5px 5px 0;
-      font-size: 0.85em;
+      font-size: 0.8em;
     }
 
     .incident-card.accident { border-left-color: #ED2939; }
@@ -585,25 +509,25 @@
     .incident-card.animal { border-left-color: #8B4513; }
 
     .incident-card:hover {
-      transform: translateX(-5px);
-      box-shadow: 0 0 15px #ffffff;
+      transform: translateX(-3px);
+      box-shadow: 0 0 10px #ffffff;
     }
 
     .incident-title {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 5px;
       font-weight: bold;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
       color: #002654;
-      font-size: 0.9em;
+      font-size: 0.85em;
       flex-wrap: wrap;
     }
 
     .incident-desc {
       color: #000000;
-      font-size: 0.85em;
-      margin: 5px 0;
+      font-size: 0.8em;
+      margin: 4px 0;
       line-height: 1.3;
     }
 
@@ -611,17 +535,17 @@
       display: flex;
       justify-content: space-between;
       color: #ED2939;
-      font-size: 0.75em;
-      margin-top: 8px;
+      font-size: 0.7em;
+      margin-top: 5px;
       font-weight: bold;
       flex-wrap: wrap;
       gap: 5px;
     }
 
     .incident-source {
-      font-size: 0.65em;
+      font-size: 0.6em;
       color: #002654;
-      margin-top: 5px;
+      margin-top: 4px;
       font-style: italic;
     }
 
@@ -629,32 +553,32 @@
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      margin-bottom: 20px;
+      gap: 6px;
+      margin-bottom: 15px;
     }
 
     .stat-card {
       background: rgba(255,255,255,0.1);
-      padding: 8px;
+      padding: 6px;
       border-radius: 5px;
       text-align: center;
     }
 
     .stat-number {
-      font-size: 1.2em;
+      font-size: 1.1em;
       font-weight: bold;
       color: #ED2939;
     }
 
     .stat-label {
-      font-size: 0.65em;
+      font-size: 0.6em;
       color: #ffffff;
     }
 
     /* Map */
     .map-container {
-      margin-top: 20px;
-      height: 250px;
+      margin-top: 15px;
+      height: 200px;
       border: 3px solid #ffffff;
       border-radius: 10px;
       overflow: hidden;
@@ -668,8 +592,8 @@
 
     /* Footer */
     .footer {
-      margin-top: 20px;
-      padding: 10px 15px;
+      margin-top: 15px;
+      padding: 8px 15px;
       background: linear-gradient(90deg, #002654 0%, #ffffff 50%, #ED2939 100%);
       border-radius: 10px;
       display: flex;
@@ -678,15 +602,8 @@
       color: #002654;
       font-weight: bold;
       flex-wrap: wrap;
-      gap: 10px;
-      font-size: 0.85em;
-    }
-
-    .sources {
-      display: flex;
-      gap: 15px;
+      gap: 8px;
       font-size: 0.8em;
-      flex-wrap: wrap;
     }
 
     .source-item {
@@ -710,33 +627,9 @@
       font-weight: bold;
     }
 
-    /* Connection status */
+    /* Connection status - caché */
     .connection-status {
-      position: fixed;
-      bottom: 90px;
-      right: 10px;
-      left: 10px;
-      padding: 10px;
-      background: #002654;
-      border: 2px solid #ED2939;
-      border-radius: 10px;
-      font-size: 0.8em;
-      z-index: 1000;
-      color: white;
       display: none;
-    }
-
-    .connection-status.connected {
-      border-left: 5px solid #00ff00;
-    }
-
-    .connection-status.error {
-      border-left: 5px solid #ED2939;
-    }
-
-    .ip-address {
-      color: #ED2939;
-      font-weight: bold;
     }
 
     /* ============================================
@@ -751,14 +644,13 @@
       .main-container {
         flex-direction: column;
         height: auto;
-        gap: 15px;
+        gap: 12px;
       }
 
       .header {
         flex-direction: column;
-        gap: 10px;
+        align-items: stretch;
         text-align: center;
-        padding: 12px;
       }
 
       .logo {
@@ -766,62 +658,61 @@
       }
 
       .logo h1 {
-        font-size: 1.2em;
+        font-size: 1.1em;
       }
 
       .stats {
-        width: 100%;
         justify-content: center;
+        width: 100%;
       }
 
       .stat-item {
-        padding: 5px 10px;
-        font-size: 0.8em;
+        flex: 1;
+        justify-content: center;
+        font-size: 0.7em;
       }
 
       .webcam-section {
-        min-height: 300px;
+        min-height: 250px;
       }
 
       .webcam-header {
-        padding: 12px;
+        padding: 8px;
       }
 
       .webcam-title {
-        font-size: 0.9em;
-      }
-
-      .live-indicator {
-        padding: 3px 8px;
+        font-size: 0.8em;
       }
 
       .webcam-container {
-        min-height: 180px;
+        min-height: 150px;
       }
 
       .region-logo {
-        width: 60px;
-        bottom: 60px;
+        width: 50px;
+        bottom: 50px;
       }
 
       .webcam-info {
-        font-size: 0.8em;
-        padding: 8px 12px;
+        font-size: 0.7em;
+        padding: 5px 8px;
       }
 
       .webcam-controls {
-        padding: 12px;
-        gap: 8px;
+        padding: 8px;
+        gap: 5px;
       }
 
       .btn {
-        padding: 6px 12px;
-        font-size: 0.8em;
+        padding: 5px 8px;
+        font-size: 0.7em;
+        flex: 1 1 auto;
+        justify-content: center;
       }
 
       .btn.small {
-        padding: 3px 6px;
-        font-size: 0.7em;
+        padding: 2px 4px;
+        font-size: 0.65em;
       }
 
       .sidebar {
@@ -829,87 +720,69 @@
       }
 
       .sidebar-header {
-        padding: 12px;
+        padding: 8px;
+      }
+
+      .sidebar-header span {
+        font-size: 0.8em;
       }
 
       .search-box {
-        padding: 8px;
-        font-size: 0.85em;
+        padding: 6px;
+        font-size: 0.7em;
       }
 
       .category-filters {
-        padding: 8px;
+        padding: 6px;
+        gap: 3px;
       }
 
       .category-btn {
-        padding: 4px 8px;
-        font-size: 0.6em;
-      }
-
-      .proxy-buttons {
-        padding: 8px;
-        gap: 4px;
-      }
-
-      .proxy-buttons .btn.small {
-        padding: 3px 6px;
-        font-size: 0.7em;
-      }
-
-      .debug-buttons {
-        padding: 8px;
-        gap: 4px;
-      }
-
-      .debug-buttons .btn.small {
-        padding: 3px 6px;
-        font-size: 0.7em;
-      }
-
-      .sidebar-tabs {
-        flex-wrap: wrap;
+        padding: 3px 5px;
+        font-size: 0.55em;
+        min-width: 50px;
       }
 
       .tab {
-        padding: 8px 3px;
-        font-size: 0.7em;
-        min-width: 60px;
+        padding: 6px 2px;
+        font-size: 0.65em;
+        min-width: 50px;
       }
 
       .tab-content {
-        padding: 12px;
-        max-height: 350px;
+        padding: 8px;
+        max-height: 300px;
       }
 
       .webcam-item {
-        padding: 8px;
-        font-size: 0.8em;
-      }
-
-      .zone-tag {
-        font-size: 0.65em;
-        padding: 2px 5px;
-      }
-
-      .incident-card {
-        padding: 8px;
-      }
-
-      .incident-title {
-        font-size: 0.85em;
-        gap: 5px;
-      }
-
-      .incident-desc {
-        font-size: 0.8em;
-      }
-
-      .incident-meta {
+        padding: 6px;
         font-size: 0.7em;
       }
 
+      .zone-tag {
+        font-size: 0.6em;
+        padding: 2px 4px;
+      }
+
+      .incident-card {
+        padding: 6px;
+        font-size: 0.7em;
+      }
+
+      .incident-title {
+        font-size: 0.75em;
+      }
+
+      .incident-desc {
+        font-size: 0.7em;
+      }
+
+      .incident-meta {
+        font-size: 0.65em;
+      }
+
       .stats-grid {
-        gap: 5px;
+        gap: 4px;
       }
 
       .stat-number {
@@ -917,67 +790,41 @@
       }
 
       .stat-label {
-        font-size: 0.6em;
+        font-size: 0.55em;
       }
 
       .map-container {
-        height: 200px;
-        margin-top: 15px;
+        height: 180px;
+        margin-top: 12px;
       }
 
       .footer {
-        padding: 10px;
-        font-size: 0.8em;
+        padding: 6px 10px;
+        font-size: 0.7em;
         flex-direction: column;
         text-align: center;
       }
 
-      .sources {
-        justify-content: center;
-        gap: 10px;
-      }
-
-      .github-guide,
-      .connection-status {
-        bottom: 10px;
-        right: 10px;
-        left: 10px;
-        font-size: 0.75em;
-      }
-
-      .proxy-buttons-container {
-        justify-content: center;
-      }
-
-      .proxy-btn {
-        padding: 3px 6px;
+      .source-item {
         font-size: 0.7em;
-      }
-
-      .github-link {
-        font-size: 0.75em;
       }
     }
 
     @media (max-width: 480px) {
       .stats {
         flex-direction: column;
-        gap: 8px;
-        width: 100%;
       }
 
       .stat-item {
         width: 100%;
-        justify-content: center;
       }
 
       .webcam-controls {
-        flex-direction: column;
+        flex-wrap: wrap;
       }
 
       .btn {
-        width: 100%;
-        justify-content: center;
+        width: calc(50% - 3px);
       }
 
       .category-filters {
@@ -985,28 +832,47 @@
       }
 
       .category-btn {
-        flex: 1 1 auto;
-        min-width: 70px;
-        text-align: center;
+        min-width: 45px;
       }
 
       .sidebar-tabs {
-        flex-direction: column;
+        flex-direction: row;
       }
 
       .tab {
-        width: 100%;
-        padding: 10px;
-      }
-
-      .sources {
-        flex-direction: column;
-        gap: 8px;
+        font-size: 0.6em;
+        padding: 5px 1px;
       }
 
       .region-logo {
-        width: 50px;
-        bottom: 50px;
+        width: 40px;
+        bottom: 45px;
+      }
+    }
+
+    /* Pour très petits écrans */
+    @media (max-width: 360px) {
+      .btn {
+        width: 100%;
+      }
+
+      .category-btn {
+        min-width: 40px;
+        font-size: 0.5em;
+      }
+
+      .webcam-title {
+        font-size: 0.7em;
+      }
+
+      .live-indicator {
+        font-size: 0.65em;
+      }
+
+      .webcam-info {
+        font-size: 0.6em;
+        flex-direction: column;
+        align-items: center;
       }
     }
   </style>
@@ -1017,52 +883,21 @@
   <div class="header">
     <div class="logo">
       <h1>INFOTRAFIC RÉUNION</h1>
-      <span class="badge">GITHUB PAGES</span>
+      <span class="badge">DIRECT</span>
     </div>
     <div class="stats">
       <div class="stat-item blue">
-        <span class="material-icons">videocam</span>
+        <span class="material-icons" style="font-size: 16px;">videocam</span>
         <span id="camCount">13</span>
       </div>
       <div class="stat-item red">
-        <span class="material-icons">warning</span>
+        <span class="material-icons" style="font-size: 16px;">warning</span>
         <span id="incidentCount">0</span>
       </div>
       <div class="stat-item white">
-        <span class="material-icons">schedule</span>
-        <span id="liveTime">--:--:--</span>
+        <span class="material-icons" style="font-size: 16px;">schedule</span>
+        <span id="liveTime">--:--</span>
       </div>
-    </div>
-  </div>
-
-  <!-- GitHub Pages Guide -->
-  <div id="githubGuide" class="github-guide">
-    <div class="github-guide-title">🌐 Connexion GitHub Pages</div>
-    <div class="github-guide-status">
-      <span>📡 Statut: </span><span id="githubStatus">Test des proxys...</span>
-    </div>
-    <div class="proxy-buttons-container" id="proxyButtonsContainer">
-      <button class="proxy-btn" onclick="forceProxy(0)">P1</button>
-      <button class="proxy-btn" onclick="forceProxy(1)">P2</button>
-      <button class="proxy-btn" onclick="forceProxy(2)">P3</button>
-      <button class="proxy-btn" onclick="forceProxy(3)">P4</button>
-      <button class="proxy-btn" onclick="forceProxy(4)">P5</button>
-      <button class="proxy-btn" onclick="forceProxy(5)">P6</button>
-    </div>
-    <div style="margin-top: 5px;">
-      <a href="https://cors-anywhere.herokuapp.com/corsdemo" target="_blank" class="github-link">🔓 Activer CORS Anywhere</a>
-    </div>
-    <div style="margin-top: 5px;">
-      <a href="#" onclick="manualTest()" class="github-link">🔄 Test manuel</a>
-    </div>
-  </div>
-
-  <!-- Connection Status -->
-  <div id="connectionStatus" class="connection-status">
-    <div>🖥️ Serveur: <span id="serverIP" class="ip-address">192.168.1.17:3000</span></div>
-    <div>📡 Statut: <span id="apiStatus">⏳ Vérification...</span></div>
-    <div style="font-size:0.8em; margin-top:5px;">
-      <a href="#" onclick="window.testConnection()" style="color: #ED2939;">Tester la connexion</a>
     </div>
   </div>
 
@@ -1071,8 +906,8 @@
     <div class="webcam-section">
       <div class="webcam-header">
         <div class="webcam-title">
-          <span class="material-icons">live_tv</span>
-          <span id="webcamName">WEBCAM D.E.E.R.</span>
+          <span class="material-icons" style="font-size: 16px;">live_tv</span>
+          <span id="webcamName">WEBCAM</span>
         </div>
         <div class="live-indicator">
           <span class="live-dot"></span>
@@ -1083,7 +918,7 @@
       <div class="webcam-container">
         <div class="loading-overlay" id="loadingOverlay">
           <div class="spinner"></div>
-          <div style="color: #ffffff; font-weight: bold;">Chargement...</div>
+          <div style="color: #ffffff; font-weight: bold; font-size: 0.9em;">Chargement...</div>
         </div>
         <img id="webcamImage" alt="Webcam D.E.E.R." style="display: none;">
         
@@ -1102,20 +937,20 @@
 
       <div class="webcam-controls">
         <button class="btn" id="prevBtn">
-          <span class="material-icons">chevron_left</span>
-          PRÉC.
+          <span class="material-icons" style="font-size: 16px;">chevron_left</span>
+          PRÉC
         </button>
         <button class="btn" id="refreshBtn">
-          <span class="material-icons">refresh</span>
-          ACTU.
+          <span class="material-icons" style="font-size: 16px;">refresh</span>
+          ACTU
         </button>
         <button class="btn" id="fullscreenBtn">
-          <span class="material-icons">fullscreen</span>
-          PLEIN ÉCRAN
+          <span class="material-icons" style="font-size: 16px;">fullscreen</span>
+          PLEIN
         </button>
         <button class="btn" id="nextBtn">
-          SUIV.
-          <span class="material-icons">chevron_right</span>
+          SUIV
+          <span class="material-icons" style="font-size: 16px;">chevron_right</span>
         </button>
       </div>
     </div>
@@ -1123,35 +958,18 @@
     <!-- Sidebar -->
     <div class="sidebar">
       <div class="sidebar-header">
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <span class="material-icons">info</span>
+        <div style="display: flex; align-items: center; gap: 5px;">
+          <span class="material-icons" style="font-size: 16px;">info</span>
           <span>INFOS TRAFIC</span>
         </div>
         <input type="text" class="search-box" id="searchInput" placeholder="Rechercher...">
-      </div>
-
-      <!-- Proxy Buttons -->
-      <div class="proxy-buttons">
-        <button class="btn small" onclick="window.forceProxy(0)">P1</button>
-        <button class="btn small" onclick="window.forceProxy(1)">P2</button>
-        <button class="btn small" onclick="window.forceProxy(2)">P3</button>
-        <button class="btn small" onclick="window.forceProxy(3)">P4</button>
-        <button class="btn small" onclick="window.forceProxy(4)">P5</button>
-        <button class="btn small" onclick="window.forceProxy(5)">P6</button>
-      </div>
-
-      <!-- Debug Buttons -->
-      <div class="debug-buttons">
-        <button class="btn small warning" onclick="window.debugIncidents()">🔍 Debug</button>
-        <button class="btn small" onclick="window.showRawData()">📦 Raw</button>
-        <button class="btn small" onclick="window.fixDisplay()">🛠️ Fix</button>
       </div>
 
       <!-- Category Filters -->
       <div class="category-filters" id="categoryFilters"></div>
 
       <div class="sidebar-tabs">
-        <button class="tab active" onclick="window.switchTab('incidents')">⚠️ INCIDENTS</button>
+        <button class="tab active" onclick="window.switchTab('incidents')">⚠️ INCID</button>
         <button class="tab" onclick="window.switchTab('stats')">📊 STATS</button>
         <button class="tab" onclick="window.switchTab('webcams')">📹 WEBCAMS</button>
       </div>
@@ -1169,21 +987,11 @@
 
   <!-- Footer -->
   <div class="footer">
-    <div class="sources">
-      <div class="source-item">
-        <span>📹</span>
-        <a href="https://www.infotrafic.re" target="_blank">D.E.E.R.</a>
-      </div>
-      <div class="source-item">
-        <span>🚦</span>
-        <a href="#" target="_blank">API</a>
-      </div>
-      <div class="source-item">
-        <span>⚠️</span>
-        <a href="#" onclick="window.testConnection()" style="color: #ED2939;">Tester</a>
-      </div>
+    <div class="source-item">
+      <span>📹</span>
+      <a href="https://www.infotrafic.re" target="_blank">D.E.E.R.</a>
     </div>
-    <div class="last-update" id="lastUpdate">--:--:--</div>
+    <div class="last-update" id="lastUpdate">--:--</div>
   </div>
 
   <!-- Scripts -->
@@ -1194,50 +1002,33 @@
       'use strict';
 
       // ============================================
-      // CONFIGURATION SPÉCIALE GITHUB PAGES
+      // CONFIGURATION HTTPS (via CADDY)
       // ============================================
       
-      // Détection automatique de l'environnement
-      const isGitHubPages = window.location.hostname.includes('github.io');
-      const LOCAL_API = 'http://192.168.1.17:3000/api';
+      // URL de l'API via Caddy (HTTPS)
+      const API_URL = 'https://192.168.1.17:3443/api';
       
-      // Proxys CORS gratuits (ordonnés par fiabilité)
-      const PROXIES = [
-        'https://corsproxy.io/?',
-        'https://api.allorigins.win/raw?url=',
-        'https://cors-anywhere.herokuapp.com/',
-        'https://thingproxy.freeboard.io/fetch/',
-        'https://proxy.cors.sh/',
-        'https://cors.eu.org/'
-      ];
-      
-      let API_BASE = LOCAL_API;
-      let useProxy = false;
-      let currentProxy = 0;
+      // L'URL de base est toujours la même
+      const API_BASE = API_URL;
 
       // ============================================
-      // WEBCAMS AVEC PROXY
+      // WEBCAMS
       // ============================================
-      const IMAGE_PROXIES = [
-        'https://corsproxy.io/?',
-        'https://api.allorigins.win/raw?url=',
-        'https://cors-anywhere.herokuapp.com/'
-      ];
       
       const WEBCAMS = [
-        { id: 'dec_04', name: 'RN2 Sainte-Marie - Duparc', originalUrl: 'https://www.infotrafic.re/CAM/dec_04.jpeg', coords: [-20.8969, 55.5501], zone: 'Nord', desc: 'Sainte-Marie' },
-        { id: 'dec_14', name: 'RN1 Saint-Denis - Potences', originalUrl: 'https://www.infotrafic.re/CAM/dec_14.jpeg', coords: [-20.8821, 55.4503], zone: 'Nord', desc: 'Saint-Denis' },
-        { id: 'dec_15', name: 'RN1 - La Grande Chaloupe', originalUrl: 'https://www.infotrafic.re/CAM/dec_15.jpeg', coords: [-20.9067, 55.3982], zone: 'Nord-Ouest', desc: 'Grande Chaloupe' },
-        { id: 'dec_02', name: 'RN1 Le Port - Sacré Cœur', originalUrl: 'https://www.infotrafic.re/CAM/dec_02.jpeg', coords: [-20.9367, 55.2961], zone: 'Ouest', desc: 'Le Port' },
-        { id: 'dec_16', name: 'RN1 Saint-Paul - Bellemène', originalUrl: 'https://www.infotrafic.re/CAM/dec_16.jpeg', coords: [-20.9967, 55.2821], zone: 'Ouest', desc: 'Saint-Paul' },
-        { id: 'dec_09', name: 'RN1 Saint-Paul - Tranchée', originalUrl: 'https://www.infotrafic.re/CAM/dec_09.jpeg', coords: [-21.0034, 55.2756], zone: 'Ouest', desc: 'Saint-Paul' },
-        { id: 'dec_17', name: 'RN1 - Plateau Caillou', originalUrl: 'https://www.infotrafic.re/CAM/dec_17.jpeg', coords: [-21.0189, 55.2698], zone: 'Ouest', desc: 'Plateau Caillou' },
-        { id: 'dec_18', name: 'RN1 - Éperon', originalUrl: 'https://www.infotrafic.re/CAM/dec_18.jpeg', coords: [-21.0312, 55.2645], zone: 'Ouest', desc: 'Éperon' },
-        { id: 'dec_10', name: 'RN1 - Ravine 3 Bassins', originalUrl: 'https://www.infotrafic.re/CAM/dec_10.jpeg', coords: [-21.0812, 55.2598], zone: 'Ouest', desc: 'Trois Bassins' },
-        { id: 'dec_11', name: 'RN1 Saint-Leu - Ravine Fontaine', originalUrl: 'https://www.infotrafic.re/CAM/dec_11.jpeg', coords: [-21.1534, 55.2789], zone: 'Ouest', desc: 'Saint-Leu' },
-        { id: 'dec_12', name: 'RN1 Saint-Pierre - Pierrefonds', originalUrl: 'https://www.infotrafic.re/CAM/dec_12.jpeg', coords: [-21.2867, 55.4212], zone: 'Sud', desc: 'Saint-Pierre' },
-        { id: 'dec_13', name: 'RN3 Saint-Pierre - Azalées', originalUrl: 'https://www.infotrafic.re/CAM/dec_13.jpeg', coords: [-21.3124, 55.4678], zone: 'Sud', desc: 'Azalées' },
-        { id: 'dec_05', name: 'RN2 Saint-Pierre - Anse Les Bas', originalUrl: 'https://www.infotrafic.re/CAM/dec_05.jpeg', coords: [-21.3345, 55.4789], zone: 'Sud', desc: 'Anse Les Bas' }
+        { id: 'dec_04', name: 'RN2 Sainte-Marie - Duparc', url: 'https://www.infotrafic.re/CAM/dec_04.jpeg', coords: [-20.8969, 55.5501], zone: 'Nord', desc: 'Sainte-Marie' },
+        { id: 'dec_14', name: 'RN1 Saint-Denis - Potences', url: 'https://www.infotrafic.re/CAM/dec_14.jpeg', coords: [-20.8821, 55.4503], zone: 'Nord', desc: 'Saint-Denis' },
+        { id: 'dec_15', name: 'RN1 - La Grande Chaloupe', url: 'https://www.infotrafic.re/CAM/dec_15.jpeg', coords: [-20.9067, 55.3982], zone: 'Nord-Ouest', desc: 'Grande Chaloupe' },
+        { id: 'dec_02', name: 'RN1 Le Port - Sacré Cœur', url: 'https://www.infotrafic.re/CAM/dec_02.jpeg', coords: [-20.9367, 55.2961], zone: 'Ouest', desc: 'Le Port' },
+        { id: 'dec_16', name: 'RN1 Saint-Paul - Bellemène', url: 'https://www.infotrafic.re/CAM/dec_16.jpeg', coords: [-20.9967, 55.2821], zone: 'Ouest', desc: 'Saint-Paul' },
+        { id: 'dec_09', name: 'RN1 Saint-Paul - Tranchée', url: 'https://www.infotrafic.re/CAM/dec_09.jpeg', coords: [-21.0034, 55.2756], zone: 'Ouest', desc: 'Saint-Paul' },
+        { id: 'dec_17', name: 'RN1 - Plateau Caillou', url: 'https://www.infotrafic.re/CAM/dec_17.jpeg', coords: [-21.0189, 55.2698], zone: 'Ouest', desc: 'Plateau Caillou' },
+        { id: 'dec_18', name: 'RN1 - Éperon', url: 'https://www.infotrafic.re/CAM/dec_18.jpeg', coords: [-21.0312, 55.2645], zone: 'Ouest', desc: 'Éperon' },
+        { id: 'dec_10', name: 'RN1 - Ravine 3 Bassins', url: 'https://www.infotrafic.re/CAM/dec_10.jpeg', coords: [-21.0812, 55.2598], zone: 'Ouest', desc: 'Trois Bassins' },
+        { id: 'dec_11', name: 'RN1 Saint-Leu - Ravine Fontaine', url: 'https://www.infotrafic.re/CAM/dec_11.jpeg', coords: [-21.1534, 55.2789], zone: 'Ouest', desc: 'Saint-Leu' },
+        { id: 'dec_12', name: 'RN1 Saint-Pierre - Pierrefonds', url: 'https://www.infotrafic.re/CAM/dec_12.jpeg', coords: [-21.2867, 55.4212], zone: 'Sud', desc: 'Saint-Pierre' },
+        { id: 'dec_13', name: 'RN3 Saint-Pierre - Azalées', url: 'https://www.infotrafic.re/CAM/dec_13.jpeg', coords: [-21.3124, 55.4678], zone: 'Sud', desc: 'Azalées' },
+        { id: 'dec_05', name: 'RN2 Saint-Pierre - Anse Les Bas', url: 'https://www.infotrafic.re/CAM/dec_05.jpeg', coords: [-21.3345, 55.4789], zone: 'Sud', desc: 'Anse Les Bas' }
       ];
 
       // ============================================
@@ -1283,203 +1074,40 @@
         fullscreenBtn: document.getElementById('fullscreenBtn'),
         searchInput: document.getElementById('searchInput'),
         tabContent: document.getElementById('tabContent'),
-        categoryFilters: document.getElementById('categoryFilters'),
-        apiStatus: document.getElementById('apiStatus'),
-        serverIP: document.getElementById('serverIP'),
-        connectionStatus: document.getElementById('connectionStatus'),
-        githubStatus: document.getElementById('githubStatus'),
-        githubGuide: document.getElementById('githubGuide')
+        categoryFilters: document.getElementById('categoryFilters')
       };
 
-      // Afficher le guide uniquement sur GitHub Pages
-      if (isGitHubPages) {
-        elements.githubGuide.classList.add('visible');
-        console.log('🌐 Site déployé sur GitHub Pages');
-        console.log('🔒 Mode HTTPS actif - Utilisation des proxys CORS');
-      }
-
       // ============================================
-      // FONCTIONS DE TEST PROXY
+      // TEST DE CONNEXION (silencieux)
       // ============================================
-      async function testProxy(proxyUrl) {
-        const testUrl = proxyUrl + encodeURIComponent(LOCAL_API + '/health');
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-        
+      async function testConnection() {
         try {
-          console.log(`🔄 Test proxy: ${proxyUrl}`);
-          
-          const response = await fetch(testUrl, { 
-            signal: controller.signal,
+          const response = await fetch(`${API_BASE}/health`, {
             mode: 'cors',
-            headers: { 
-              'Accept': 'application/json',
-              'Origin': window.location.origin 
-            }
+            timeout: 5000
           });
-          
-          clearTimeout(timeoutId);
           
           if (response.ok) {
             const data = await response.json();
             if (data.success) {
-              console.log(`✅ Proxy OK: ${proxyUrl}`);
+              console.log('✅ Connecté à l\'API');
+              await loadAllData();
               return true;
             }
           }
-        } catch (e) {
-          console.log(`❌ Proxy failed: ${proxyUrl} (${e.message})`);
+          throw new Error('Erreur de connexion');
+        } catch (error) {
+          console.error('❌ Erreur de connexion:', error);
+          return false;
         }
-        return false;
-      }
-
-      window.forceProxy = async function(proxyIndex) {
-        if (proxyIndex >= 0 && proxyIndex < PROXIES.length) {
-          elements.apiStatus.innerHTML = `⏳ Forçage proxy ${proxyIndex+1}...`;
-          if (elements.githubStatus) {
-            elements.githubStatus.innerHTML = `Test proxy ${proxyIndex+1}/${PROXIES.length}`;
-          }
-          
-          const works = await testProxy(PROXIES[proxyIndex]);
-          
-          if (works) {
-            useProxy = true;
-            currentProxy = proxyIndex;
-            API_BASE = PROXIES[currentProxy] + encodeURIComponent(LOCAL_API);
-            elements.apiStatus.innerHTML = '✅ Connecté (proxy)';
-            elements.apiStatus.style.color = '#00ff00';
-            elements.serverIP.innerHTML = '192.168.1.17:3000 (proxy)';
-            if (elements.githubStatus) {
-              elements.githubStatus.innerHTML = '✅ Connecté via proxy';
-            }
-            await loadAllData();
-          } else {
-            elements.apiStatus.innerHTML = '❌ Proxy indisponible';
-            if (elements.githubStatus) {
-              elements.githubStatus.innerHTML = `❌ Proxy ${proxyIndex+1} indisponible`;
-            }
-          }
-        }
-      };
-
-      // ============================================
-      // TEST MANUEL
-      // ============================================
-      window.manualTest = async function() {
-        elements.apiStatus.innerHTML = '⏳ Test manuel...';
-        if (elements.githubStatus) {
-          elements.githubStatus.innerHTML = '⏳ Test manuel en cours...';
-        }
-        
-        for (let i = 0; i < PROXIES.length; i++) {
-          elements.apiStatus.innerHTML = `⏳ Test proxy ${i+1}/${PROXIES.length}...`;
-          if (elements.githubStatus) {
-            elements.githubStatus.innerHTML = `⏳ Test proxy ${i+1}/${PROXIES.length}`;
-          }
-          
-          const works = await testProxy(PROXIES[i]);
-          if (works) {
-            useProxy = true;
-            currentProxy = i;
-            API_BASE = PROXIES[i] + encodeURIComponent(LOCAL_API);
-            elements.apiStatus.innerHTML = '✅ Connecté (proxy)';
-            elements.apiStatus.style.color = '#00ff00';
-            elements.serverIP.innerHTML = '192.168.1.17:3000 (proxy)';
-            if (elements.githubStatus) {
-              elements.githubStatus.innerHTML = '✅ Connecté via proxy';
-            }
-            await loadAllData();
-            return true;
-          }
-        }
-        
-        elements.apiStatus.innerHTML = '❌ Aucun proxy disponible';
-        if (elements.githubStatus) {
-          elements.githubStatus.innerHTML = '❌ Aucun proxy disponible';
-        }
-        return false;
-      };
-
-      // ============================================
-      // INITIALISATION API
-      // ============================================
-      async function initAPI() {
-        const statusElement = elements.apiStatus;
-        const ipElement = elements.serverIP;
-        
-        statusElement.innerHTML = '⏳ Test direct...';
-        ipElement.innerHTML = '192.168.1.17:3000';
-        
-        try {
-          // Test direct (ne fonctionnera que localement)
-          const directTest = await fetch(LOCAL_API + '/health', { 
-            mode: 'cors',
-            timeout: 3000 
-          });
-          
-          if (directTest.ok) {
-            const data = await directTest.json();
-            if (data.success) {
-              statusElement.innerHTML = '✅ Connecté (direct)';
-              statusElement.style.color = '#00ff00';
-              API_BASE = LOCAL_API;
-              useProxy = false;
-              return true;
-            }
-          }
-        } catch (e) {
-          console.log('ℹ️ Direct connection testé' + (isGitHubPages ? ' (bloqué sur GitHub Pages)' : ''));
-        }
-        
-        // Test des proxys
-        statusElement.innerHTML = '⏳ Test proxys...';
-        if (elements.githubStatus) {
-          elements.githubStatus.innerHTML = '⏳ Test proxys...';
-        }
-        
-        for (let i = 0; i < PROXIES.length; i++) {
-          statusElement.innerHTML = `⏳ Proxy ${i+1}/${PROXIES.length}...`;
-          if (elements.githubStatus) {
-            elements.githubStatus.innerHTML = `⏳ Proxy ${i+1}/${PROXIES.length}...`;
-          }
-          
-          if (await testProxy(PROXIES[i])) {
-            statusElement.innerHTML = '✅ Connecté (proxy)';
-            statusElement.style.color = '#00ff00';
-            ipElement.innerHTML = '192.168.1.17:3000 (via proxy)';
-            if (elements.githubStatus) {
-              elements.githubStatus.innerHTML = '✅ Connecté via proxy';
-            }
-            useProxy = true;
-            currentProxy = i;
-            API_BASE = PROXIES[i] + encodeURIComponent(LOCAL_API);
-            return true;
-          }
-        }
-        
-        // Fallback
-        statusElement.innerHTML = '⚠️ Mode démo';
-        statusElement.style.color = '#FFA500';
-        if (elements.githubStatus) {
-          elements.githubStatus.innerHTML = '⚠️ Mode démo (cliquez sur un proxy)';
-        }
-        return false;
       }
 
       // ============================================
-      // FONCTION DE FETCH AVEC PROXY
+      // FONCTION DE FETCH
       // ============================================
       async function apiFetch(endpoint) {
-        let url;
-        
-        if (useProxy) {
-          url = PROXIES[currentProxy] + encodeURIComponent(LOCAL_API + '/' + endpoint);
-        } else {
-          url = LOCAL_API + '/' + endpoint;
-        }
-        
         try {
-          const response = await fetch(url, {
+          const response = await fetch(`${API_BASE}/${endpoint}`, {
             mode: 'cors',
             headers: { 'Accept': 'application/json' }
           });
@@ -1498,7 +1126,7 @@
       // DONNÉES DE FALLBACK
       // ============================================
       function getFallbackData(endpoint) {
-        const now = new Date().toLocaleTimeString('fr-FR');
+        const now = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
         
         const fallback = {
           health: { success: true, status: 'OK' },
@@ -1513,9 +1141,9 @@
           },
           accident: [
             { 
-              title: 'Accident RN1 Cambaie', 
-              description: 'Deux véhicules impliqués', 
-              location: 'Cambaie, Saint-Paul', 
+              title: 'Accident RN1', 
+              description: 'Deux véhicules', 
+              location: 'Cambaie', 
               road: 'RN1',
               time: now,
               coordinates: [-20.9453, 55.2987],
@@ -1524,8 +1152,8 @@
           ],
           roadworks: [
             { 
-              title: 'Travaux tunnel Grande Chaloupe', 
-              description: 'Fermeture nocturne 20h-5h', 
+              title: 'Travaux tunnel', 
+              description: 'Fermeture 20h-5h', 
               location: 'Grande Chaloupe', 
               road: 'RN1',
               time: '20h-5h',
@@ -1539,50 +1167,8 @@
       }
 
       // ============================================
-      // FONCTIONS DE DÉBOGAGE
-      // ============================================
-      window.debugIncidents = function() {
-        console.log('🔍 DÉBOGAGE INCIDENTS');
-        console.log('=====================');
-        console.log('📊 allIncidents:', allIncidents);
-        
-        let total = 0;
-        CATEGORIES.forEach(cat => {
-          const incidents = allIncidents[cat.id] || [];
-          console.log(`📁 ${cat.name}: ${incidents.length} incidents`);
-          if (incidents.length > 0) {
-            console.log(`   Premier incident:`, incidents[0]);
-            console.log(`   Clés disponibles:`, Object.keys(incidents[0]));
-          }
-          total += incidents.length;
-        });
-        
-        console.log(`📈 TOTAL: ${total} incidents`);
-        return total;
-      };
-
-      window.showRawData = function() {
-        console.log('📦 DONNÉES BRUTES');
-        console.log('=================');
-        console.log(JSON.stringify(allIncidents, null, 2));
-      };
-
-      window.fixDisplay = function() {
-        console.log('🛠️ FORCE L\'AFFICHAGE');
-        if (document.querySelector('.tab.active').textContent.includes('INCIDENTS')) {
-          displayAllIncidents();
-        }
-        updateIncidentMarkers();
-      };
-
-      // ============================================
       // CHARGEMENT DES DONNÉES
       // ============================================
-      window.testConnection = async function() {
-        await initAPI();
-        await loadAllData();
-      };
-
       async function loadAllData() {
         try {
           const data = await apiFetch('all');
@@ -1622,25 +1208,21 @@
                 }
                 
                 return {
-                  title: item.unique_disruption_number || 'Donnée trafic',
+                  title: item.unique_disruption_number || 'Trafic',
                   description: description,
                   location: item.address && item.address !== 'nil' ? item.address : 'La Réunion',
-                  time: new Date().toLocaleTimeString('fr-FR'),
+                  time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
                   coordinates: [lat, lng],
                   source: item.source || 'Labocom',
                   color: color,
                   speed: speed
                 };
               });
-              console.log(`✅ ${allIncidents.trafficolor.length} données trafic chargées`);
-            }
-            
-            if (data.data.webcam && Array.isArray(data.data.webcam)) {
-              allIncidents.webcam = data.data.webcam;
+              console.log(`✅ ${allIncidents.trafficolor.length} données trafic`);
             }
             
             CATEGORIES.forEach(cat => {
-              if (cat.id !== 'trafficolor' && cat.id !== 'webcam' && !allIncidents[cat.id]) {
+              if (cat.id !== 'trafficolor' && !allIncidents[cat.id]) {
                 allIncidents[cat.id] = [];
               }
             });
@@ -1657,11 +1239,11 @@
           
           updateIncidentMarkers();
           
-          if (document.querySelector('.tab.active').textContent.includes('INCIDENTS')) {
+          if (document.querySelector('.tab.active').textContent.includes('INCID')) {
             displayAllIncidents();
           }
           
-          elements.lastUpdate.textContent = `Màj: ${new Date().toLocaleTimeString('fr-FR')}`;
+          elements.lastUpdate.textContent = `${new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
           
         } catch (error) {
           console.error('❌ Erreur chargement:', error);
@@ -1677,13 +1259,13 @@
 
         currentIndex = index;
         
-        elements.webcamName.textContent = cam.name.toUpperCase();
-        elements.locationDisplay.textContent = `📍 ${cam.name}`;
+        elements.webcamName.textContent = cam.name.substring(0, 20) + '...';
+        elements.locationDisplay.textContent = `📍 ${cam.desc}`;
         elements.zoneDisplay.textContent = `Zone: ${cam.zone}`;
         elements.loadingOverlay.style.display = 'flex';
         elements.webcamImage.style.display = 'none';
 
-        const imageUrl = cam.originalUrl + '?t=' + Date.now();
+        const imageUrl = cam.url + '?t=' + Date.now();
         
         const img = new Image();
         img.onload = () => {
@@ -1697,9 +1279,9 @@
         img.onerror = () => {
           elements.loadingOverlay.innerHTML = `
             <div style="text-align:center;">
-              <span class="material-icons" style="font-size:48px; color:#ED2939;">videocam_off</span>
-              <p style="margin-top:10px; color:#ffffff;">Webcam indisponible</p>
-              <button onclick="loadWebcam(${index})" style="margin-top:10px; padding:5px 15px; background:#002654; color:white; border:2px solid white; cursor:pointer;">Réessayer</button>
+              <span class="material-icons" style="font-size:36px; color:#ED2939;">videocam_off</span>
+              <p style="margin-top:5px; color:#ffffff; font-size:0.8em;">Indisponible</p>
+              <button onclick="loadWebcam(${index})" style="margin-top:5px; padding:3px 8px; background:#002654; color:white; border:1px solid white; cursor:pointer; font-size:0.7em;">Réessayer</button>
             </div>
           `;
         };
@@ -1723,7 +1305,7 @@
         if (incidents.length > 0) {
           displayIncidentsByCategory(category, incidents);
         } else {
-          elements.tabContent.innerHTML = `<div style="text-align: center; padding: 20px; color: #ED2939;">Aucun incident</div>`;
+          elements.tabContent.innerHTML = `<div style="text-align: center; padding: 15px; color: #ED2939; font-size:0.8em;">Aucun incident</div>`;
         }
         
         document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
@@ -1739,7 +1321,7 @@
         Object.keys(allIncidents).forEach(key => {
           const incidents = allIncidents[key];
           
-          if (Array.isArray(incidents) && incidents.length > 0 && key !== 'webcam') {
+          if (Array.isArray(incidents) && incidents.length > 0) {
             const cat = CATEGORIES.find(c => c.id === key) || { 
               id: key, 
               name: key.replace('_', ' '), 
@@ -1758,10 +1340,10 @@
               html += `
                 <div class="incident-card ${cat.id}" onclick="focusLocation(${inc.coordinates[0]}, ${inc.coordinates[1]})">
                   <div class="incident-title">
-                    <span class="material-icons">${cat.icon}</span>
+                    <span class="material-icons" style="font-size:16px;">${cat.icon}</span>
                     ${inc.title || 'Incident'}
                   </div>
-                  <div class="incident-desc">${description}</div>
+                  <div class="incident-desc">${description.substring(0, 50)}</div>
                   <div class="incident-meta">
                     <span>📍 ${inc.location || 'La Réunion'}</span>
                     <span>🕒 ${inc.time || ''}</span>
@@ -1773,9 +1355,7 @@
         });
         
         if (total === 0) {
-          html += '<div style="text-align: center; padding: 20px; color: #ED2939;">Aucun incident signalé</div>';
-        } else {
-          console.log(`✅ ${total} incidents affichés`);
+          html += '<div style="text-align: center; padding: 15px; color: #ED2939; font-size:0.8em;">Aucun incident</div>';
         }
         
         html += '</div>';
@@ -1784,7 +1364,7 @@
 
       function displayIncidentsByCategory(categoryId, incidents) {
         const cat = CATEGORIES.find(c => c.id === categoryId);
-        let html = `<h3 style="color: ${cat.color}; margin-bottom: 15px; font-size:0.9em;">${cat.name}</h3>`;
+        let html = `<h3 style="color: ${cat.color}; margin-bottom: 10px; font-size:0.8em;">${cat.name}</h3>`;
         html += '<div class="incident-list">';
         
         incidents.forEach(inc => {
@@ -1796,10 +1376,10 @@
           html += `
             <div class="incident-card ${categoryId}" onclick="focusLocation(${inc.coordinates[0]}, ${inc.coordinates[1]})">
               <div class="incident-title">
-                <span class="material-icons">${cat.icon}</span>
+                <span class="material-icons" style="font-size:16px;">${cat.icon}</span>
                 ${inc.title || 'Incident'}
               </div>
-              <div class="incident-desc">${description}</div>
+              <div class="incident-desc">${description.substring(0, 50)}</div>
               <div class="incident-meta">
                 <span>📍 ${inc.location || 'La Réunion'}</span>
                 <span>🕒 ${inc.time || ''}</span>
@@ -1821,16 +1401,16 @@
             
             const statsToShow = {
               trafficolor: 'Trafic',
-              accident: 'Accidents',
-              traffic_jam: 'Bouchons',
-              roadworks: 'Travaux',
-              serious_hazard: 'Dangers',
-              hazard: 'Dangers',
-              roadclosure: 'Fermetures',
-              flood: 'Inondations',
-              market: 'Marchés',
-              local_event: 'Événements',
-              animal: 'Animaux'
+              accident: 'Accid',
+              traffic_jam: 'Bouch',
+              roadworks: 'Trav',
+              serious_hazard: 'Dang',
+              hazard: 'Dang',
+              roadclosure: 'Ferm',
+              flood: 'Inon',
+              market: 'Marché',
+              local_event: 'Event',
+              animal: 'Anim'
             };
             
             Object.entries(statsToShow).forEach(([key, label]) => {
@@ -1847,14 +1427,14 @@
             });
             
             html += '</div>';
-            html += `<div style="text-align: center; margin-top: 20px;">
-              <span style="color: #ED2939; font-size: 1.2em;">Total: ${data.total || 0}</span>
+            html += `<div style="text-align: center; margin-top: 10px;">
+              <span style="color: #ED2939; font-size: 0.9em;">Total: ${data.total || 0}</span>
             </div>`;
             
             elements.tabContent.innerHTML = html;
           }
         } catch (error) {
-          elements.tabContent.innerHTML = '<div style="text-align: center; padding: 20px; color: #ED2939;">Erreur stats</div>';
+          elements.tabContent.innerHTML = '<div style="text-align: center; padding: 15px; color: #ED2939;">Erreur stats</div>';
         }
       }
 
@@ -1883,12 +1463,12 @@
           const marker = L.marker(cam.coords, {
             icon: L.divIcon({
               className: 'map-marker',
-              html: `<div style="background: linear-gradient(135deg, #002654 0%, #ffffff 50%, #ED2939 100%); width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px #ffffff;"></div>`,
-              iconSize: [12, 12]
+              html: `<div style="background: linear-gradient(135deg, #002654 0%, #ffffff 50%, #ED2939 100%); width: 10px; height: 10px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 8px #ffffff;"></div>`,
+              iconSize: [10, 10]
             })
           }).addTo(map);
 
-          marker.bindPopup(`<b>📹 ${cam.name}</b><br>Zone: ${cam.zone}`);
+          marker.bindPopup(`<b>📹 ${cam.desc}</b><br>${cam.zone}`);
           marker.on('click', () => {
             currentIndex = index;
             loadWebcam(currentIndex);
@@ -1909,7 +1489,7 @@
         Object.keys(allIncidents).forEach(key => {
           const incidents = allIncidents[key];
           
-          if (Array.isArray(incidents) && key !== 'webcam') {
+          if (Array.isArray(incidents) && incidents.length > 0) {
             const cat = CATEGORIES.find(c => c.id === key) || { 
               id: key, 
               color: '#888', 
@@ -1926,15 +1506,15 @@
                   const marker = L.marker([lat, lng], {
                     icon: L.divIcon({
                       className: 'map-marker',
-                      html: `<span class="material-icons" style="color: ${markerColor}; font-size: 20px; filter: drop-shadow(0 0 10px ${markerColor});">${cat.icon}</span>`,
-                      iconSize: [20, 20]
+                      html: `<span class="material-icons" style="color: ${markerColor}; font-size: 18px; filter: drop-shadow(0 0 8px ${markerColor});">${cat.icon}</span>`,
+                      iconSize: [18, 18]
                     })
                   }).addTo(map);
 
                   let popupContent = `<b style="color: ${cat.color};">${cat.name || key}</b><br>`;
                   popupContent += `<strong>${inc.title || 'Incident'}</strong><br>`;
                   if (inc.description) popupContent += `${inc.description}<br>`;
-                  if (inc.speed) popupContent += `🚗 Vitesse: ${inc.speed} km/h<br>`;
+                  if (inc.speed) popupContent += `🚗 ${inc.speed} km/h<br>`;
                   popupContent += `<small>📍 ${inc.location || 'La Réunion'}</small>`;
 
                   marker.bindPopup(popupContent);
@@ -1947,7 +1527,7 @@
           }
         });
         
-        console.log(`🗺️ ${totalMarkers} marqueurs ajoutés`);
+        console.log(`🗺️ ${totalMarkers} marqueurs`);
       }
 
       // ============================================
@@ -1992,8 +1572,8 @@
           html += `
             <div class="webcam-item ${index === currentIndex ? 'active' : ''}" onclick="selectWebcam(${index})">
               <div>
-                <div><strong style="color: #002654;">${cam.name}</strong></div>
-                <div style="font-size:0.8em; color:#ED2939; margin-top:5px;">${cam.desc}</div>
+                <div><strong style="color: #002654;">${cam.desc}</strong></div>
+                <div style="font-size:0.7em; color:#ED2939; margin-top:3px;">${cam.zone}</div>
               </div>
               <span class="zone-tag">${cam.zone}</span>
             </div>
@@ -2025,9 +1605,8 @@
           
           if (activeTab.includes('WEBCAMS')) {
             const filtered = WEBCAMS.filter(cam => 
-              cam.name.toLowerCase().includes(search) || 
-              cam.zone.toLowerCase().includes(search) ||
-              cam.desc.toLowerCase().includes(search)
+              cam.desc.toLowerCase().includes(search) || 
+              cam.zone.toLowerCase().includes(search)
             );
             
             let html = '<div class="webcam-list">';
@@ -2036,8 +1615,8 @@
               html += `
                 <div class="webcam-item ${originalIndex === currentIndex ? 'active' : ''}" onclick="selectWebcam(${originalIndex})">
                   <div>
-                    <div><strong style="color: #002654;">${cam.name}</strong></div>
-                    <div style="font-size:0.8em; color:#ED2939; margin-top:5px;">${cam.desc}</div>
+                    <div><strong style="color: #002654;">${cam.desc}</strong></div>
+                    <div style="font-size:0.7em; color:#ED2939; margin-top:3px;">${cam.zone}</div>
                   </div>
                   <span class="zone-tag">${cam.zone}</span>
                 </div>
@@ -2089,7 +1668,7 @@
         displayWebcamsList();
         createCategoryFilters();
         
-        await initAPI();
+        await testConnection();
         await loadAllData();
         
         setInterval(loadAllData, 60000);

@@ -1,13 +1,15 @@
-// server.js
+// server.js - Serveur d'incidents et statistiques en direct pour Infotrafic Réunion
+// Écoute sur le port 3000 (conformément à la configuration Caddy)
+// Génère des données réalistes pour La Réunion
+
 const express = require('express');
 const cors = require('cors');
 
 const app = express();
-const PORT = 3443; // Port utilisé dans l'URL de l'API
+const PORT = 3000; // Port attendu par le reverse_proxy de Caddy
 
-// Middleware
-app.use(cors()); // Permet les requêtes depuis n'importe quelle origine
-app.use(express.json());
+// Middleware CORS (peut être conservé, Caddy ajoute déjà les en-têtes)
+app.use(cors());
 
 // ============================================
 // GÉNÉRATEUR DE DONNÉES ALÉATOIRES (simule le direct)
@@ -216,10 +218,10 @@ app.get('/api/roadworks', (req, res) => {
 });
 
 // ============================================
-// LANCEMENT DU SERVEUR
+// LANCEMENT DU SERVEUR (écoute sur 0.0.0.0:3000)
 // ============================================
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Serveur d'infotrafic démarré sur https://192.168.1.17:${PORT}`);
+  console.log(`🚀 Serveur d'infotrafic démarré sur http://0.0.0.0:${PORT}`);
   console.log(`📡 Endpoints disponibles :`);
   console.log(`   - /api/health`);
   console.log(`   - /api/all`);

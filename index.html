@@ -2,576 +2,1744 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <title>Infotrafic Réunion - Données officielles en direct</title>
+  <title>Infotrafic Réunion — Temps réel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <meta name="description" content="Information routière officielle en temps réel à La Réunion - Webcams D.E.E.R., bouchons, travaux">
-  <meta name="theme-color" content="#002654">
+  <meta name="description" content="Information routière en temps réel à La Réunion">
+  <meta name="theme-color" content="#0B0D10">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Roboto Mono', monospace; background: #0a0a0a; color: #fff; min-height: 100vh; padding: 10px; overflow-x: hidden; }
-    .flag-bar { height: 4px; background: linear-gradient(90deg, #002654 0%, #002654 33.33%, #fff 33.33%, #fff 66.66%, #ED2939 66.66%, #ED2939 100%); margin-bottom: 10px; border-radius: 5px; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 12px 15px; background: linear-gradient(135deg, #002654 0%, #fff 50%, #ED2939 100%); border: 1px solid #fff; box-shadow: 0 0 20px rgba(255,255,255,0.3); border-radius: 10px; flex-wrap: wrap; gap: 10px; }
-    .logo { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .logo h1 { font-size: 1.3em; color: #fff; text-shadow: 2px 2px 0 #002654, -2px -2px 0 #ED2939; }
-    .badge { background: #fff; color: #002654; padding: 3px 10px; border-radius: 30px; font-weight: bold; font-size: 0.8em; border: 1px solid #ED2939; }
-    .stats { display: flex; gap: 10px; flex-wrap: wrap; }
-    .stat-item { display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 30px; font-size: 0.8em; backdrop-filter: blur(5px); }
-    .stat-item.blue { border: 1px solid #002654; color: #002654; background: rgba(255,255,255,0.9); }
-    .stat-item.red { border: 1px solid #ED2939; color: #ED2939; background: rgba(255,255,255,0.9); }
-    .stat-item.white { border: 1px solid #fff; color: #fff; background: rgba(0,0,0,0.5); }
-    .main-container { display: flex; gap: 15px; min-height: 400px; }
-    .webcam-section { flex: 2; display: flex; flex-direction: column; background: linear-gradient(145deg, #001a3a 0%, #fff 50%, #3a0f0f 100%); border: 2px solid #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 0 30px rgba(0,38,84,0.5); }
-    .webcam-header { padding: 12px; background: linear-gradient(90deg, #002654 0%, #fff 50%, #ED2939 100%); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-    .webcam-title { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #fff; text-shadow: 2px 2px 0 #002654; font-size: 0.9em; }
-    .live-indicator { display: flex; align-items: center; gap: 5px; background: rgba(0,0,0,0.5); padding: 4px 8px; border-radius: 30px; font-size: 0.75em; color: #fff; }
-    .live-dot { width: 8px; height: 8px; background: #ED2939; border-radius: 50%; animation: pulse 1s infinite; }
-    @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } }
-    .webcam-container { flex: 1; position: relative; background: #000; min-height: 180px; }
-    #webcamImage { width: 100%; height: 100%; object-fit: contain; display: none; }
-    .loading-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(0,38,84,0.9) 0%, rgba(255,255,255,0.9) 50%, rgba(237,41,57,0.9) 100%); display: flex; justify-content: center; align-items: center; flex-direction: column; gap: 10px; z-index: 10; text-align: center; padding: 15px; }
-    .spinner { width: 40px; height: 40px; border: 3px solid #fff; border-top-color: #002654; border-right-color: #ED2939; border-radius: 50%; animation: spin 1s linear infinite; }
-    @keyframes spin { 100% { transform: rotate(360deg); } }
-    .region-logo { position: absolute; bottom: 60px; right: 10px; z-index: 20; width: 70px; opacity: 0.9; transition: all 0.3s; pointer-events: none; filter: drop-shadow(0 0 5px rgba(255,255,255,0.8)); animation: logo-glow 2s infinite alternate; border-radius: 8px; background: rgba(255,255,255,0.1); padding: 3px; backdrop-filter: blur(2px); }
-    @keyframes logo-glow { 0% { filter: drop-shadow(0 0 5px rgba(255,255,255,0.7)); } 100% { filter: drop-shadow(0 0 10px rgba(255,255,255,1)) drop-shadow(0 0 15px rgba(255,255,255,0.7)); } }
-    .webcam-info { position: absolute; bottom: 10px; left: 10px; right: 10px; display: flex; justify-content: space-between; background: linear-gradient(90deg, #002654 0%, transparent 50%, #ED2939 100%); padding: 6px 10px; border: 1px solid #fff; border-radius: 5px; color: #fff; font-weight: bold; z-index: 15; font-size: 0.8em; flex-wrap: wrap; gap: 5px; }
-    .webcam-controls { padding: 12px; background: linear-gradient(145deg, #002654 0%, #fff 50%, #ED2939 100%); border-top: 1px solid #fff; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-    .btn { background: transparent; border: 2px solid #fff; color: #fff; padding: 6px 12px; cursor: pointer; font-family: inherit; font-size: 0.8em; transition: all 0.3s; display: flex; align-items: center; gap: 4px; font-weight: bold; text-shadow: 1px 1px 0 #002654; border-radius: 6px; }
-    .btn:hover { background: #fff; color: #002654; border-color: #ED2939; box-shadow: 0 0 20px #fff; }
-    .sidebar { flex: 1; display: flex; flex-direction: column; background: linear-gradient(145deg, #001a3a 0%, #fff 50%, #2a0a0a 100%); border: 2px solid #fff; border-radius: 10px; overflow: hidden; min-width: 280px; box-shadow: 0 0 30px rgba(237,41,57,0.3); }
-    .sidebar-header { padding: 12px; background: linear-gradient(90deg, #002654 0%, #fff 50%, #ED2939 100%); }
-    .sidebar-header span { color: #fff; font-weight: bold; text-shadow: 2px 2px 0 #002654; font-size: 0.9em; }
-    .search-box { width: 100%; padding: 8px; margin-top: 8px; background: rgba(255,255,255,0.9); border: 2px solid #002654; color: #002654; font-family: inherit; border-radius: 5px; font-weight: bold; font-size: 0.8em; }
-    .search-box::placeholder { color: #ED2939; }
-    .category-filters { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px; background: rgba(0,0,0,0.2); }
-    .category-btn { background: transparent; border: 1px solid #fff; color: #fff; padding: 4px 6px; border-radius: 20px; font-size: 0.6em; cursor: pointer; transition: all 0.3s; flex: 1 1 auto; min-width: 60px; }
-    .category-btn:hover { background: #ED2939; border-color: #ED2939; }
-    .category-btn.active { background: #002654; border-color: #002654; }
-    .sidebar-tabs { display: flex; border-bottom: 2px solid #fff; flex-wrap: wrap; }
-    .tab { flex: 1; padding: 10px 3px; text-align: center; background: none; border: none; color: #fff; cursor: pointer; font-family: inherit; transition: all 0.3s; font-size: 0.75em; font-weight: bold; text-shadow: 1px 1px 0 #002654; min-width: 70px; }
-    .tab.active { background: linear-gradient(90deg, #002654 0%, #ED2939 100%); color: #fff; }
-    .tab-content { flex: 1; overflow-y: auto; padding: 12px; max-height: 350px; }
-    .webcam-list { display: flex; flex-direction: column; gap: 8px; }
-    .webcam-item { background: linear-gradient(145deg, rgba(0,38,84,0.1) 0%, rgba(255,255,255,0.2) 50%, rgba(237,41,57,0.1) 100%); border: 1px solid #002654; padding: 8px; cursor: pointer; transition: all 0.3s; display: flex; justify-content: space-between; align-items: center; border-radius: 5px; font-size: 0.8em; }
-    .webcam-item:hover { transform: translateX(-3px); border-color: #ED2939; box-shadow: 0 0 10px #ED2939; }
-    .webcam-item.active { border: 2px solid #ED2939; background: linear-gradient(145deg, #002654 0%, #fff 50%, #ED2939 100%); }
-    .zone-tag { font-size: 0.65em; padding: 2px 5px; background: #002654; color: #fff; border-radius: 20px; white-space: nowrap; }
-    .incident-list { display: flex; flex-direction: column; gap: 8px; }
-    .incident-card { background: linear-gradient(145deg, rgba(0,38,84,0.2) 0%, rgba(255,255,255,0.3) 50%, rgba(237,41,57,0.2) 100%); border-left: 4px solid; padding: 8px; cursor: pointer; transition: all 0.3s; border-radius: 0 5px 5px 0; font-size: 0.8em; }
-    .incident-card.accident { border-left-color: #ED2939; }
-    .incident-card.traffic_jam { border-left-color: #FFA500; }
-    .incident-card.roadworks { border-left-color: #002654; }
-    .incident-card.trafficolor { border-left-color: #00CED1; }
-    .incident-card.hazard { border-left-color: #FF4500; }
-    .incident-card.roadclosure { border-left-color: #000000; }
-    .incident-card.flood { border-left-color: #00CED1; }
-    .incident-card.local_event { border-left-color: #9370DB; }
-    .incident-card.animal { border-left-color: #8B4513; }
-    .incident-card:hover { transform: translateX(-3px); box-shadow: 0 0 10px #fff; }
-    .incident-title { display: flex; align-items: center; gap: 5px; font-weight: bold; margin-bottom: 4px; color: #002654; font-size: 0.85em; flex-wrap: wrap; }
-    .incident-desc { color: #000; font-size: 0.8em; margin: 4px 0; line-height: 1.3; }
-    .incident-meta { display: flex; justify-content: space-between; color: #ED2939; font-size: 0.7em; margin-top: 5px; font-weight: bold; flex-wrap: wrap; gap: 5px; }
-    .incident-source { font-size: 0.6em; color: #002654; margin-top: 4px; font-style: italic; }
-    .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 15px; }
-    .stat-card { background: rgba(255,255,255,0.1); padding: 6px; border-radius: 5px; text-align: center; }
-    .stat-number { font-size: 1.1em; font-weight: bold; color: #ED2939; }
-    .stat-label { font-size: 0.6em; color: #fff; }
-    .map-container { margin-top: 15px; height: 200px; border: 3px solid #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 0 30px rgba(0,38,84,0.5); }
-    #map { height: 100%; width: 100%; }
-    .footer { margin-top: 15px; padding: 8px 15px; background: linear-gradient(90deg, #002654 0%, #fff 50%, #ED2939 100%); border-radius: 10px; display: flex; justify-content: space-between; align-items: center; color: #002654; font-weight: bold; flex-wrap: wrap; gap: 8px; font-size: 0.8em; }
-    .source-item { display: flex; align-items: center; gap: 5px; }
-    .source-item a { color: #002654; text-decoration: none; border-bottom: 1px dotted #ED2939; }
-    .source-item a:hover { color: #ED2939; }
-    .last-update { color: #ED2939; font-weight: bold; }
-    @media (max-width: 768px) {
-      body { padding: 8px; }
-      .main-container { flex-direction: column; height: auto; gap: 12px; }
-      .header { flex-direction: column; align-items: stretch; text-align: center; }
-      .logo { justify-content: center; }
-      .logo h1 { font-size: 1.1em; }
-      .stats { justify-content: center; width: 100%; }
-      .stat-item { flex: 1; justify-content: center; font-size: 0.7em; }
-      .webcam-section { min-height: 250px; }
-      .webcam-container { min-height: 150px; }
-      .region-logo { width: 50px; bottom: 50px; }
-      .webcam-info { font-size: 0.7em; padding: 5px 8px; }
-      .btn { padding: 5px 8px; font-size: 0.7em; flex: 1 1 auto; justify-content: center; }
-      .sidebar { min-width: 100%; }
-      .search-box { padding: 6px; font-size: 0.7em; }
-      .category-btn { padding: 3px 5px; font-size: 0.55em; min-width: 50px; }
-      .tab { padding: 6px 2px; font-size: 0.65em; min-width: 50px; }
-      .tab-content { padding: 8px; max-height: 300px; }
-      .map-container { height: 180px; margin-top: 12px; }
-      .footer { padding: 6px 10px; font-size: 0.7em; flex-direction: column; text-align: center; }
+  /* ============================================
+     RESET & TOKENS
+     ============================================ */
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  :root {
+    /* Couleurs */
+    --bg: #0B0D10;
+    --surface: #14171C;
+    --surface-2: #1A1E24;
+    --surface-3: #22272F;
+    --border: rgba(255, 255, 255, 0.07);
+    --border-strong: rgba(255, 255, 255, 0.14);
+    --text: #F5F7FA;
+    --text-muted: #8A93A0;
+    --text-dim: #5A6270;
+    --accent: #3B82F6;
+    --accent-hover: #2563EB;
+    --accent-soft: rgba(59, 130, 246, 0.12);
+    --danger: #EF4444;
+    --warning: #F59E0B;
+    --success: #10B981;
+
+    /* Espacements fluides */
+    --space-1: clamp(4px, 0.5vw, 6px);
+    --space-2: clamp(6px, 1vw, 10px);
+    --space-3: clamp(10px, 1.5vw, 14px);
+    --space-4: clamp(14px, 2vw, 20px);
+    --space-5: clamp(20px, 3vw, 28px);
+    --space-6: clamp(28px, 4vw, 40px);
+
+    /* Rayons */
+    --radius-sm: clamp(6px, 1vw, 8px);
+    --radius: clamp(8px, 1.2vw, 12px);
+    --radius-lg: clamp(12px, 1.6vw, 16px);
+    --radius-full: 999px;
+
+    /* Typographie fluide */
+    --fs-xs: clamp(10px, 0.75vw + 0.3rem, 12px);
+    --fs-sm: clamp(11px, 0.85vw + 0.35rem, 13px);
+    --fs-base: clamp(12px, 1vw + 0.4rem, 14px);
+    --fs-md: clamp(13px, 1.1vw + 0.45rem, 15px);
+    --fs-lg: clamp(15px, 1.4vw + 0.5rem, 18px);
+    --fs-xl: clamp(18px, 2vw + 0.6rem, 24px);
+    --fs-2xl: clamp(22px, 2.5vw + 0.8rem, 32px);
+
+    /* Ombres */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
+
+    /* Layout */
+    --container-max: 1600px;
+    --sidebar-w: clamp(300px, 26vw, 400px);
+    --touch-min: 44px;
+
+    /* Transitions */
+    --t-fast: 120ms ease;
+    --t: 180ms ease;
+    --t-slow: 300ms ease;
+
+    /* Fonts */
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Roboto Mono', ui-monospace, monospace;
+  }
+
+  /* Réduction des animations si l'utilisateur le demande */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
     }
-    @media (max-width: 480px) {
-      .stats { flex-direction: column; }
-      .stat-item { width: 100%; }
-      .btn { width: calc(50% - 3px); }
-      .region-logo { width: 40px; bottom: 45px; }
+  }
+
+  /* ============================================
+     BASE
+     ============================================ */
+  html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: var(--fs-base);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  img { max-width: 100%; height: auto; display: block; }
+  button { font-family: inherit; }
+
+  /* ============================================
+     APP CONTAINER
+     ============================================ */
+  .app {
+    width: 100%;
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: var(--space-3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  /* ============================================
+     TOPBAR
+     ============================================ */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+
+  .brand-mark {
+    width: clamp(32px, 3vw, 40px);
+    height: clamp(32px, 3vw, 40px);
+    border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: var(--fs-sm);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    flex-shrink: 0;
+  }
+
+  .brand-text {
+    min-width: 0;
+  }
+
+  .brand-text h1 {
+    font-size: var(--fs-md);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .brand-text p {
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    flex-wrap: wrap;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px clamp(8px, 1vw, 12px);
+    border-radius: var(--radius-full);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    font-size: var(--fs-xs);
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    transition: all var(--t);
+    white-space: nowrap;
+    min-height: 30px;
+  }
+
+  .pill:hover {
+    border-color: var(--border-strong);
+    color: var(--text);
+  }
+
+  .pill .material-icons { font-size: 14px; }
+
+  .pill-value {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .pill.live {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: var(--danger);
+  }
+
+  .live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--danger);
+    animation: pulse 2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ============================================
+     MAIN GRID — adaptatif
+     ============================================ */
+  .main {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+    min-height: 0;
+  }
+
+  /* Sidebar uniquement à partir de 900px */
+  @media (min-width: 900px) {
+    .main {
+      grid-template-columns: minmax(0, 1fr) var(--sidebar-w);
     }
-  </style>
+  }
+
+  /* Ultra-wide : limiter la largeur pour éviter l'étirement */
+  @media (min-width: 1800px) {
+    .app { padding: var(--space-4) var(--space-5); }
+  }
+
+  /* ============================================
+     CARD
+     ============================================ */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .card-header {
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  .card-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    min-width: 0;
+  }
+
+  .card-title > span:last-child {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .card-title .material-icons {
+    font-size: 16px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .card-subtitle {
+    font-size: var(--fs-xs);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    white-space: nowrap;
+  }
+
+  /* ============================================
+     WEBCAM — ratio fluide
+     ============================================ */
+  .webcam {
+    min-height: 0;
+  }
+
+  .webcam-viewport {
+    position: relative;
+    width: 100%;
+    /* Ratio 16/9 par défaut, s'adapte au viewport */
+    aspect-ratio: 16 / 9;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* Sur très petits écrans : ratio 4/3 pour plus de hauteur */
+  @media (max-width: 480px) {
+    .webcam-viewport { aspect-ratio: 4 / 3; }
+  }
+
+  /* Sur très grands écrans : limiter la hauteur */
+  @media (min-width: 1400px) {
+    .webcam-viewport {
+      aspect-ratio: auto;
+      height: clamp(480px, 55vh, 720px);
+    }
+  }
+
+  .webcam-viewport img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: none;
+  }
+
+  .webcam-viewport img.active { display: block; }
+
+  .webcam-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    background: rgba(11, 13, 16, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 5;
+    text-align: center;
+    padding: var(--space-4);
+  }
+
+  .webcam-overlay.hidden { display: none; }
+
+  .spinner {
+    width: clamp(24px, 3vw, 36px);
+    height: clamp(24px, 3vw, 36px);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .overlay-text {
+    font-size: var(--fs-sm);
+    color: var(--text-muted);
+    font-weight: 500;
+    max-width: 280px;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 18px;
+    min-height: var(--touch-min);
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-sans);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all var(--t);
+  }
+
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-primary:active { transform: scale(0.98); }
+
+  /* Info bar overlay */
+  .webcam-info {
+    position: absolute;
+    bottom: var(--space-2);
+    left: var(--space-2);
+    right: var(--space-2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: rgba(20, 23, 28, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: var(--fs-xs);
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    z-index: 4;
+    flex-wrap: wrap;
+  }
+
+  .webcam-info > span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  .webcam-info strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* ============================================
+     CONTRÔLES WEBCAM — touch-friendly
+     ============================================ */
+  .webcam-controls {
+    padding: var(--space-3);
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-1);
+    background: var(--surface);
+  }
+
+  @media (max-width: 360px) {
+    .webcam-controls { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (min-width: 1200px) {
+    .webcam-controls {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 8px 12px;
+    min-height: var(--touch-min);
+    background: var(--surface-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-sans);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--t);
+    letter-spacing: -0.01em;
+    user-select: none;
+    -webkit-user-select: none;
+    white-space: nowrap;
+  }
+
+  .btn:hover {
+    background: var(--surface-3);
+    border-color: var(--border-strong);
+  }
+
+  .btn:active { transform: scale(0.97); }
+
+  .btn .material-icons {
+    font-size: 16px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .btn.accent {
+    background: var(--accent-soft);
+    border-color: rgba(59, 130, 246, 0.3);
+    color: #60A5FA;
+  }
+
+  .btn.accent .material-icons { color: #60A5FA; }
+
+  /* Masquer le texte sur très petits écrans */
+  @media (max-width: 360px) {
+    .btn span:not(.material-icons) {
+      display: none;
+    }
+  }
+
+  /* ============================================
+     SIDEBAR
+     ============================================ */
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-height: 0;
+    min-width: 0;
+  }
+
+  .search-wrap {
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .search {
+    width: 100%;
+    padding: 10px 12px 10px 38px;
+    min-height: var(--touch-min);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: var(--fs-sm);
+    outline: none;
+    transition: all var(--t);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238A93A0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cpath d='m21 21-4.35-4.35'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 12px center;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  /* Empêche le zoom iOS sur focus */
+  @media (max-width: 768px) {
+    .search { font-size: 16px; }
+  }
+
+  .search::placeholder { color: var(--text-dim); }
+
+  .search:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  /* Filtres */
+  .filters {
+    padding: var(--space-3) var(--space-4);
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .chip {
+    padding: 6px 12px;
+    min-height: 32px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    color: var(--text-muted);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--t);
+    font-family: var(--font-sans);
+    white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .chip:hover {
+    color: var(--text);
+    border-color: var(--border-strong);
+  }
+
+  .chip.active {
+    background: var(--accent-soft);
+    border-color: rgba(59, 130, 246, 0.4);
+    color: #60A5FA;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  .tab {
+    flex: 1;
+    padding: var(--space-3) 6px;
+    min-height: var(--touch-min);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: var(--font-sans);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--t);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    white-space: nowrap;
+  }
+
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--text); }
+
+  .tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--accent);
+  }
+
+  .tab .material-icons { font-size: 14px; }
+
+  /* Masquer le texte des tabs sur très petits écrans */
+  @media (max-width: 380px) {
+    .tab span:not(.material-icons) { display: none; }
+    .tab .material-icons { font-size: 18px; }
+  }
+
+  /* Contenu */
+  .tab-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-3);
+    max-height: 60vh;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  @media (min-width: 900px) {
+    .tab-content { max-height: 480px; }
+  }
+
+  .tab-content::-webkit-scrollbar { width: 6px; }
+  .tab-content::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 3px;
+  }
+  .tab-content::-webkit-scrollbar-track { background: transparent; }
+
+  /* ============================================
+     LISTES
+     ============================================ */
+  .list { display: flex; flex-direction: column; gap: 4px; }
+
+  .list-item {
+    padding: var(--space-3);
+    min-height: var(--touch-min);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--t);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    border: 1px solid transparent;
+  }
+
+  .list-item:hover {
+    background: var(--surface-2);
+    border-color: var(--border);
+  }
+
+  .list-item.active {
+    background: var(--accent-soft);
+    border-color: rgba(59, 130, 246, 0.3);
+  }
+
+  .list-item > div:first-child {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .list-item-title {
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .list-item-sub {
+    font-size: var(--fs-xs);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tag {
+    font-size: var(--fs-xs);
+    padding: 3px 8px;
+    border-radius: var(--radius-full);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ============================================
+     INCIDENTS
+     ============================================ */
+  .incident {
+    padding: var(--space-3);
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    cursor: pointer;
+    transition: all var(--t);
+    margin-bottom: 6px;
+  }
+
+  .incident:hover {
+    border-color: var(--border-strong);
+    transform: translateX(2px);
+  }
+
+  .incident-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: 6px;
+  }
+
+  .incident-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .incident-icon .material-icons {
+    font-size: 14px;
+    color: #fff;
+  }
+
+  .incident-title {
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .incident-desc {
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    line-height: 1.4;
+    margin-bottom: 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .incident-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    font-size: var(--fs-xs);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    flex-wrap: wrap;
+  }
+
+  .incident-meta > span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ============================================
+     STATS — grille auto-adaptative
+     ============================================ */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--space-2);
+  }
+
+  .stat {
+    padding: var(--space-3);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    text-align: center;
+    transition: all var(--t);
+  }
+
+  .stat:hover { border-color: var(--border-strong); }
+
+  .stat-value {
+    font-size: var(--fs-xl);
+    font-weight: 700;
+    font-family: var(--font-mono);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: var(--fs-xs);
+    color: var(--text-dim);
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ============================================
+     MAP — hauteur fluide
+     ============================================ */
+  .map-section {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--surface);
+  }
+
+  .map-header {
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  #map {
+    width: 100%;
+    height: clamp(240px, 40vh, 500px);
+    background: #0B0D10;
+  }
+
+  /* En paysage mobile : carte plus courte */
+  @media (max-width: 900px) and (orientation: landscape) {
+    #map { height: clamp(180px, 50vh, 300px); }
+    .webcam-viewport {
+      aspect-ratio: auto;
+      height: clamp(200px, 60vh, 340px);
+    }
+  }
+
+  /* Leaflet overrides */
+  .leaflet-container {
+    background: #0B0D10 !important;
+    font-family: var(--font-sans) !important;
+  }
+
+  .leaflet-popup-content-wrapper {
+    background: var(--surface) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-sm) !important;
+    box-shadow: var(--shadow) !important;
+    font-family: var(--font-sans) !important;
+  }
+
+  .leaflet-popup-tip {
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+  }
+
+  .leaflet-popup-content {
+    margin: 12px 14px !important;
+    font-size: var(--fs-xs) !important;
+    line-height: 1.5 !important;
+  }
+
+  .leaflet-popup-close-button { color: var(--text-muted) !important; }
+
+  /* Contrôles Leaflet adaptés au touch */
+  .leaflet-control-zoom a {
+    width: 36px !important;
+    height: 36px !important;
+    line-height: 36px !important;
+    background: var(--surface) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+    font-size: 18px !important;
+  }
+
+  .leaflet-control-zoom a:hover {
+    background: var(--surface-2) !important;
+  }
+
+  /* ============================================
+     FOOTER
+     ============================================ */
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: var(--fs-xs);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    flex-wrap: wrap;
+  }
+
+  .footer-sources {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  .footer a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color var(--t);
+  }
+
+  .footer a:hover { color: var(--text); }
+
+  .footer-sep { color: var(--text-dim); opacity: 0.5; }
+
+  /* ============================================
+     TRÈS PETITS ÉCRANS (< 360px)
+     ============================================ */
+  @media (max-width: 359px) {
+    .app { padding: var(--space-2); gap: var(--space-2); }
+    .pill { font-size: 10px; padding: 4px 8px; }
+    .brand-text p { display: none; }
+    .footer { flex-direction: column; text-align: center; }
+  }
+
+  /* ============================================
+     TABLETTES (600-900px)
+     ============================================ */
+  @media (min-width: 600px) and (max-width: 899px) {
+    .topbar-actions { justify-content: flex-end; }
+    .tab-content { max-height: 500px; }
+  }
+
+  /* ============================================
+     GRANDS ÉCRANS (> 1400px)
+     ============================================ */
+  @media (min-width: 1400px) {
+    .app { padding: var(--space-4) var(--space-5); gap: var(--space-4); }
+    .sidebar { min-height: 600px; }
+  }
+
+  /* ============================================
+     ÉCRANS 4K / ULTRA-WIDE (> 2000px)
+     ============================================ */
+  @media (min-width: 2000px) {
+    :root {
+      --container-max: 1800px;
+      --sidebar-w: 420px;
+    }
+    #map { height: 600px; }
+  }
+
+  /* ============================================
+     ORIENTATION PAYSAGE MOBILE
+     ============================================ */
+  @media (max-height: 500px) and (orientation: landscape) {
+    .topbar { padding: 0; }
+    .brand-text p { display: none; }
+    .webcam-viewport { aspect-ratio: auto; height: 60vh; }
+    #map { height: 70vh; }
+    .tab-content { max-height: 50vh; }
+  }
+
+  /* ============================================
+     PRINT
+     ============================================ */
+  @media print {
+    body { background: #fff; color: #000; }
+    .webcam-controls, .topbar-actions, .footer { display: none; }
+    .card, .map-section, .footer { border-color: #ccc; }
+  }
+
+  /* ============================================
+     FOCUS VISIBLE (accessibilité)
+     ============================================ */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  .btn:focus-visible,
+  .chip:focus-visible,
+  .tab:focus-visible,
+  .list-item:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* Utility */
+  .hidden { display: none !important; }
+
+  /* Icônes par catégorie */
+  .cat-accident { background: #EF4444; }
+  .cat-traffic_jam { background: #F59E0B; }
+  .cat-roadworks { background: #3B82F6; }
+  .cat-hazard { background: #F97316; }
+  .cat-roadclosure { background: #6B7280; }
+  .cat-flood { background: #06B6D4; }
+  .cat-local_event { background: #8B5CF6; }
+  .cat-animal { background: #A16207; }
+  .cat-trafficolor { background: #10B981; }
+</style>
 </head>
 <body>
-  <div class="flag-bar"></div>
+  <div class="app">
 
-  <div class="header">
-    <div class="logo">
-      <h1>INFOTRAFIC RÉUNION</h1>
-      <span class="badge">DIRECT</span>
-    </div>
-    <div class="stats">
-      <div class="stat-item blue"><span class="material-icons" style="font-size:16px;">videocam</span><span id="camCount">0</span></div>
-      <div class="stat-item red"><span class="material-icons" style="font-size:16px;">warning</span><span id="incidentCount">0</span></div>
-      <div class="stat-item white"><span class="material-icons" style="font-size:16px;">schedule</span><span id="liveTime">--:--</span></div>
-    </div>
-  </div>
-
-  <div class="main-container">
-    <div class="webcam-section">
-      <div class="webcam-header">
-        <div class="webcam-title"><span class="material-icons" style="font-size:16px;">live_tv</span><span id="webcamName">WEBCAM</span></div>
-        <div class="live-indicator"><span class="live-dot"></span><span>DIRECT</span></div>
-      </div>
-      <div class="webcam-container">
-        <div class="loading-overlay" id="loadingOverlay">
-          <div class="spinner"></div>
-          <div style="color:#fff;font-weight:bold;font-size:0.9em;">Chargement...</div>
-        </div>
-        <img id="webcamImage" alt="Webcam D.E.E.R." style="display:none;">
-        <img src="region-reunion-logo.png" alt="Logo Région Réunion" class="region-logo" title="Région Réunion"
-             onerror="this.onerror=null; this.src='https://github.com/gunout/Traffic-Routier-D.E.E.R/blob/main/region-reunion-logo.png?raw=true';">
-        <div class="webcam-info">
-          <span id="locationDisplay">Localisation: -</span>
-          <span id="zoneDisplay">Zone: -</span>
+    <!-- ============ TOPBAR ============ -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">974</div>
+        <div class="brand-text">
+          <h1>Infotrafic Réunion</h1>
+          <p>DRR · DEER · OpenEventDatabase</p>
         </div>
       </div>
-      <div class="webcam-controls">
-        <button class="btn" id="prevBtn"><span class="material-icons" style="font-size:16px;">chevron_left</span>PRÉC</button>
-        <button class="btn" id="refreshBtn"><span class="material-icons" style="font-size:16px;">refresh</span>ACTU</button>
-        <button class="btn" id="fullscreenBtn"><span class="material-icons" style="font-size:16px;">fullscreen</span>PLEIN</button>
-        <button class="btn" id="nextBtn">SUIV<span class="material-icons" style="font-size:16px;">chevron_right</span></button>
+
+      <div class="topbar-actions">
+        <div class="pill">
+          <span class="material-icons">videocam</span>
+          <span class="pill-value" id="camCount">0</span>
+          <span>caméras</span>
+        </div>
+        <div class="pill">
+          <span class="material-icons">warning</span>
+          <span class="pill-value" id="incidentCount">0</span>
+          <span>incidents</span>
+        </div>
+        <div class="pill live">
+          <span class="live-dot"></span>
+          <span id="liveTime">--:--</span>
+        </div>
       </div>
+    </header>
+
+    <!-- ============ MAIN ============ -->
+    <div class="main">
+
+      <!-- WEBCAM -->
+      <section class="card webcam">
+        <div class="card-header">
+          <div class="card-title">
+            <span class="material-icons">live_tv</span>
+            <span id="webcamName">Chargement…</span>
+          </div>
+          <span class="card-subtitle" id="webcamZone">—</span>
+        </div>
+
+        <div class="webcam-viewport">
+          <div class="webcam-overlay" id="loadingOverlay">
+            <div class="spinner"></div>
+            <div class="overlay-text">Chargement de la caméra…</div>
+          </div>
+          <img id="webcamImage" alt="Webcam DRR">
+          <div class="webcam-info">
+            <span>📍 <strong id="locationDisplay">—</strong></span>
+            <span>🕒 <strong id="webcamTime">--:--</strong></span>
+          </div>
+        </div>
+
+        <div class="webcam-controls">
+          <button class="btn" id="prevBtn">
+            <span class="material-icons">chevron_left</span> Précédent
+          </button>
+          <button class="btn accent" id="refreshBtn">
+            <span class="material-icons">refresh</span> Actualiser
+          </button>
+          <button class="btn" id="fullscreenBtn">
+            <span class="material-icons">fullscreen</span> Plein écran
+          </button>
+          <button class="btn" id="nextBtn">
+            Suivant <span class="material-icons">chevron_right</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- SIDEBAR -->
+      <aside class="card sidebar">
+        <div class="search-wrap">
+          <input type="text" class="search" id="searchInput" placeholder="Rechercher une caméra ou une zone…">
+        </div>
+
+        <div class="filters" id="categoryFilters"></div>
+
+        <div class="tabs">
+          <button class="tab active" onclick="window.switchTab('incidents', event)">
+            <span class="material-icons">warning</span> Incidents
+          </button>
+          <button class="tab" onclick="window.switchTab('stats', event)">
+            <span class="material-icons">bar_chart</span> Stats
+          </button>
+          <button class="tab" onclick="window.switchTab('webcams', event)">
+            <span class="material-icons">videocam</span> Caméras
+          </button>
+        </div>
+
+        <div class="tab-content" id="tabContent"></div>
+      </aside>
     </div>
 
-    <div class="sidebar">
-      <div class="sidebar-header">
-        <div style="display:flex;align-items:center;gap:5px;"><span class="material-icons" style="font-size:16px;">info</span><span>INFOS TRAFIC</span></div>
-        <input type="text" class="search-box" id="searchInput" placeholder="Rechercher...">
+    <!-- ============ MAP ============ -->
+    <section class="map-section">
+      <div class="map-header">
+        <div class="card-title">
+          <span class="material-icons">map</span>
+          Carte temps réel
+        </div>
+        <span class="card-subtitle" id="mapCount">—</span>
       </div>
-      <div class="category-filters" id="categoryFilters"></div>
-      <div class="sidebar-tabs">
-        <button class="tab active" onclick="window.switchTab('incidents')">⚠️ INCID</button>
-        <button class="tab" onclick="window.switchTab('stats')">📊 STATS</button>
-        <button class="tab" onclick="window.switchTab('webcams')">📹 WEBCAMS</button>
+      <div id="map"></div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="footer">
+      <div class="footer-sources">
+        <span>Sources</span>
+        <span class="footer-sep">·</span>
+        <a href="https://www.infotrafic.re" target="_blank" rel="noopener">InfoTrafic 974</a>
+        <span class="footer-sep">·</span>
+        <a href="https://api.openeventdatabase.org/" target="_blank" rel="noopener">OpenEventDatabase</a>
+        <span class="footer-sep">·</span>
+        <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap</a>
       </div>
-      <div class="tab-content" id="tabContent"></div>
-    </div>
-  </div>
-
-  <div class="map-container"><div id="map"></div></div>
-
-  <div class="footer">
-    <div class="source-item"><span>📹</span><a href="https://www.infotrafic.re" target="_blank">D.E.E.R.</a><span>·</span><span>🌐</span><a href="https://api.openeventdatabase.org/" target="_blank">OpenEventDatabase</a></div>
-    <div class="last-update" id="lastUpdate">--:--</div>
+      <span>Dernière mise à jour · <span id="lastUpdate">--:--</span></span>
+    </footer>
   </div>
 
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
   <script>
-    (function() {
-      'use strict';
+  (function() {
+    'use strict';
 
-      // ============================================
-      // CONFIGURATION
-      // ============================================
-      const OEDB_API = 'https://api.openeventdatabase.org/event';
-      const REUNION_BBOX = '55.2,-21.4,55.9,-20.8';
-      const INFOTRAFIC_APP = 'https://www.infotrafic.re/';
+    const OEDB_API = 'https://api.openeventdatabase.org/event';
+    const REUNION_BBOX = '55.2,-21.4,55.9,-20.8';
+    const INFOTRAFIC_APP = 'https://www.infotrafic.re/';
 
-      // ============================================
-      // WEBCAMS D.E.E.R. (DONNÉES RÉELLES + COMPLÉMENTS OFFICIELS)
-      // ============================================
-      const WEBCAMS = [
-        // === Nord ===
-        { id: 'dec_04', name: 'RN2 Sainte-Marie - Duparc', url: 'https://www.infotrafic.re/CAM/dec_04.jpeg', coords: [-20.8969, 55.5501], zone: 'Nord', desc: 'Sainte-Marie' },
-        { id: 'dec_14', name: 'RN1 Saint-Denis - Potences', url: 'https://www.infotrafic.re/CAM/dec_14.jpeg', coords: [-20.8821, 55.4503], zone: 'Nord', desc: 'Saint-Denis' },
-        { id: 'dec_01', name: 'Saint-Denis Jamaique', url: 'https://www.infotrafic.re/CAM/dec_01.jpeg', coords: [-20.8790, 55.4480], zone: 'Nord', desc: 'Saint-Denis Jamaique' },
-        { id: 'dec_03', name: 'Échangeur de Gillot', url: 'https://www.infotrafic.re/CAM/dec_03.jpeg', coords: [-20.8912, 55.5217], zone: 'Nord', desc: 'Échangeur de Gillot' },
-        { id: 'dec_06', name: 'Entrée Ouest Saint-Denis', url: 'https://www.infotrafic.re/CAM/dec_06.jpeg', coords: [-20.8789, 55.4321], zone: 'Nord', desc: 'Entrée Ouest Saint-Denis' },
+    // ============================================
+    // WEBCAMS
+    // ============================================
+    const WEBCAMS = [
+      { id: 'dec_04', name: 'RN2 Sainte-Marie — Duparc', url: 'https://www.infotrafic.re/CAM/dec_04.jpeg', coords: [-20.8969, 55.5501], zone: 'Nord', desc: 'Sainte-Marie' },
+      { id: 'dec_14', name: 'RN1 Saint-Denis — Potences', url: 'https://www.infotrafic.re/CAM/dec_14.jpeg', coords: [-20.8821, 55.4503], zone: 'Nord', desc: 'Saint-Denis' },
+      { id: 'dec_01', name: 'Saint-Denis Jamaique', url: 'https://www.infotrafic.re/CAM/dec_01.jpeg', coords: [-20.8790, 55.4480], zone: 'Nord', desc: 'Saint-Denis Jamaique' },
+      { id: 'dec_03', name: 'Échangeur de Gillot', url: 'https://www.infotrafic.re/CAM/dec_03.jpeg', coords: [-20.8912, 55.5217], zone: 'Nord', desc: 'Gillot' },
+      { id: 'dec_06', name: 'Entrée Ouest Saint-Denis', url: 'https://www.infotrafic.re/CAM/dec_06.jpeg', coords: [-20.8789, 55.4321], zone: 'Nord', desc: 'Entrée Ouest' },
+      { id: 'dec_15', name: 'RN1 — La Grande Chaloupe', url: 'https://www.infotrafic.re/CAM/dec_15.jpeg', coords: [-20.9067, 55.3982], zone: 'Nord-Ouest', desc: 'Grande Chaloupe' },
+      { id: 'dec_07', name: 'La Possession', url: 'https://www.infotrafic.re/CAM/dec_07.jpeg', coords: [-20.9278, 55.3354], zone: 'Ouest', desc: 'La Possession' },
+      { id: 'dec_02', name: 'RN1 Le Port — Sacré Cœur', url: 'https://www.infotrafic.re/CAM/dec_02.jpeg', coords: [-20.9367, 55.2961], zone: 'Ouest', desc: 'Le Port' },
+      { id: 'dec_16', name: 'RN1 Saint-Paul — Bellemène', url: 'https://www.infotrafic.re/CAM/dec_16.jpeg', coords: [-20.9967, 55.2821], zone: 'Ouest', desc: 'Saint-Paul' },
+      { id: 'dec_09', name: 'RN1 Saint-Paul — Tranchée', url: 'https://www.infotrafic.re/CAM/dec_09.jpeg', coords: [-21.0034, 55.2756], zone: 'Ouest', desc: 'Saint-Paul' },
+      { id: 'dec_08', name: 'Viaduc Bernica', url: 'https://www.infotrafic.re/CAM/dec_08.jpeg', coords: [-21.0103, 55.2718], zone: 'Ouest', desc: 'Viaduc Bernica' },
+      { id: 'dec_17', name: 'RN1 — Plateau Caillou', url: 'https://www.infotrafic.re/CAM/dec_17.jpeg', coords: [-21.0189, 55.2698], zone: 'Ouest', desc: 'Plateau Caillou' },
+      { id: 'dec_18', name: 'RN1 — Éperon', url: 'https://www.infotrafic.re/CAM/dec_18.jpeg', coords: [-21.0312, 55.2645], zone: 'Ouest', desc: 'Éperon' },
+      { id: 'dec_10', name: 'RN1 — Ravine 3 Bassins', url: 'https://www.infotrafic.re/CAM/dec_10.jpeg', coords: [-21.0812, 55.2598], zone: 'Ouest', desc: 'Trois Bassins' },
+      { id: 'dec_11', name: 'RN1 Saint-Leu — Ravine Fontaine', url: 'https://www.infotrafic.re/CAM/dec_11.jpeg', coords: [-21.1534, 55.2789], zone: 'Ouest', desc: 'Saint-Leu' },
+      { id: 'dec_12', name: 'RN1 Saint-Pierre — Pierrefonds', url: 'https://www.infotrafic.re/CAM/dec_12.jpeg', coords: [-21.2867, 55.4212], zone: 'Sud', desc: 'Pierrefonds' },
+      { id: 'dec_13', name: 'RN3 Saint-Pierre — Azalées', url: 'https://www.infotrafic.re/CAM/dec_13.jpeg', coords: [-21.3124, 55.4678], zone: 'Sud', desc: 'Azalées' },
+      { id: 'dec_05', name: 'RN2 Saint-Pierre — Anse Les Bas', url: 'https://www.infotrafic.re/CAM/dec_05.jpeg', coords: [-21.3345, 55.4789], zone: 'Sud', desc: 'Anse Les Bas' }
+    ];
 
-        // === Nord-Ouest ===
-        { id: 'dec_15', name: 'RN1 - La Grande Chaloupe', url: 'https://www.infotrafic.re/CAM/dec_15.jpeg', coords: [-20.9067, 55.3982], zone: 'Nord-Ouest', desc: 'Grande Chaloupe' },
+    // ============================================
+    // CATÉGORIES
+    // ============================================
+    const CATEGORIES = [
+      { id: 'accident', name: 'Accidents', color: '#EF4444', icon: 'warning' },
+      { id: 'traffic_jam', name: 'Bouchons', color: '#F59E0B', icon: 'traffic' },
+      { id: 'roadworks', name: 'Travaux', color: '#3B82F6', icon: 'construction' },
+      { id: 'hazard', name: 'Dangers', color: '#F97316', icon: 'report' },
+      { id: 'roadclosure', name: 'Fermetures', color: '#6B7280', icon: 'block' },
+      { id: 'flood', name: 'Inondations', color: '#06B6D4', icon: 'water' },
+      { id: 'local_event', name: 'Événements', color: '#8B5CF6', icon: 'event' },
+      { id: 'animal', name: 'Animaux', color: '#A16207', icon: 'pets' }
+    ];
 
-        // === Ouest ===
-        { id: 'dec_07', name: 'La Possession', url: 'https://www.infotrafic.re/CAM/dec_07.jpeg', coords: [-20.9278, 55.3354], zone: 'Ouest', desc: 'La Possession' },
-        { id: 'dec_02', name: 'RN1 Le Port - Sacré Cœur', url: 'https://www.infotrafic.re/CAM/dec_02.jpeg', coords: [-20.9367, 55.2961], zone: 'Ouest', desc: 'Le Port' },
-        { id: 'dec_16', name: 'RN1 Saint-Paul - Bellemène', url: 'https://www.infotrafic.re/CAM/dec_16.jpeg', coords: [-20.9967, 55.2821], zone: 'Ouest', desc: 'Saint-Paul' },
-        { id: 'dec_09', name: 'RN1 Saint-Paul - Tranchée', url: 'https://www.infotrafic.re/CAM/dec_09.jpeg', coords: [-21.0034, 55.2756], zone: 'Ouest', desc: 'Saint-Paul' },
-        { id: 'dec_08', name: 'Viaduc Bernica', url: 'https://www.infotrafic.re/CAM/dec_08.jpeg', coords: [-21.0103, 55.2718], zone: 'Ouest', desc: 'Viaduc Bernica' },
-        { id: 'dec_17', name: 'RN1 - Plateau Caillou', url: 'https://www.infotrafic.re/CAM/dec_17.jpeg', coords: [-21.0189, 55.2698], zone: 'Ouest', desc: 'Plateau Caillou' },
-        { id: 'dec_18', name: 'RN1 - Éperon', url: 'https://www.infotrafic.re/CAM/dec_18.jpeg', coords: [-21.0312, 55.2645], zone: 'Ouest', desc: 'Éperon' },
-        { id: 'dec_10', name: 'RN1 - Ravine 3 Bassins', url: 'https://www.infotrafic.re/CAM/dec_10.jpeg', coords: [-21.0812, 55.2598], zone: 'Ouest', desc: 'Trois Bassins' },
-        { id: 'dec_11', name: 'RN1 Saint-Leu - Ravine Fontaine', url: 'https://www.infotrafic.re/CAM/dec_11.jpeg', coords: [-21.1534, 55.2789], zone: 'Ouest', desc: 'Saint-Leu' },
+    // ============================================
+    // ÉTAT
+    // ============================================
+    let currentIndex = 0;
+    let map = null;
+    let markers = [];
+    let incidentMarkers = [];
+    let allIncidents = {};
+    let webcamInterval = null;
 
-        // === Sud ===
-        { id: 'dec_12', name: 'RN1 Saint-Pierre - Pierrefonds', url: 'https://www.infotrafic.re/CAM/dec_12.jpeg', coords: [-21.2867, 55.4212], zone: 'Sud', desc: 'Pierrefonds' },
-        { id: 'dec_13', name: 'RN3 Saint-Pierre - Azalées', url: 'https://www.infotrafic.re/CAM/dec_13.jpeg', coords: [-21.3124, 55.4678], zone: 'Sud', desc: 'Azalées' },
-        { id: 'dec_05', name: 'RN2 Saint-Pierre - Anse Les Bas', url: 'https://www.infotrafic.re/CAM/dec_05.jpeg', coords: [-21.3345, 55.4789], zone: 'Sud', desc: 'Anse Les Bas' }
-      ];
+    const el = {
+      webcamImage: document.getElementById('webcamImage'),
+      loadingOverlay: document.getElementById('loadingOverlay'),
+      webcamName: document.getElementById('webcamName'),
+      webcamZone: document.getElementById('webcamZone'),
+      locationDisplay: document.getElementById('locationDisplay'),
+      webcamTime: document.getElementById('webcamTime'),
+      camCount: document.getElementById('camCount'),
+      incidentCount: document.getElementById('incidentCount'),
+      liveTime: document.getElementById('liveTime'),
+      lastUpdate: document.getElementById('lastUpdate'),
+      mapCount: document.getElementById('mapCount'),
+      prevBtn: document.getElementById('prevBtn'),
+      nextBtn: document.getElementById('nextBtn'),
+      refreshBtn: document.getElementById('refreshBtn'),
+      fullscreenBtn: document.getElementById('fullscreenBtn'),
+      searchInput: document.getElementById('searchInput'),
+      tabContent: document.getElementById('tabContent'),
+      categoryFilters: document.getElementById('categoryFilters')
+    };
 
-      // ============================================
-      // CATÉGORIES D'INCIDENTS
-      // ============================================
-      const CATEGORIES = [
-        { id: 'accident', name: 'Accidents', color: '#ED2939', icon: 'warning' },
-        { id: 'traffic_jam', name: 'Bouchons', color: '#FFA500', icon: 'traffic' },
-        { id: 'roadworks', name: 'Travaux', color: '#002654', icon: 'construction' },
-        { id: 'hazard', name: 'Dangers', color: '#FF4500', icon: 'warning' },
-        { id: 'roadclosure', name: 'Fermetures', color: '#000000', icon: 'block' },
-        { id: 'flood', name: 'Inondations', color: '#00CED1', icon: 'water' },
-        { id: 'local_event', name: 'Événements', color: '#9370DB', icon: 'event' },
-        { id: 'animal', name: 'Animaux', color: '#8B4513', icon: 'pets' }
-      ];
+    // ============================================
+    // UTILS
+    // ============================================
+    function esc(s) {
+      return s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : '';
+    }
 
-      // ============================================
-      // ÉTAT
-      // ============================================
-      let currentIndex = 0;
-      let map = null;
-      let markers = [];
-      let incidentMarkers = [];
-      let allIncidents = {};
-      let webcamInterval = null;
+    function catClass(id) { return 'cat-' + id; }
 
-      const el = {
-        webcamImage: document.getElementById('webcamImage'),
-        loadingOverlay: document.getElementById('loadingOverlay'),
-        webcamName: document.getElementById('webcamName'),
-        locationDisplay: document.getElementById('locationDisplay'),
-        zoneDisplay: document.getElementById('zoneDisplay'),
-        camCount: document.getElementById('camCount'),
-        incidentCount: document.getElementById('incidentCount'),
-        liveTime: document.getElementById('liveTime'),
-        lastUpdate: document.getElementById('lastUpdate'),
-        prevBtn: document.getElementById('prevBtn'),
-        nextBtn: document.getElementById('nextBtn'),
-        refreshBtn: document.getElementById('refreshBtn'),
-        fullscreenBtn: document.getElementById('fullscreenBtn'),
-        searchInput: document.getElementById('searchInput'),
-        tabContent: document.getElementById('tabContent'),
-        categoryFilters: document.getElementById('categoryFilters')
-      };
+    async function apiFetch(url) {
+      try {
+        const r = await fetch(url, { headers: { 'Accept': 'application/json' } });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return await r.json();
+      } catch (e) {
+        console.warn('Fetch:', e.message);
+        return null;
+      }
+    }
 
-      // ============================================
-      // FETCH
-      // ============================================
-      async function apiFetch(url) {
-        try {
-          const r = await fetch(url, { headers: { 'Accept': 'application/json' } });
-          if (!r.ok) throw new Error('HTTP ' + r.status);
-          return await r.json();
-        } catch (e) { console.warn('Fetch:', e.message); return null; }
+    // ============================================
+    // DONNÉES OEDB
+    // ============================================
+    async function loadAllData() {
+      const data = await apiFetch(OEDB_API + '?bbox=' + REUNION_BBOX + '&when=now&limit=500');
+      if (!data || !data.features) {
+        el.lastUpdate.textContent = 'hors ligne';
+        return;
       }
 
-      // ============================================
-      // DONNÉES OEDB (TOUS LES CHAMPS)
-      // ============================================
-      async function loadAllData() {
-        const data = await apiFetch(OEDB_API + '?bbox=' + REUNION_BBOX + '&when=now&limit=500');
-        if (!data || !data.features) { el.lastUpdate.textContent = 'Hors ligne'; return; }
+      allIncidents = {};
+      CATEGORIES.forEach(c => allIncidents[c.id] = []);
+      let count = 0;
 
-        allIncidents = {};
-        CATEGORIES.forEach(c => allIncidents[c.id] = []);
-        let count = 0;
+      data.features.forEach(ev => {
+        const p = ev.properties || {};
+        const g = ev.geometry;
+        let lat = -21.1151, lng = 55.5364, lineCoords = null;
 
-        data.features.forEach(ev => {
-          const p = ev.properties || {};
-          const g = ev.geometry;
-          let lat = -21.1151, lng = 55.5364, lineCoords = null;
-
-          if (g) {
-            if (g.type === 'Point' && g.coordinates) { lng = g.coordinates[0]; lat = g.coordinates[1]; }
-            else if (g.type === 'LineString' && g.coordinates && g.coordinates.length) {
-              const m = Math.floor(g.coordinates.length / 2);
-              lng = g.coordinates[m][0]; lat = g.coordinates[m][1];
-              lineCoords = g.coordinates.map(c => [c[1], c[0]]);
-            }
+        if (g) {
+          if (g.type === 'Point' && g.coordinates) {
+            lng = g.coordinates[0]; lat = g.coordinates[1];
+          } else if (g.type === 'LineString' && g.coordinates && g.coordinates.length) {
+            const m = Math.floor(g.coordinates.length / 2);
+            lng = g.coordinates[m][0]; lat = g.coordinates[m][1];
+            lineCoords = g.coordinates.map(c => [c[1], c[0]]);
           }
-
-          let cat = 'trafficolor';
-          const w = (p.what || '').toLowerCase();
-          if (w.includes('accident')) cat = 'accident';
-          else if (w.includes('jam') || w.includes('bouchon') || w.includes('congestion')) cat = 'traffic_jam';
-          else if (w.includes('roadwork') || w.includes('travaux') || w.includes('construction')) cat = 'roadworks';
-          else if (w.includes('hazard') || w.includes('danger') || w.includes('obstacle')) cat = 'hazard';
-          else if (w.includes('closure') || w.includes('ferm')) cat = 'roadclosure';
-          else if (w.includes('flood') || w.includes('inondation')) cat = 'flood';
-          else if (w.includes('event') || w.includes('manifestation')) cat = 'local_event';
-          else if (w.includes('animal')) cat = 'animal';
-
-          if (!allIncidents[cat]) allIncidents[cat] = [];
-          allIncidents[cat].push({
-            title: p.label || p.what || 'Incident',
-            description: p.description || p.what || '',
-            location: p.location_name || 'La Réunion',
-            time: new Date(p.start || Date.now()).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
-            coordinates: [lat, lng], lineCoords,
-            source: p.source || 'OEDB'
-          });
-          count++;
-        });
-
-        el.incidentCount.textContent = count;
-        el.lastUpdate.textContent = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-        updateIncidentMarkers();
-        if (document.querySelector('.tab.active')?.textContent.includes('INCID')) displayAllIncidents();
-      }
-
-      // ============================================
-      // WEBCAM (avec fallback si l'image ne charge pas)
-      // ============================================
-      function loadWebcam(index) {
-        const cam = WEBCAMS[index];
-        if (!cam) return;
-        currentIndex = index;
-
-        el.webcamName.textContent = cam.name.substring(0, 22) + '...';
-        el.locationDisplay.textContent = '📍 ' + cam.desc;
-        el.zoneDisplay.textContent = 'Zone: ' + cam.zone;
-        el.loadingOverlay.style.display = 'flex';
-        el.loadingOverlay.innerHTML = '<div class="spinner"></div><div style="color:#fff;font-weight:bold;font-size:0.9em;">Chargement...</div>';
-        el.webcamImage.style.display = 'none';
-
-        const imageUrl = cam.url + '?t=' + Date.now();
-        const img = new Image();
-        img.onload = () => {
-          el.webcamImage.src = imageUrl;
-          el.webcamImage.style.display = 'block';
-          el.loadingOverlay.style.display = 'none';
-          if (map) map.setView(cam.coords, 13);
-          if (markers[index]) markers[index].openPopup();
-        };
-        img.onerror = () => {
-          el.loadingOverlay.innerHTML =
-            '<div style="text-align:center;">' +
-              '<span class="material-icons" style="font-size:48px;color:#ED2939;">videocam_off</span>' +
-              '<p style="color:#fff;margin:8px 0;font-size:0.85em;">Caméra DRR · Disponible via InfoTrafic 974</p>' +
-              '<a href="' + INFOTRAFFIC_APP + '" target="_blank" rel="noopener" ' +
-              'style="display:inline-block;padding:8px 16px;background:#002654;color:#fff;border:2px solid #fff;' +
-              'border-radius:6px;text-decoration:none;font-weight:bold;font-size:0.8em;">OUVRIR INFOTRAFIC.RE →</a>' +
-            '</div>';
-        };
-        img.src = imageUrl;
-      }
-
-      // ============================================
-      // FILTRES
-      // ============================================
-      function createCategoryFilters() {
-        el.categoryFilters.innerHTML = CATEGORIES.map(c =>
-          '<button class="category-btn" onclick="filterByCategory(\'' + c.id + '\')">' + c.name + '</button>'
-        ).join('');
-      }
-
-      window.filterByCategory = function(id) {
-        const inc = allIncidents[id] || [];
-        if (inc.length) {
-          const cat = CATEGORIES.find(c => c.id === id);
-          el.tabContent.innerHTML = '<h3 style="color:' + cat.color + ';margin-bottom:10px;font-size:0.8em;">' + cat.name + '</h3><div class="incident-list">' +
-            inc.map(i => renderIncident(i, cat)).join('') + '</div>';
-        } else {
-          el.tabContent.innerHTML = '<div style="text-align:center;padding:15px;color:#ED2939;font-size:0.8em;">Aucun incident</div>';
         }
-        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-        if (event?.target) event.target.classList.add('active');
+
+        let cat = 'trafficolor';
+        const w = (p.what || '').toLowerCase();
+        if (w.includes('accident')) cat = 'accident';
+        else if (w.includes('jam') || w.includes('bouchon') || w.includes('congestion')) cat = 'traffic_jam';
+        else if (w.includes('roadwork') || w.includes('travaux') || w.includes('construction')) cat = 'roadworks';
+        else if (w.includes('hazard') || w.includes('danger') || w.includes('obstacle')) cat = 'hazard';
+        else if (w.includes('closure') || w.includes('ferm')) cat = 'roadclosure';
+        else if (w.includes('flood') || w.includes('inondation')) cat = 'flood';
+        else if (w.includes('event') || w.includes('manifestation')) cat = 'local_event';
+        else if (w.includes('animal')) cat = 'animal';
+
+        if (!allIncidents[cat]) allIncidents[cat] = [];
+        allIncidents[cat].push({
+          title: p.label || p.what || 'Incident',
+          description: p.description || p.what || '',
+          location: p.location_name || 'La Réunion',
+          time: new Date(p.start || Date.now()).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+          coordinates: [lat, lng],
+          lineCoords,
+          source: p.source || 'OEDB'
+        });
+        count++;
+      });
+
+      el.incidentCount.textContent = count;
+      el.lastUpdate.textContent = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      updateIncidentMarkers();
+      if (document.querySelector('.tab.active')?.textContent.includes('Incidents')) displayAllIncidents();
+    }
+
+    // ============================================
+    // WEBCAM
+    // ============================================
+    function loadWebcam(index) {
+      const cam = WEBCAMS[index];
+      if (!cam) return;
+      currentIndex = index;
+
+      el.webcamName.textContent = cam.name;
+      el.webcamZone.textContent = cam.zone;
+      el.locationDisplay.textContent = cam.desc;
+      el.webcamTime.textContent = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+
+      el.loadingOverlay.classList.remove('hidden');
+      el.loadingOverlay.innerHTML = '<div class="spinner"></div><div class="overlay-text">Chargement de la caméra…</div>';
+      el.webcamImage.classList.remove('active');
+
+      const imageUrl = cam.url + '?t=' + Date.now();
+      const img = new Image();
+
+      img.onload = () => {
+        el.webcamImage.src = imageUrl;
+        el.webcamImage.classList.add('active');
+        el.loadingOverlay.classList.add('hidden');
+        if (map) map.setView(cam.coords, 13);
+        if (markers[index]) markers[index].openPopup();
       };
 
-      // ============================================
-      // RENDU
-      // ============================================
-      function renderIncident(inc, cat) {
-        return '<div class="incident-card ' + cat.id + '" onclick="focusLocation(' + inc.coordinates[0] + ',' + inc.coordinates[1] + ')">' +
-          '<div class="incident-title"><span class="material-icons" style="font-size:16px;">' + cat.icon + '</span>' + esc(inc.title) + '</div>' +
-          (inc.description ? '<div class="incident-desc">' + esc(inc.description.substring(0,80)) + '</div>' : '') +
-          '<div class="incident-meta"><span>📍 ' + esc(inc.location) + '</span><span>🕒 ' + esc(inc.time) + '</span></div>' +
-          '<div class="incident-source">Source: ' + esc(inc.source) + '</div></div>';
+      img.onerror = () => {
+        el.loadingOverlay.innerHTML =
+          '<div style="text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;">' +
+            '<span class="material-icons" style="font-size:40px;color:#8A93A0;">videocam_off</span>' +
+            '<div class="overlay-text">Caméra non disponible en direct</div>' +
+            '<a href="' + INFOTRAFIC_APP + '" target="_blank" rel="noopener" class="btn-primary">' +
+              'Ouvrir InfoTrafic 974' +
+            '</a>' +
+          '</div>';
+      };
+
+      img.src = imageUrl;
+    }
+
+    // ============================================
+    // FILTRES
+    // ============================================
+    function createCategoryFilters() {
+      el.categoryFilters.innerHTML = CATEGORIES.map(c =>
+        '<button class="chip" data-cat="' + c.id + '" onclick="filterByCategory(\'' + c.id + '\', event)">' + c.name + '</button>'
+      ).join('');
+    }
+
+    window.filterByCategory = function(id, event) {
+      const inc = allIncidents[id] || [];
+      const cat = CATEGORIES.find(c => c.id === id);
+
+      if (inc.length) {
+        el.tabContent.innerHTML =
+          '<div style="font-size:11px;color:#8A93A0;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">' +
+            esc(cat.name) + ' · ' + inc.length +
+          '</div>' +
+          inc.map(i => renderIncident(i, cat)).join('');
+      } else {
+        el.tabContent.innerHTML =
+          '<div style="text-align:center;padding:32px 16px;color:#5A6270;font-size:13px;">' +
+            'Aucun incident dans cette catégorie' +
+          '</div>';
       }
 
-      function esc(s) { return s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : ''; }
+      document.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
+      if (event?.currentTarget) event.currentTarget.classList.add('active');
+    };
 
-      function displayAllIncidents() {
-        let html = '<div class="incident-list">', total = 0;
-        Object.keys(allIncidents).forEach(k => {
-          const arr = allIncidents[k];
-          if (arr?.length) {
-            const cat = CATEGORIES.find(c => c.id === k) || { id:k, name:k, color:'#888', icon:'info' };
-            arr.forEach(i => { html += renderIncident(i, cat); total++; });
-          }
-        });
-        if (!total) html += '<div style="text-align:center;padding:15px;color:#ED2939;font-size:0.8em;">Aucun incident</div>';
-        el.tabContent.innerHTML = html + '</div>';
+    // ============================================
+    // RENDU
+    // ============================================
+    function renderIncident(inc, cat) {
+      return '<div class="incident" style="border-left-color:' + cat.color + ';" ' +
+        'onclick="focusLocation(' + inc.coordinates[0] + ',' + inc.coordinates[1] + ')">' +
+        '<div class="incident-header">' +
+          '<div class="incident-icon ' + catClass(cat.id) + '">' +
+            '<span class="material-icons">' + cat.icon + '</span>' +
+          '</div>' +
+          '<div class="incident-title">' + esc(inc.title) + '</div>' +
+        '</div>' +
+        (inc.description ?
+          '<div class="incident-desc">' + esc(inc.description.substring(0, 100)) + '</div>' : '') +
+        '<div class="incident-meta">' +
+          '<span>📍 ' + esc(inc.location) + '</span>' +
+          '<span>' + esc(inc.time) + '</span>' +
+        '</div>' +
+      '</div>';
+    }
+
+    function displayAllIncidents() {
+      let html = '', total = 0;
+
+      Object.keys(allIncidents).forEach(k => {
+        const arr = allIncidents[k];
+        if (arr?.length) {
+          const cat = CATEGORIES.find(c => c.id === k) || { id:k, name:k, color:'#888', icon:'info' };
+          arr.forEach(i => { html += renderIncident(i, cat); total++; });
+        }
+      });
+
+      if (!total) {
+        html = '<div style="text-align:center;padding:32px 16px;color:#5A6270;font-size:13px;">' +
+          'Aucun incident signalé actuellement' +
+        '</div>';
       }
 
-      function displayStats() {
-        const total = Object.values(allIncidents).reduce((s,a) => s + a.length, 0);
-        let html = '<div class="stats-grid">';
-        CATEGORIES.forEach(c => {
-          const n = (allIncidents[c.id] || []).length;
-          if (n) html += '<div class="stat-card" style="border-left:3px solid ' + c.color + ';"><div class="stat-number">' + n + '</div><div class="stat-label">' + c.name.substring(0,8) + '</div></div>';
-        });
-        html += '</div>';
-        if (!total) html = '<div style="text-align:center;padding:15px;color:#ED2939;">Aucun incident</div>';
-        else html += '<div style="text-align:center;margin-top:10px;"><span style="color:#ED2939;font-size:0.9em;">Total: ' + total + '</span></div>';
-        el.tabContent.innerHTML = html;
+      el.tabContent.innerHTML = html;
+    }
+
+    function displayStats() {
+      const total = Object.values(allIncidents).reduce((s,a) => s + a.length, 0);
+
+      if (!total) {
+        el.tabContent.innerHTML =
+          '<div style="text-align:center;padding:32px 16px;color:#5A6270;font-size:13px;">' +
+            'Aucun incident à afficher' +
+          '</div>';
+        return;
       }
 
-      function displayWebcamsList() {
-        el.tabContent.innerHTML = '<div class="webcam-list">' + WEBCAMS.map((c,i) =>
-          '<div class="webcam-item' + (i===currentIndex?' active':'') + '" onclick="selectWebcam(' + i + ')">' +
-            '<div><div><strong style="color:#002654;">' + esc(c.desc) + '</strong></div>' +
-            '<div style="font-size:0.7em;color:#ED2939;margin-top:3px;">' + esc(c.zone) + '</div></div>' +
-            '<span class="zone-tag">' + esc(c.zone) + '</span></div>'
-        ).join('') + '</div>';
-      }
+      let html = '<div class="stats-grid">';
+      CATEGORIES.forEach(c => {
+        const n = (allIncidents[c.id] || []).length;
+        if (n) {
+          html += '<div class="stat">' +
+            '<div class="stat-value" style="color:' + c.color + ';">' + n + '</div>' +
+            '<div class="stat-label">' + esc(c.name) + '</div>' +
+          '</div>';
+        }
+      });
+      html += '</div>';
 
-      // ============================================
-      // CARTE — OpenStreetMap SANS API KEY
-      // ============================================
-      function initMap() {
-        map = L.map('map', { center: [-21.1151, 55.5364], zoom: 10, zoomControl: false, attributionControl: false });
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 19,
-          attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      html += '<div style="margin-top:12px;padding:12px;background:#1A1E24;border-radius:8px;' +
+        'text-align:center;font-size:13px;color:#8A93A0;">' +
+        'Total : <strong style="color:#F5F7FA;">' + total + '</strong> incidents actifs' +
+      '</div>';
+
+      el.tabContent.innerHTML = html;
+    }
+
+    function displayWebcamsList() {
+      el.tabContent.innerHTML = '<div class="list">' + WEBCAMS.map((c,i) =>
+        '<div class="list-item' + (i === currentIndex ? ' active' : '') + '" ' +
+          'onclick="selectWebcam(' + i + ')">' +
+          '<div>' +
+            '<div class="list-item-title">' + esc(c.desc) + '</div>' +
+            '<div class="list-item-sub">' + esc(c.name) + '</div>' +
+          '</div>' +
+          '<span class="tag">' + esc(c.zone) + '</span>' +
+        '</div>'
+      ).join('') + '</div>';
+    }
+
+    // ============================================
+    // CARTE
+    // ============================================
+    function initMap() {
+      map = L.map('map', {
+        center: [-21.1151, 55.5364],
+        zoom: 10,
+        zoomControl: true,
+        attributionControl: true
+      });
+
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+      }).addTo(map);
+
+      WEBCAMS.forEach((cam, i) => {
+        const m = L.marker(cam.coords, {
+          icon: L.divIcon({
+            className: '',
+            html: '<div style="width:10px;height:10px;border-radius:50%;' +
+              'background:#3B82F6;border:2px solid #fff;' +
+              'box-shadow:0 0 0 3px rgba(59,130,246,0.25);"></div>',
+            iconSize: [10, 10],
+            iconAnchor: [5, 5]
+          })
         }).addTo(map);
 
-        WEBCAMS.forEach((cam, i) => {
-          const m = L.marker(cam.coords, {
-            icon: L.divIcon({ className:'',
-              html:'<div style="background:linear-gradient(135deg,#002654,#ED2939);width:12px;height:12px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 8px #fff;"></div>',
-              iconSize:[12,12] })
-          }).addTo(map);
-          m.bindPopup('<b>📹 ' + esc(cam.name) + '</b><br>' + esc(cam.zone));
-          m.on('click', () => { currentIndex = i; loadWebcam(i); });
-          markers.push(m);
+        m.bindPopup(
+          '<div style="font-weight:600;margin-bottom:2px;">' + esc(cam.name) + '</div>' +
+          '<div style="color:#8A93A0;font-size:11px;font-family:JetBrains Mono,monospace;">' +
+            esc(cam.zone) +
+          '</div>'
+        );
+
+        m.on('click', () => {
+          currentIndex = i;
+          loadWebcam(i);
         });
-      }
 
-      function updateIncidentMarkers() {
-        if (!map) return;
-        incidentMarkers.forEach(m => map.removeLayer(m));
-        incidentMarkers = [];
-        Object.keys(allIncidents).forEach(k => {
-          const cat = CATEGORIES.find(c => c.id === k) || { id:k, color:'#888', icon:'info', name:k };
-          allIncidents[k].forEach(inc => {
-            const [lat, lng] = inc.coordinates;
-            if (isNaN(lat) || isNaN(lng)) return;
-            const popup = '<b style="color:' + cat.color + ';">' + esc(cat.name) + '</b><br>' +
-              '<strong>' + esc(inc.title) + '</strong><br>' + esc(inc.description) + '<br>' +
-              '📍 ' + esc(inc.location) + '<br>🕒 ' + esc(inc.time);
-            if (inc.lineCoords?.length > 1) {
-              const poly = L.polyline(inc.lineCoords, { color:cat.color, weight:4, opacity:0.7, dashArray:'8,8' }).addTo(map);
-              poly.bindPopup(popup); incidentMarkers.push(poly);
-            } else {
-              const mk = L.marker([lat,lng], { icon: L.divIcon({ className:'',
-                html:'<span class="material-icons" style="color:' + cat.color + ';font-size:18px;filter:drop-shadow(0 0 6px ' + cat.color + ');">' + cat.icon + '</span>',
-                iconSize:[18,18] }) }).addTo(map);
-              mk.bindPopup(popup); incidentMarkers.push(mk);
-            }
-          });
+        markers.push(m);
+      });
+    }
+
+    function updateIncidentMarkers() {
+      if (!map) return;
+      incidentMarkers.forEach(m => map.removeLayer(m));
+      incidentMarkers = [];
+
+      let totalMarkers = 0;
+
+      Object.keys(allIncidents).forEach(k => {
+        const cat = CATEGORIES.find(c => c.id === k) || { id:k, color:'#888', icon:'info', name:k };
+
+        allIncidents[k].forEach(inc => {
+          const [lat, lng] = inc.coordinates;
+          if (isNaN(lat) || isNaN(lng)) return;
+
+          const popup =
+            '<div style="font-weight:600;color:' + cat.color + ';margin-bottom:4px;">' +
+              esc(cat.name) +
+            '</div>' +
+            '<div style="font-weight:600;margin-bottom:2px;">' + esc(inc.title) + '</div>' +
+            (inc.description ?
+              '<div style="color:#8A93A0;margin-bottom:4px;">' + esc(inc.description.substring(0, 80)) + '</div>' : '') +
+            '<div style="color:#8A93A0;font-size:11px;font-family:JetBrains Mono,monospace;">' +
+              '📍 ' + esc(inc.location) + '<br>🕒 ' + esc(inc.time) +
+            '</div>';
+
+          if (inc.lineCoords?.length > 1) {
+            const poly = L.polyline(inc.lineCoords, {
+              color: cat.color,
+              weight: 4,
+              opacity: 0.7,
+              dashArray: '6, 6'
+            }).addTo(map);
+            poly.bindPopup(popup);
+            incidentMarkers.push(poly);
+            totalMarkers++;
+          } else {
+            const mk = L.marker([lat, lng], {
+              icon: L.divIcon({
+                className: '',
+                html: '<div style="width:22px;height:22px;border-radius:50%;' +
+                  'background:' + cat.color + ';' +
+                  'display:flex;align-items:center;justify-content:center;' +
+                  'border:2px solid #14171C;' +
+                  'box-shadow:0 0 0 2px ' + cat.color + '40;">' +
+                  '<span class="material-icons" style="font-size:12px;color:#fff;">' + cat.icon + '</span>' +
+                '</div>',
+                iconSize: [22, 22],
+                iconAnchor: [11, 11]
+              })
+            }).addTo(map);
+            mk.bindPopup(popup);
+            incidentMarkers.push(mk);
+            totalMarkers++;
+          }
         });
-      }
+      });
 
-      // ============================================
-      // NAVIGATION
-      // ============================================
-      function nextCam() { currentIndex = (currentIndex + 1) % WEBCAMS.length; loadWebcam(currentIndex); }
-      function prevCam() { currentIndex = (currentIndex - 1 + WEBCAMS.length) % WEBCAMS.length; loadWebcam(currentIndex); }
+      el.mapCount.textContent = totalMarkers + ' points';
+    }
 
-      window.selectWebcam = i => { currentIndex = i; loadWebcam(i); displayWebcamsList(); };
-      window.focusLocation = (lat, lng) => { if (map) map.setView([lat, lng], 14); };
-      window.switchTab = t => {
-        document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-        if (event?.target) event.target.classList.add('active');
-        if (t === 'incidents') displayAllIncidents();
-        else if (t === 'stats') displayStats();
-        else displayWebcamsList();
+    // ============================================
+    // NAVIGATION
+    // ============================================
+    function nextCam() {
+      currentIndex = (currentIndex + 1) % WEBCAMS.length;
+      loadWebcam(currentIndex);
+    }
+
+    function prevCam() {
+      currentIndex = (currentIndex - 1 + WEBCAMS.length) % WEBCAMS.length;
+      loadWebcam(currentIndex);
+    }
+
+    window.selectWebcam = (i) => {
+      currentIndex = i;
+      loadWebcam(i);
+      displayWebcamsList();
+    };
+
+    window.focusLocation = (lat, lng) => {
+      if (map) map.setView([lat, lng], 14);
+    };
+
+    window.switchTab = (tab, event) => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      if (event?.currentTarget) event.currentTarget.classList.add('active');
+
+      if (tab === 'incidents') displayAllIncidents();
+      else if (tab === 'stats') displayStats();
+      else displayWebcamsList();
+    };
+
+    // ============================================
+    // HORLOGE
+    // ============================================
+    function startClock() {
+      const tick = () => {
+        el.liveTime.textContent = new Date().toLocaleTimeString('fr-FR', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
       };
+      tick();
+      setInterval(tick, 1000);
+    }
 
-      // ============================================
-      // HORLOGE
-      // ============================================
-      function startClock() {
-        const tick = () => el.liveTime.textContent = new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-        tick(); setInterval(tick, 1000);
-      }
+    // ============================================
+    // EVENTS
+    // ============================================
+    function setupEvents() {
+      el.prevBtn.addEventListener('click', prevCam);
+      el.nextBtn.addEventListener('click', nextCam);
+      el.refreshBtn.addEventListener('click', () => loadWebcam(currentIndex));
 
-      // ============================================
-      // EVENTS
-      // ============================================
-      function setupEvents() {
-        el.prevBtn.addEventListener('click', prevCam);
-        el.nextBtn.addEventListener('click', nextCam);
-        el.refreshBtn.addEventListener('click', () => loadWebcam(currentIndex));
-        el.fullscreenBtn.addEventListener('click', () => {
-          const c = document.querySelector('.webcam-section');
-          if (c.requestFullscreen) c.requestFullscreen();
-        });
-        el.searchInput.addEventListener('input', e => {
-          if (!document.querySelector('.tab.active')?.textContent.includes('WEBCAMS')) return;
-          const q = e.target.value.toLowerCase();
-          const f = WEBCAMS.filter(c => c.name.toLowerCase().includes(q) || c.zone.toLowerCase().includes(q));
-          el.tabContent.innerHTML = '<div class="webcam-list">' + f.map(c => {
-            const i = WEBCAMS.findIndex(x => x.id === c.id);
-            return '<div class="webcam-item' + (i===currentIndex?' active':'') + '" onclick="selectWebcam(' + i + ')">' +
-              '<div><div><strong style="color:#002654;">' + esc(c.desc) + '</strong></div>' +
-              '<div style="font-size:0.7em;color:#ED2939;">' + esc(c.zone) + '</div></div>' +
-              '<span class="zone-tag">' + esc(c.zone) + '</span></div>';
-          }).join('') + '</div>';
-        });
-        document.addEventListener('keydown', e => {
-          if (e.key === 'ArrowLeft') prevCam();
-          if (e.key === 'ArrowRight') nextCam();
-          if (e.key === ' ') { e.preventDefault(); loadWebcam(currentIndex); }
-        });
-      }
+      el.fullscreenBtn.addEventListener('click', () => {
+        const c = document.querySelector('.webcam-viewport');
+        if (c.requestFullscreen) c.requestFullscreen();
+      });
 
-      // ============================================
-      // RAFRAÎCHISSEMENT WEBCAM OPTIMISÉ
-      // ============================================
-      function setupWebcamRefresh() {
-        const section = document.querySelector('.webcam-section');
-        const obs = new IntersectionObserver(entries => {
-          entries.forEach(en => {
-            if (en.isIntersecting) {
-              if (!webcamInterval) webcamInterval = setInterval(() => loadWebcam(currentIndex), 15000);
-            } else {
-              if (webcamInterval) { clearInterval(webcamInterval); webcamInterval = null; }
+      el.searchInput.addEventListener('input', (e) => {
+        if (!document.querySelector('.tab.active')?.textContent.includes('Caméras')) return;
+        const q = e.target.value.toLowerCase();
+        const f = WEBCAMS.filter(c =>
+          c.name.toLowerCase().includes(q) ||
+          c.zone.toLowerCase().includes(q) ||
+          c.desc.toLowerCase().includes(q)
+        );
+        el.tabContent.innerHTML = '<div class="list">' + f.map(c => {
+          const i = WEBCAMS.findIndex(x => x.id === c.id);
+          return '<div class="list-item' + (i === currentIndex ? ' active' : '') + '" ' +
+            'onclick="selectWebcam(' + i + ')">' +
+            '<div>' +
+              '<div class="list-item-title">' + esc(c.desc) + '</div>' +
+              '<div class="list-item-sub">' + esc(c.name) + '</div>' +
+            '</div>' +
+            '<span class="tag">' + esc(c.zone) + '</span>' +
+          '</div>';
+        }).join('') + '</div>';
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.target.tagName === 'INPUT') return;
+        if (e.key === 'ArrowLeft') prevCam();
+        if (e.key === 'ArrowRight') nextCam();
+        if (e.key === ' ') { e.preventDefault(); loadWebcam(currentIndex); }
+      });
+    }
+
+    // ============================================
+    // RAFRAÎCHISSEMENT WEBCAM
+    // ============================================
+    function setupWebcamRefresh() {
+      const section = document.querySelector('.webcam-viewport');
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(en => {
+          if (en.isIntersecting) {
+            if (!webcamInterval) {
+              webcamInterval = setInterval(() => loadWebcam(currentIndex), 15000);
             }
-          });
-        }, { threshold: 0.3 });
-        obs.observe(section);
-      }
+          } else {
+            if (webcamInterval) {
+              clearInterval(webcamInterval);
+              webcamInterval = null;
+            }
+          }
+        });
+      }, { threshold: 0.3 });
+      obs.observe(section);
+    }
 
-      // ============================================
-      // INIT
-      // ============================================
-      async function init() {
-        el.camCount.textContent = WEBCAMS.length;
-        initMap();
-        loadWebcam(0);
-        startClock();
-        setupEvents();
-        setupWebcamRefresh();
-        displayWebcamsList();
-        createCategoryFilters();
-        await loadAllData();
-        setInterval(loadAllData, 60000);
-      }
+    // ============================================
+    // INIT
+    // ============================================
+    async function init() {
+      el.camCount.textContent = WEBCAMS.length;
+      initMap();
+      loadWebcam(0);
+      startClock();
+      setupEvents();
+      setupWebcamRefresh();
+      displayWebcamsList();
+      createCategoryFilters();
+      await loadAllData();
+      setInterval(loadAllData, 60000);
+    }
 
-      document.addEventListener('DOMContentLoaded', init);
-    })();
+    document.addEventListener('DOMContentLoaded', init);
+  })();
   </script>
 </body>
 </html>
